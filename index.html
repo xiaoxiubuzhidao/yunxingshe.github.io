@@ -3502,6 +3502,9 @@ body.modal-open{overflow:hidden}
 @keyframes faRotate{to{transform:rotate(360deg);}}
 .fa-ok svg{width:132px;height:132px;animation:faPop .3s ease-out;filter:drop-shadow(0 0 28px rgba(255,255,255,.55));}
 @keyframes faPop{0%{transform:scale(.4);opacity:0;}60%{transform:scale(1.08);}100%{transform:scale(1);opacity:1;}}
+
+.face-status.fail{color:#ff6b6b;font-weight:700;}
+.face-status.loading{color:#ffd166;}
 </style>
 
 
@@ -8579,6 +8582,7 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
 
 
 <script>
+<script>
 (function(){
   var KEY = 'zszz_face_done';
   var entered = false;
@@ -8595,28 +8599,95 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
   document.body.classList.add('modal-open');
   var stream = null;
   var mode = entered ? 'verify' : 'entry';
+  var modelsOk = false, modelsLoading = false, faceDetected = false, stopped = false;
   if (mode === 'verify') {
     title.textContent = '人脸核对 · 身份验证';
-    sub.textContent = '请将面部对准取景框，核对通过后自动进入';
-    btn.textContent = '开始核对';
+    sub.textContent = '请将面部对准取景框，检测到人脸后才能核对';
+    btn.textContent = '开启摄像头';
   }
-  function stopCam(){ if (stream) { stream.getTracks().forEach(function(t){ t.stop(); }); stream = null; } }
+  function stopCam(){ stopped = true; if (stream) { stream.getTracks().forEach(function(t){ t.stop(); }); stream = null; } }
+  function setStatus(txt, kind){
+    st.textContent = txt;
+    st.className = 'face-status ' + (kind || '');
+  }
+  function loadScript(src){
+    return new Promise(function(res, rej){
+      var s = document.createElement('script');
+      s.src = src;
+      s.onload = function(){ res(); };
+      s.onerror = function(){ rej(new Error('script load failed')); };
+      document.head.appendChild(s);
+    });
+  }
+  function loadModels(){
+    modelsLoading = true;
+    setStatus('正在加载人脸检测引擎…', 'loading');
+    loadScript('https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js')
+      .then(function(){
+        return faceapi.nets.tinyFaceDetector.loadFromUri('https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/weights');
+      })
+      .then(function(){
+        modelsOk = true; modelsLoading = false;
+        if (!stream) { setStatus('请先开启摄像头'); }
+        else { setStatus('检测中，请正对摄像头…', 'loading'); detectLoop(); }
+      })
+      .catch(function(){
+        modelsLoading = false;
+        setStatus('人脸检测引擎加载失败，请检查网络后重试', 'fail');
+      });
+  }
+  function detectLoop(){
+    if (stopped || !stream || !modelsOk) return;
+    try {
+      faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions({ inputSize: 320, scoreThreshold: 0.4 }))
+        .then(function(res){
+          faceDetected = res.length > 0;
+          if (faceDetected) setStatus('✔ 已检测到人脸，可以' + (mode === 'verify' ? '核对' : '录入'), 'ok');
+          else setStatus('未检测到人脸，请正对摄像头');
+          if (!stopped) setTimeout(detectLoop, 320);
+        })
+        .catch(function(){
+          if (!stopped) setTimeout(detectLoop, 320);
+        });
+    } catch(e) {
+      if (!stopped) setTimeout(detectLoop, 320);
+    }
+  }
   function startCam(){
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-      st.textContent = '当前浏览器不支持摄像头，请使用 Chrome 或 Edge 打开';
+      setStatus('当前浏览器不支持摄像头，请使用 Chrome 或 Edge 打开', 'fail');
       return;
     }
     navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: 640, height: 480 }, audio: false })
       .then(function(s){
-        stream = s;
+        stream = s; stopped = false;
         video.srcObject = s;
+        if (video.paused) { video.play().catch(function(){}); }
         btn.textContent = mode === 'verify' ? '确认核对' : '确认录入';
-        st.textContent = '';
+        if (modelsOk) { setStatus('检测中，请正对摄像头…', 'loading'); detectLoop(); }
+        else loadModels();
       })
       .catch(function(){
-        st.textContent = '摄像头无法开启（可能已被拒绝），请在地址栏允许摄像头权限后重试';
+        setStatus('摄像头无法开启（可能已被拒绝），请在地址栏允许摄像头权限后重试', 'fail');
       });
   }
+  btn.addEventListener('click', function(){
+    if (!stream) { startCam(); return; }
+    if (!modelsOk) { setStatus('人脸检测引擎尚未就绪，请稍候…', 'loading'); return; }
+    if (!faceDetected) {
+      setStatus('录入失败：未检测到人脸，无法' + (mode === 'verify' ? '核对' : '进入网站'), 'fail');
+      btn.textContent = '重新对准后重试';
+      return;
+    }
+    btn.disabled = true;
+    btn.textContent = '验证中…';
+    tip.textContent = mode === 'verify' ? '正在核对面部信息…' : '正在录入面部信息…';
+    mask.classList.add('scanning');
+    setTimeout(function(){
+      mask.classList.remove('scanning');
+      appleAnim();
+    }, 900);
+  });
   function appleAnim(){
     var a = document.getElementById('faceAnim');
     var stage = document.getElementById('faStage');
@@ -8638,19 +8709,9 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
       }, 1300);
     }, 1000);
   }
-  btn.addEventListener('click', function(){
-    if (!stream) { startCam(); return; }
-    btn.disabled = true;
-    btn.textContent = '验证中…';
-    tip.textContent = mode === 'verify' ? '正在核对面部信息…' : '正在录入面部信息…';
-    mask.classList.add('scanning');
-    setTimeout(function(){
-      mask.classList.remove('scanning');
-      appleAnim();
-    }, 900);
-  });
 })();
 </script>
+
 
 
 </body>
