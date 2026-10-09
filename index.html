@@ -3478,6 +3478,18 @@ body.modal-open{overflow:hidden}
 
 
 
+
+.face-anim{
+  position:fixed;inset:0;z-index:6;display:none;align-items:center;justify-content:center;
+  background:rgba(4,6,15,.94);backdrop-filter:blur(6px);
+}
+.fa-stage{text-align:center;}
+.fa-smile{animation:faPop .35s ease-out;}
+.fa-smile svg{width:112px;height:112px;filter:drop-shadow(0 0 24px rgba(255,213,79,.55));}
+.fa-spin-ring{width:96px;height:96px;border-radius:50%;border:8px solid rgba(255,255,255,.14);border-top-color:#7ae6ff;animation:faRotate .8s linear infinite;}
+@keyframes faRotate{to{transform:rotate(360deg);}}
+.fa-ok svg{width:112px;height:112px;animation:faPop .3s ease-out;filter:drop-shadow(0 0 24px rgba(46,204,113,.5));}
+@keyframes faPop{0%{transform:scale(.4);opacity:0;}60%{transform:scale(1.08);}100%{transform:scale(1);opacity:1;}}
 </style>
 
 
@@ -3499,6 +3511,8 @@ body.modal-open{overflow:hidden}
     <p class="face-sub">请将面部对准取景框，完成录入后自动进入页面</p>
     <button class="face-btn" id="faceBtn">开启摄像头</button>
     <div class="face-status" id="faceStatus"></div>
+    <div class="face-anim" id="faceAnim"><div class="fa-stage" id="faStage"></div></div>
+
     <div class="face-privacy">隐私说明：人脸画面仅在本机实时处理用于验证演示，不上传服务器、不保存照片</div>
   </div>
 </div>
@@ -8554,18 +8568,26 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
 
 <script>
 (function(){
-  try {
-    if (localStorage.getItem('zszz_face_done')) return;
-  } catch(e){}
+  var KEY = 'zszz_face_done';
+  var entered = false;
+  try { entered = !!localStorage.getItem(KEY); } catch(e){}
   var mask = document.getElementById('faceMask');
   var video = document.getElementById('faceVideo');
   var btn = document.getElementById('faceBtn');
   var st = document.getElementById('faceStatus');
   var tip = document.getElementById('faceTip');
+  var title = document.querySelector('.face-title');
+  var sub = document.querySelector('.face-sub');
   if (!mask || !btn) return;
   mask.classList.add('show');
   document.body.classList.add('modal-open');
   var stream = null;
+  var mode = entered ? 'verify' : 'entry';
+  if (mode === 'verify') {
+    title.textContent = '人脸核对 · 身份验证';
+    sub.textContent = '请将面部对准取景框，核对通过后自动进入';
+    btn.textContent = '开始核对';
+  }
   function stopCam(){ if (stream) { stream.getTracks().forEach(function(t){ t.stop(); }); stream = null; } }
   function startCam(){
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
@@ -8576,34 +8598,48 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
       .then(function(s){
         stream = s;
         video.srcObject = s;
-        btn.textContent = '确认录入';
+        btn.textContent = mode === 'verify' ? '确认核对' : '确认录入';
         st.textContent = '';
       })
       .catch(function(){
         st.textContent = '摄像头无法开启（可能已被拒绝），请在地址栏允许摄像头权限后重试';
       });
   }
+  function appleAnim(){
+    var a = document.getElementById('faceAnim');
+    var stage = document.getElementById('faStage');
+    a.style.display = 'flex';
+    var SVG_SMILE = '<svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="54" fill="#FFD54F" stroke="#F5A623" stroke-width="4"/><circle cx="42" cy="49" r="6.5" fill="#4E342E"/><circle cx="78" cy="49" r="6.5" fill="#4E342E"/><path d="M38 70 Q60 92 82 70" stroke="#4E342E" stroke-width="7" fill="none" stroke-linecap="round"/></svg>';
+    var SVG_OK = '<svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="56" fill="#2ECC71"/><path d="M34 62 L52 80 L88 44" stroke="#fff" stroke-width="10" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    stage.innerHTML = '<div class="fa-smile">' + SVG_SMILE + '</div>';
+    setTimeout(function(){
+      stage.innerHTML = '<div class="fa-spin"><div class="fa-spin-ring"></div></div>';
+      setTimeout(function(){
+        stage.innerHTML = '<div class="fa-ok">' + SVG_OK + '</div>';
+        setTimeout(function(){
+          try { localStorage.setItem(KEY, '1'); } catch(e){}
+          stopCam();
+          a.style.display = 'none';
+          mask.classList.remove('show');
+          document.body.classList.remove('modal-open');
+        }, 1300);
+      }, 1300);
+    }, 1000);
+  }
   btn.addEventListener('click', function(){
     if (!stream) { startCam(); return; }
     btn.disabled = true;
-    btn.textContent = '录入中…';
-    tip.textContent = '正在录入面部信息…';
+    btn.textContent = '验证中…';
+    tip.textContent = mode === 'verify' ? '正在核对面部信息…' : '正在录入面部信息…';
     mask.classList.add('scanning');
     setTimeout(function(){
-      try { localStorage.setItem('zszz_face_done', '1'); } catch(e){}
-      stopCam();
       mask.classList.remove('scanning');
-      st.textContent = '✔ 面部录入完成，欢迎进入';
-      st.className = 'face-status ok';
-      btn.textContent = '已完成';
-      setTimeout(function(){
-        mask.classList.remove('show');
-        document.body.classList.remove('modal-open');
-      }, 1000);
-    }, 1800);
+      appleAnim();
+    }, 900);
   });
 })();
 </script>
+
 
 </body>
 
