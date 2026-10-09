@@ -8621,9 +8621,14 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
   function loadModels(){
     modelsLoading = true;
     setStatus('正在加载人脸检测引擎…', 'loading');
-    loadScript('https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js')
+    var BASE = 'https://xiaoxiubuzhidao.github.io/zhongshenzhizhan.github.io/';
+    loadScript(BASE + 'lib/face-api.min.js').catch(function(){
+      return loadScript('https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js');
+    })
       .then(function(){
-        return faceapi.nets.tinyFaceDetector.loadFromUri('https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/weights');
+        return faceapi.nets.tinyFaceDetector.loadFromUri(BASE + 'lib/weights').catch(function(){
+          return faceapi.nets.tinyFaceDetector.loadFromUri('https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/weights');
+        });
       })
       .then(function(){
         modelsOk = true; modelsLoading = false;
