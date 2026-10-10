@@ -3518,6 +3518,7 @@ body.modal-open{overflow:hidden}
   <div class="face-card">
     <div class="face-video-wrap">
       <video id="faceVideo" autoplay playsinline muted></video>
+      <canvas id="faceCanvas"></canvas>
       <div class="face-frame"></div>
       <div class="face-scan"></div>
       <div class="face-tip" id="faceTip">请正对摄像头，保持面部在取景框内</div>
@@ -8545,6 +8546,7 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
   background:#05070f;border:1px solid rgba(140,170,255,.25);
 }
 .face-video-wrap video{width:100%;height:100%;object-fit:cover;display:block;}
+.face-video-wrap #faceCanvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2;}
 .face-frame{
   position:absolute;inset:0;pointer-events:none;
   background:radial-gradient(ellipse at center, transparent 36%, rgba(4,6,15,.55) 68%, rgba(4,6,15,.85) 100%);
@@ -8631,6 +8633,11 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
         });
       })
       .then(function(){
+        return faceapi.nets.faceLandmark68Net.loadFromUri(BASE + 'lib/weights').catch(function(){
+          return faceapi.nets.faceLandmark68Net.loadFromUri('https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/weights');
+        });
+      })
+      .then(function(){
         modelsOk = true; modelsLoading = false;
         if (!stream) { setStatus('请先开启摄像头'); }
         else { setStatus('检测中，请正对摄像头…', 'loading'); detectLoop(); }
@@ -8640,21 +8647,69 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
         setStatus('人脸检测引擎加载失败，请检查网络后重试', 'fail');
       });
   }
+  function clearMesh(){
+    var c = document.getElementById('faceCanvas');
+    if (!c) return;
+    var ctx = c.getContext('2d');
+    ctx.clearRect(0, 0, c.width, c.height);
+  }
+  function drawMesh(pts){
+    var c = document.getElementById('faceCanvas');
+    if (!c) return;
+    var ctx = c.getContext('2d');
+    var vw = video.videoWidth || 640, vh = video.videoHeight || 480;
+    if (c.width !== vw) { c.width = vw; c.height = vh; }
+    ctx.clearRect(0, 0, vw, vh);
+    // 荧光点阵
+    for (var i = 0; i < pts.length; i++){
+      ctx.beginPath();
+      ctx.arc(pts[i].x * vw, pts[i].y * vh, 2.6, 0, Math.PI * 2);
+      ctx.fillStyle = i % 3 === 0 ? 'rgba(120,255,214,1)' : 'rgba(0,255,179,.9)';
+      ctx.fill();
+    }
+    // 脸部轮廓连线（Face ID 风格网格）
+    var groups = [[0,16],[17,21],[22,26],[27,30],[31,35],[36,41],[42,47],[48,59],[60,67]];
+    ctx.strokeStyle = 'rgba(0,255,179,.5)';
+    ctx.lineWidth = 1.3;
+    for (var g = 0; g < groups.length; g++){
+      ctx.beginPath();
+      for (var k = groups[g][0]; k <= groups[g][1]; k++){
+        var p = pts[k];
+        if (k === groups[g][0]) ctx.moveTo(p.x * vw, p.y * vh);
+        else ctx.lineTo(p.x * vw, p.y * vh);
+      }
+      ctx.stroke();
+    }
+    // 鼻尖核心光点
+    ctx.beginPath();
+    ctx.arc(pts[27].x * vw, pts[27].y * vh, 5, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(140,255,220,1)';
+    ctx.shadowColor = 'rgba(0,255,179,.9)';
+    ctx.shadowBlur = 14;
+    ctx.fill();
+  }
   function detectLoop(){
     if (stopped || !stream || !modelsOk) return;
     try {
       faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions({ inputSize: 320, scoreThreshold: 0.4 }))
+        .withFaceLandmarks()
         .then(function(res){
-          faceDetected = res.length > 0;
-          if (faceDetected) setStatus('✔ 已检测到人脸，可以' + (mode === 'verify' ? '核对' : '录入'), 'ok');
-          else setStatus('未检测到人脸，请正对摄像头');
-          if (!stopped) setTimeout(detectLoop, 320);
+          if (res.length > 0) {
+            faceDetected = true;
+            setStatus('✔ 已检测到人脸，可以' + (mode === 'verify' ? '核对' : '录入'), 'ok');
+            drawMesh(res[0].landmarks.positions);
+          } else {
+            faceDetected = false;
+            clearMesh();
+            setStatus('未检测到人脸，请正对摄像头');
+          }
+          if (!stopped) setTimeout(detectLoop, 150);
         })
         .catch(function(){
-          if (!stopped) setTimeout(detectLoop, 320);
+          if (!stopped) setTimeout(detectLoop, 150);
         });
     } catch(e) {
-      if (!stopped) setTimeout(detectLoop, 320);
+      if (!stopped) setTimeout(detectLoop, 150);
     }
   }
   function startCam(){
