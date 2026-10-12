@@ -2,7 +2,15 @@
 
 
 
+
+
+
+
 <html lang="zh-CN">
+
+
+
+
 
 
 
@@ -10,7 +18,15 @@
 
 
 
+
+
+
+
 <meta charset="UTF-8">
+
+
+
+
 
 
 
@@ -18,7 +34,15 @@
 
 
 
-<title>终神之战：军团 — 全平台预约开启</title>
+
+
+
+
+<title>墨隐工作室旗下新游即将开启 — 终神之战：军团</title>
+
+
+
+
 
 
 
@@ -26,7 +50,15 @@
 
 
 
+
+
+
+
 /* ===================== 基础 ===================== */
+
+
+
+
 
 
 
@@ -34,7 +66,15 @@
 
 
 
+
+
+
+
 html{scroll-behavior:smooth}
+
+
+
+
 
 
 
@@ -42,7 +82,15 @@ body{
 
 
 
+
+
+
+
   background:#05060b;
+
+
+
+
 
 
 
@@ -50,7 +98,15 @@ body{
 
 
 
+
+
+
+
   font-family:"PingFang SC","Microsoft YaHei","Hiragino Sans GB",system-ui,-apple-system,sans-serif;
+
+
+
+
 
 
 
@@ -58,7 +114,15 @@ body{
 
 
 
+
+
+
+
   -webkit-font-smoothing:antialiased;
+
+
+
+
 
 
 
@@ -66,7 +130,15 @@ body{
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -74,7 +146,15 @@ body{
 
 
 
+
+
+
+
   --gold:#e8c877;
+
+
+
+
 
 
 
@@ -82,7 +162,15 @@ body{
 
 
 
+
+
+
+
   --gold-d:#a67c2e;
+
+
+
+
 
 
 
@@ -90,7 +178,15 @@ body{
 
 
 
+
+
+
+
   --cyan:#38bdf8;
+
+
+
+
 
 
 
@@ -98,7 +194,15 @@ body{
 
 
 
+
+
+
+
   --red:#ff5a5a;
+
+
+
+
 
 
 
@@ -106,7 +210,15 @@ body{
 
 
 
+
+
+
+
   --panel:rgba(255,255,255,.035);
+
+
+
+
 
 
 
@@ -114,11 +226,23 @@ body{
 
 
 
+
+
+
+
 a{color:inherit}
 
 
 
+
+
+
+
 ::selection{background:rgba(232,200,119,.3)}
+
+
+
+
 
 
 
@@ -130,7 +254,19 @@ a{color:inherit}
 
 
 
+
+
+
+
+
+
+
+
 /* ===================== 背景 ===================== */
+
+
+
+
 
 
 
@@ -138,7 +274,15 @@ a{color:inherit}
 
 
 
+
+
+
+
 .aura{position:fixed;border-radius:50%;filter:blur(120px);pointer-events:none;z-index:0}
+
+
+
+
 
 
 
@@ -146,7 +290,15 @@ a{color:inherit}
 
 
 
+
+
+
+
 .aura-2{width:54vw;height:54vw;background:radial-gradient(circle,rgba(232,200,119,.2),transparent 70%);bottom:-18vw;right:-14vw;animation:drift2 26s ease-in-out infinite}
+
+
+
+
 
 
 
@@ -154,7 +306,15 @@ a{color:inherit}
 
 
 
+
+
+
+
 @keyframes drift2{50%{transform:translate(-5vw,-6vh) scale(1.15)}}
+
+
+
+
 
 
 
@@ -162,7 +322,19 @@ a{color:inherit}
 
 
 
+
+
+
+
   background:radial-gradient(ellipse at 50% 40%,transparent 30%,rgba(5,6,11,.75) 100%)}
+
+
+
+
+
+
+
+
 
 
 
@@ -178,7 +350,19 @@ a{color:inherit}
 
 
 
+
+
+
+
+
+
+
+
 /* ===================== 顶栏 ===================== */
+
+
+
+
 
 
 
@@ -186,7 +370,15 @@ header{
 
 
 
+
+
+
+
   position:fixed;top:0;left:0;right:0;z-index:60;
+
+
+
+
 
 
 
@@ -194,7 +386,15 @@ header{
 
 
 
+
+
+
+
   padding:18px clamp(20px,5vw,64px);
+
+
+
+
 
 
 
@@ -202,11 +402,23 @@ header{
 
 
 
+
+
+
+
   border-bottom:1px solid transparent;
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -214,7 +426,15 @@ header.scrolled{
 
 
 
+
+
+
+
   padding:12px clamp(20px,5vw,64px);
+
+
+
+
 
 
 
@@ -222,7 +442,15 @@ header.scrolled{
 
 
 
+
+
+
+
   backdrop-filter:blur(16px);
+
+
+
+
 
 
 
@@ -230,11 +458,23 @@ header.scrolled{
 
 
 
+
+
+
+
   border-bottom-color:rgba(232,200,119,.14);
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -242,7 +482,15 @@ header.scrolled{
 
 
 
+
+
+
+
 .logo svg{width:26px;height:26px;flex:none}
+
+
+
+
 
 
 
@@ -250,7 +498,15 @@ header.scrolled{
 
 
 
+
+
+
+
   -webkit-background-clip:text;background-clip:text;color:transparent}
+
+
+
+
 
 
 
@@ -258,7 +514,15 @@ nav{display:flex;gap:32px;font-size:.9rem}
 
 
 
+
+
+
+
 nav a{text-decoration:none;color:#a9aec0;transition:.25s;position:relative}
+
+
+
+
 
 
 
@@ -266,7 +530,15 @@ nav a:hover{color:var(--gold)}
 
 
 
+
+
+
+
 nav a::after{content:"";position:absolute;left:0;bottom:-6px;width:0;height:1px;
+
+
+
+
 
 
 
@@ -274,7 +546,15 @@ nav a::after{content:"";position:absolute;left:0;bottom:-6px;width:0;height:1px;
 
 
 
+
+
+
+
 nav a:hover::after{width:100%}
+
+
+
+
 
 
 
@@ -282,7 +562,15 @@ nav a:hover::after{width:100%}
 
 
 
+
+
+
+
   padding:10px 24px;border-radius:999px;font-size:.85rem;font-weight:700;
+
+
+
+
 
 
 
@@ -290,7 +578,15 @@ nav a:hover::after{width:100%}
 
 
 
+
+
+
+
   background:linear-gradient(135deg,var(--gold-l),var(--gold) 50%,#c9a04e);
+
+
+
+
 
 
 
@@ -298,7 +594,15 @@ nav a:hover::after{width:100%}
 
 
 
+
+
+
+
   transition:.3s;white-space:nowrap;
+
+
+
+
 
 
 
@@ -306,7 +610,15 @@ nav a:hover::after{width:100%}
 
 
 
+
+
+
+
 .top-btn:hover{transform:translateY(-2px);box-shadow:0 14px 30px -8px rgba(232,200,119,.9)}
+
+
+
+
 
 
 
@@ -318,7 +630,19 @@ nav a:hover::after{width:100%}
 
 
 
+
+
+
+
+
+
+
+
 /* ===================== HERO ===================== */
+
+
+
+
 
 
 
@@ -326,7 +650,15 @@ nav a:hover::after{width:100%}
 
 
 
+
+
+
+
   min-height:100vh;
+
+
+
+
 
 
 
@@ -334,7 +666,15 @@ nav a:hover::after{width:100%}
 
 
 
+
+
+
+
   text-align:center;padding:140px clamp(20px,6vw,60px) 90px;
+
+
+
+
 
 
 
@@ -342,7 +682,15 @@ nav a:hover::after{width:100%}
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -350,7 +698,15 @@ nav a:hover::after{width:100%}
 
 
 
+
+
+
+
   display:inline-flex;align-items:center;gap:9px;
+
+
+
+
 
 
 
@@ -358,7 +714,15 @@ nav a:hover::after{width:100%}
 
 
 
+
+
+
+
   border:1px solid rgba(232,200,119,.35);
+
+
+
+
 
 
 
@@ -366,7 +730,15 @@ nav a:hover::after{width:100%}
 
 
 
+
+
+
+
   font-size:.78rem;letter-spacing:.22em;color:var(--gold);
+
+
+
+
 
 
 
@@ -374,7 +746,15 @@ nav a:hover::after{width:100%}
 
 
 
+
+
+
+
   animation:fadeUp .9s .1s both;
+
+
+
+
 
 
 
@@ -382,11 +762,23 @@ nav a:hover::after{width:100%}
 
 
 
+
+
+
+
 .badge .dot{width:6px;height:6px;border-radius:50%;background:var(--gold);
 
 
 
+
+
+
+
   box-shadow:0 0 10px var(--gold);animation:pulse 1.8s infinite}
+
+
+
+
 
 
 
@@ -398,7 +790,19 @@ nav a:hover::after{width:100%}
 
 
 
+
+
+
+
+
+
+
+
 .game-title{
+
+
+
+
 
 
 
@@ -406,7 +810,15 @@ nav a:hover::after{width:100%}
 
 
 
+
+
+
+
   font-weight:900;
+
+
+
+
 
 
 
@@ -414,7 +826,15 @@ nav a:hover::after{width:100%}
 
 
 
+
+
+
+
   line-height:1.05;
+
+
+
+
 
 
 
@@ -422,7 +842,15 @@ nav a:hover::after{width:100%}
 
 
 
+
+
+
+
   -webkit-background-clip:text;background-clip:text;color:transparent;
+
+
+
+
 
 
 
@@ -430,11 +858,23 @@ nav a:hover::after{width:100%}
 
 
 
+
+
+
+
   animation:fadeUp 1s .2s both;
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -442,7 +882,15 @@ nav a:hover::after{width:100%}
 
 
 
+
+
+
+
   background:linear-gradient(180deg,#fff,#b9a0ff);
+
+
+
+
 
 
 
@@ -450,11 +898,23 @@ nav a:hover::after{width:100%}
 
 
 
+
+
+
+
   font-weight:400;padding:0 .04em;
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -462,7 +922,15 @@ nav a:hover::after{width:100%}
 
 
 
+
+
+
+
   margin-top:24px;font-size:clamp(.95rem,2.1vw,1.22rem);
+
+
+
+
 
 
 
@@ -470,11 +938,23 @@ nav a:hover::after{width:100%}
 
 
 
+
+
+
+
   animation:fadeUp 1s .35s both;
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -482,7 +962,15 @@ nav a:hover::after{width:100%}
 
 
 
+
+
+
+
   margin-top:48px;display:flex;gap:16px;flex-wrap:wrap;justify-content:center;
+
+
+
+
 
 
 
@@ -490,7 +978,15 @@ nav a:hover::after{width:100%}
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -502,7 +998,19 @@ nav a:hover::after{width:100%}
 
 
 
+
+
+
+
+
+
+
+
 .btn{
+
+
+
+
 
 
 
@@ -510,7 +1018,15 @@ nav a:hover::after{width:100%}
 
 
 
+
+
+
+
   padding:16px 40px;border-radius:999px;border:1px solid transparent;
+
+
+
+
 
 
 
@@ -518,11 +1034,23 @@ nav a:hover::after{width:100%}
 
 
 
+
+
+
+
   text-decoration:none;transition:.3s;font-family:inherit;
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -530,7 +1058,15 @@ nav a:hover::after{width:100%}
 
 
 
+
+
+
+
   color:#1a1206;
+
+
+
+
 
 
 
@@ -538,11 +1074,23 @@ nav a:hover::after{width:100%}
 
 
 
+
+
+
+
   box-shadow:0 12px 34px -10px rgba(232,200,119,.75),inset 0 1px 0 rgba(255,255,255,.55);
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -550,7 +1098,15 @@ nav a:hover::after{width:100%}
 
 
 
+
+
+
+
 .btn-ghost{
+
+
+
+
 
 
 
@@ -558,7 +1114,15 @@ nav a:hover::after{width:100%}
 
 
 
+
+
+
+
   background:rgba(232,200,119,.05);
+
+
+
+
 
 
 
@@ -566,7 +1130,15 @@ nav a:hover::after{width:100%}
 
 
 
+
+
+
+
 .btn-ghost:hover{background:rgba(232,200,119,.14);border-color:rgba(232,200,119,.85);transform:translateY(-3px)}
+
+
+
+
 
 
 
@@ -578,7 +1150,19 @@ nav a:hover::after{width:100%}
 
 
 
+
+
+
+
+
+
+
+
 .countdown{
+
+
+
+
 
 
 
@@ -586,11 +1170,23 @@ nav a:hover::after{width:100%}
 
 
 
+
+
+
+
   animation:fadeUp 1s .65s both;
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -598,7 +1194,15 @@ nav a:hover::after{width:100%}
 
 
 
+
+
+
+
 .cd-num{
+
+
+
+
 
 
 
@@ -606,7 +1210,15 @@ nav a:hover::after{width:100%}
 
 
 
+
+
+
+
   font-variant-numeric:tabular-nums;letter-spacing:.02em;
+
+
+
+
 
 
 
@@ -614,11 +1226,23 @@ nav a:hover::after{width:100%}
 
 
 
+
+
+
+
   -webkit-background-clip:text;background-clip:text;color:transparent;
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -626,7 +1250,15 @@ nav a:hover::after{width:100%}
 
 
 
+
+
+
+
 .cd-sep{font-size:1.6rem;color:rgba(232,200,119,.35);margin-top:4px}
+
+
+
+
 
 
 
@@ -634,7 +1266,15 @@ nav a:hover::after{width:100%}
 
 
 
+
+
+
+
 .cd-date{
+
+
+
+
 
 
 
@@ -642,7 +1282,15 @@ nav a:hover::after{width:100%}
 
 
 
+
+
+
+
   padding:8px 22px;border-radius:999px;
+
+
+
+
 
 
 
@@ -650,7 +1298,15 @@ nav a:hover::after{width:100%}
 
 
 
+
+
+
+
   background:rgba(232,200,119,.06);
+
+
+
+
 
 
 
@@ -658,11 +1314,23 @@ nav a:hover::after{width:100%}
 
 
 
+
+
+
+
   animation:fadeUp 1s .72s both;
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -674,7 +1342,19 @@ nav a:hover::after{width:100%}
 
 
 
+
+
+
+
+
+
+
+
 .stat{
+
+
+
+
 
 
 
@@ -682,7 +1362,15 @@ nav a:hover::after{width:100%}
 
 
 
+
+
+
+
   padding:11px 26px;border-radius:999px;
+
+
+
+
 
 
 
@@ -690,7 +1378,15 @@ nav a:hover::after{width:100%}
 
 
 
+
+
+
+
   font-size:.86rem;color:#9aa0b5;backdrop-filter:blur(8px);
+
+
+
+
 
 
 
@@ -698,7 +1394,15 @@ nav a:hover::after{width:100%}
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -706,7 +1410,15 @@ nav a:hover::after{width:100%}
 
 
 
+
+
+
+
 .stat .live{width:7px;height:7px;border-radius:50%;background:var(--green);
+
+
+
+
 
 
 
@@ -718,7 +1430,19 @@ nav a:hover::after{width:100%}
 
 
 
+
+
+
+
+
+
+
+
 /* ===================== 通用 SECTION ===================== */
+
+
+
+
 
 
 
@@ -726,7 +1450,15 @@ section{padding:clamp(80px,11vw,140px) clamp(20px,6vw,64px)}
 
 
 
+
+
+
+
 .wrap{max-width:1200px;margin:0 auto}
+
+
+
+
 
 
 
@@ -734,7 +1466,15 @@ section{padding:clamp(80px,11vw,140px) clamp(20px,6vw,64px)}
 
 
 
+
+
+
+
 .sec-tag{
+
+
+
+
 
 
 
@@ -742,11 +1482,23 @@ section{padding:clamp(80px,11vw,140px) clamp(20px,6vw,64px)}
 
 
 
+
+
+
+
   text-transform:uppercase;margin-bottom:16px;opacity:.85;
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -754,7 +1506,15 @@ section{padding:clamp(80px,11vw,140px) clamp(20px,6vw,64px)}
 
 
 
+
+
+
+
   font-size:clamp(1.7rem,4.2vw,2.7rem);font-weight:800;letter-spacing:.06em;
+
+
+
+
 
 
 
@@ -762,11 +1522,23 @@ section{padding:clamp(80px,11vw,140px) clamp(20px,6vw,64px)}
 
 
 
+
+
+
+
   -webkit-background-clip:text;background-clip:text;color:transparent;
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -778,11 +1550,27 @@ section{padding:clamp(80px,11vw,140px) clamp(20px,6vw,64px)}
 
 
 
+
+
+
+
+
+
+
+
 .reveal{opacity:0;transform:translateY(30px);
 
 
 
+
+
+
+
   transition:opacity .85s cubic-bezier(.2,.75,.3,1),transform .85s cubic-bezier(.2,.75,.3,1)}
+
+
+
+
 
 
 
@@ -794,7 +1582,19 @@ section{padding:clamp(80px,11vw,140px) clamp(20px,6vw,64px)}
 
 
 
+
+
+
+
+
+
+
+
 /* ===================== 特色 ===================== */
+
+
+
+
 
 
 
@@ -802,7 +1602,15 @@ section{padding:clamp(80px,11vw,140px) clamp(20px,6vw,64px)}
 
 
 
+
+
+
+
 .f-card{
+
+
+
+
 
 
 
@@ -810,7 +1618,15 @@ section{padding:clamp(80px,11vw,140px) clamp(20px,6vw,64px)}
 
 
 
+
+
+
+
   border:1px solid var(--line);
+
+
+
+
 
 
 
@@ -818,11 +1634,23 @@ section{padding:clamp(80px,11vw,140px) clamp(20px,6vw,64px)}
 
 
 
+
+
+
+
   position:relative;overflow:hidden;transition:.4s;
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -830,7 +1658,15 @@ section{padding:clamp(80px,11vw,140px) clamp(20px,6vw,64px)}
 
 
 
+
+
+
+
   content:"";position:absolute;inset:0;border-radius:20px;padding:1px;
+
+
+
+
 
 
 
@@ -838,7 +1674,15 @@ section{padding:clamp(80px,11vw,140px) clamp(20px,6vw,64px)}
 
 
 
+
+
+
+
   -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+
+
+
+
 
 
 
@@ -846,11 +1690,23 @@ section{padding:clamp(80px,11vw,140px) clamp(20px,6vw,64px)}
 
 
 
+
+
+
+
   opacity:0;transition:.4s;
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -858,7 +1714,15 @@ section{padding:clamp(80px,11vw,140px) clamp(20px,6vw,64px)}
 
 
 
+
+
+
+
 .f-card:hover::before{opacity:1}
+
+
+
+
 
 
 
@@ -866,7 +1730,15 @@ section{padding:clamp(80px,11vw,140px) clamp(20px,6vw,64px)}
 
 
 
+
+
+
+
   font-size:.78rem;letter-spacing:.28em;color:rgba(232,200,119,.6);
+
+
+
+
 
 
 
@@ -874,7 +1746,15 @@ section{padding:clamp(80px,11vw,140px) clamp(20px,6vw,64px)}
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -882,7 +1762,15 @@ section{padding:clamp(80px,11vw,140px) clamp(20px,6vw,64px)}
 
 
 
+
+
+
+
   width:48px;height:48px;border-radius:14px;display:grid;place-items:center;
+
+
+
+
 
 
 
@@ -890,7 +1778,15 @@ section{padding:clamp(80px,11vw,140px) clamp(20px,6vw,64px)}
 
 
 
+
+
+
+
   border:1px solid rgba(232,200,119,.25);margin-bottom:22px;font-size:1.4rem;
+
+
+
+
 
 
 
@@ -898,7 +1794,15 @@ section{padding:clamp(80px,11vw,140px) clamp(20px,6vw,64px)}
 
 
 
+
+
+
+
 .f-card h3{font-size:1.16rem;letter-spacing:.06em;margin-bottom:12px;color:#f2f4fa}
+
+
+
+
 
 
 
@@ -910,7 +1814,19 @@ section{padding:clamp(80px,11vw,140px) clamp(20px,6vw,64px)}
 
 
 
+
+
+
+
+
+
+
+
 /* ===================== 预约表单 ===================== */
+
+
+
+
 
 
 
@@ -918,7 +1834,15 @@ section{padding:clamp(80px,11vw,140px) clamp(20px,6vw,64px)}
 
 
 
+
+
+
+
   display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(30px,5vw,64px);
+
+
+
+
 
 
 
@@ -926,7 +1850,15 @@ section{padding:clamp(80px,11vw,140px) clamp(20px,6vw,64px)}
 
 
 
+
+
+
+
   border:1px solid rgba(232,200,119,.22);
+
+
+
+
 
 
 
@@ -934,7 +1866,15 @@ section{padding:clamp(80px,11vw,140px) clamp(20px,6vw,64px)}
 
 
 
+
+
+
+
     radial-gradient(120% 120% at 0% 0%,rgba(124,58,237,.2),transparent 55%),
+
+
+
+
 
 
 
@@ -942,7 +1882,15 @@ section{padding:clamp(80px,11vw,140px) clamp(20px,6vw,64px)}
 
 
 
+
+
+
+
     rgba(12,13,22,.75);
+
+
+
+
 
 
 
@@ -950,11 +1898,23 @@ section{padding:clamp(80px,11vw,140px) clamp(20px,6vw,64px)}
 
 
 
+
+
+
+
   align-items:center;
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -962,7 +1922,15 @@ section{padding:clamp(80px,11vw,140px) clamp(20px,6vw,64px)}
 
 
 
+
+
+
+
 .rc-left h2{
+
+
+
+
 
 
 
@@ -970,7 +1938,15 @@ section{padding:clamp(80px,11vw,140px) clamp(20px,6vw,64px)}
 
 
 
+
+
+
+
   line-height:1.35;margin-bottom:16px;
+
+
+
+
 
 
 
@@ -978,7 +1954,15 @@ section{padding:clamp(80px,11vw,140px) clamp(20px,6vw,64px)}
 
 
 
+
+
+
+
   -webkit-background-clip:text;background-clip:text;color:transparent;
+
+
+
+
 
 
 
@@ -986,7 +1970,15 @@ section{padding:clamp(80px,11vw,140px) clamp(20px,6vw,64px)}
 
 
 
+
+
+
+
 .rc-left>p{color:#8b91a7;font-size:.94rem;margin-bottom:26px;line-height:1.9}
+
+
+
+
 
 
 
@@ -994,7 +1986,15 @@ section{padding:clamp(80px,11vw,140px) clamp(20px,6vw,64px)}
 
 
 
+
+
+
+
 .perks li{font-size:.88rem;color:#b7bccd;display:flex;gap:10px;align-items:center}
+
+
+
+
 
 
 
@@ -1006,7 +2006,19 @@ section{padding:clamp(80px,11vw,140px) clamp(20px,6vw,64px)}
 
 
 
+
+
+
+
+
+
+
+
 form{display:flex;flex-direction:column;gap:14px}
+
+
+
+
 
 
 
@@ -1018,7 +2030,19 @@ form{display:flex;flex-direction:column;gap:14px}
 
 
 
+
+
+
+
+
+
+
+
 .phone-field{position:relative}
+
+
+
+
 
 
 
@@ -1026,7 +2050,15 @@ input[type=tel]{
 
 
 
+
+
+
+
   width:100%;padding:17px 52px 17px 22px;border-radius:14px;
+
+
+
+
 
 
 
@@ -1034,7 +2066,15 @@ input[type=tel]{
 
 
 
+
+
+
+
   border:1px solid rgba(255,255,255,.13);
+
+
+
+
 
 
 
@@ -1042,11 +2082,23 @@ input[type=tel]{
 
 
 
+
+
+
+
   transition:.3s;letter-spacing:.05em;
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -1054,7 +2106,15 @@ input[type=tel]::placeholder{color:#5a6078;letter-spacing:.02em}
 
 
 
+
+
+
+
 input[type=tel]:focus{
+
+
+
+
 
 
 
@@ -1062,7 +2122,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   background:rgba(232,200,119,.07);
+
+
+
+
 
 
 
@@ -1070,7 +2138,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -1078,7 +2154,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   position:absolute;right:18px;top:50%;transform:translateY(-50%);
+
+
+
+
 
 
 
@@ -1086,7 +2170,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   pointer-events:none;opacity:0;transition:.25s;
+
+
+
+
 
 
 
@@ -1094,7 +2186,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
 .phone-field.valid .phone-icon{color:var(--green);opacity:1}
+
+
+
+
 
 
 
@@ -1106,7 +2206,19 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
+
+
+
+
 .phone-field.valid input{
+
+
+
+
 
 
 
@@ -1114,7 +2226,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   background:rgba(74,222,128,.07);
+
+
+
+
 
 
 
@@ -1122,7 +2242,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -1130,7 +2258,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   border-color:rgba(255,90,90,.8);
+
+
+
+
 
 
 
@@ -1138,11 +2274,23 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   box-shadow:0 0 0 4px rgba(255,90,90,.1);
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -1150,7 +2298,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   font-size:.76rem;color:#61677e;letter-spacing:.05em;
+
+
+
+
 
 
 
@@ -1158,11 +2314,23 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
 }
 
 
 
+
+
+
+
 .phone-msg.ok{color:var(--green)}
+
+
+
+
 
 
 
@@ -1174,7 +2342,19 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
+
+
+
+
 .form-tip{font-size:.74rem;color:#61677e;text-align:center;line-height:1.7}
+
+
+
+
 
 
 
@@ -1186,7 +2366,19 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
+
+
+
+
 .success{
+
+
+
+
 
 
 
@@ -1194,11 +2386,23 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   animation:fadeUp .6s both;
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -1206,7 +2410,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
 .success .tick{
+
+
+
+
 
 
 
@@ -1214,7 +2426,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   display:grid;place-items:center;font-size:1.9rem;color:#1a1206;
+
+
+
+
 
 
 
@@ -1222,7 +2442,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   box-shadow:0 0 36px rgba(232,200,119,.7);
+
+
+
+
 
 
 
@@ -1230,7 +2458,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -1238,7 +2474,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
 .success h3{font-size:1.2rem;letter-spacing:.1em;margin-bottom:12px;color:var(--gold)}
+
+
+
+
 
 
 
@@ -1246,7 +2490,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
 .success .seat{
+
+
+
+
 
 
 
@@ -1254,7 +2506,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   border:1px dashed rgba(232,200,119,.5);font-size:.8rem;
+
+
+
+
 
 
 
@@ -1262,7 +2522,19 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
 }
+
+
+
+
+
+
+
+
 
 
 
@@ -1274,7 +2546,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
 .lottery-modal .modal-card{width:min(520px,100%)}
+
+
+
+
 
 
 
@@ -1282,7 +2562,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   padding:26px clamp(22px,4vw,32px) 30px;
+
+
+
+
 
 
 
@@ -1290,7 +2578,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -1298,7 +2594,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
 .lottery-body::-webkit-scrollbar-track{background:rgba(255,255,255,.03)}
+
+
+
+
 
 
 
@@ -1306,7 +2610,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   background:linear-gradient(180deg,var(--gold-d),var(--gold));
+
+
+
+
 
 
 
@@ -1314,7 +2626,19 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
 }
+
+
+
+
+
+
+
+
 
 
 
@@ -1326,7 +2650,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   text-align:center;padding-bottom:22px;
+
+
+
+
 
 
 
@@ -1334,7 +2666,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -1342,7 +2682,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   width:56px;height:56px;border-radius:50%;
+
+
+
+
 
 
 
@@ -1350,7 +2698,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   font-size:1.6rem;color:#1a1206;
+
+
+
+
 
 
 
@@ -1358,7 +2714,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   box-shadow:0 0 30px rgba(232,200,119,.65);
+
+
+
+
 
 
 
@@ -1366,7 +2730,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -1374,7 +2746,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   font-size:1.02rem;letter-spacing:.12em;color:var(--gold);
+
+
+
+
 
 
 
@@ -1382,7 +2762,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -1390,7 +2778,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
 .lottery-success p b{
+
+
+
+
 
 
 
@@ -1398,7 +2794,19 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
 }
+
+
+
+
+
+
+
+
 
 
 
@@ -1410,7 +2818,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   padding:28px 22px;border-radius:18px;
+
+
+
+
 
 
 
@@ -1418,7 +2834,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   background:radial-gradient(120% 120% at 50% 0%,rgba(232,200,119,.14),rgba(232,200,119,.03));
+
+
+
+
 
 
 
@@ -1426,7 +2850,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -1434,7 +2866,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   font-size:clamp(2rem,7vw,2.8rem);font-weight:900;
+
+
+
+
 
 
 
@@ -1442,7 +2882,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   background:linear-gradient(180deg,#fff,#d8c48a);
+
+
+
+
 
 
 
@@ -1450,11 +2898,23 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   filter:drop-shadow(0 0 22px rgba(232,200,119,.45));
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -1462,7 +2922,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   margin-top:12px;font-size:.8rem;color:#8b91a7;letter-spacing:.24em;
+
+
+
+
 
 
 
@@ -1470,7 +2938,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -1482,7 +2958,19 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
+
+
+
+
 .result-card{padding:32px 24px;border-radius:20px;text-align:center}
+
+
+
+
 
 
 
@@ -1490,7 +2978,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   border:1px solid rgba(232,200,119,.6);
+
+
+
+
 
 
 
@@ -1498,11 +2994,23 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   animation:pop .55s cubic-bezier(.2,1.4,.4,1) both, glow 2.2s ease-in-out infinite .55s;
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -1510,7 +3018,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   0%,100%{box-shadow:0 0 34px -12px rgba(232,200,119,.55)}
+
+
+
+
 
 
 
@@ -1518,7 +3034,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -1526,7 +3050,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   border:1px solid rgba(255,255,255,.12);
+
+
+
+
 
 
 
@@ -1534,11 +3066,23 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   animation:fadeUp .55s both;
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -1546,7 +3090,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
 .result-card h4{font-size:1.12rem;letter-spacing:.12em;margin-bottom:12px}
+
+
+
+
 
 
 
@@ -1554,7 +3106,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
 .result-card.lose h4{color:#9aa0b5}
+
+
+
+
 
 
 
@@ -1562,7 +3122,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
 .result-card .code{
+
+
+
+
 
 
 
@@ -1570,7 +3138,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   font-family:ui-monospace,"SF Mono",Consolas,monospace;
+
+
+
+
 
 
 
@@ -1578,7 +3154,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   color:var(--gold-l);background:rgba(0,0,0,.4);
+
+
+
+
 
 
 
@@ -1586,11 +3170,23 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   text-shadow:0 0 18px rgba(232,200,119,.5);
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -1598,11 +3194,27 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   display:block;margin-top:20px;font-size:.74rem;color:#61677e;letter-spacing:.1em;
 
 
 
+
+
+
+
 }
+
+
+
+
+
+
+
+
 
 
 
@@ -1614,7 +3226,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
 .download-modal .modal-card{width:min(440px,100%)}
+
+
+
+
 
 
 
@@ -1622,7 +3242,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   padding:32px clamp(24px,5vw,38px) 34px;
+
+
+
+
 
 
 
@@ -1630,7 +3258,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -1638,7 +3274,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   width:76px;height:76px;border-radius:22px;margin:0 auto 22px;
+
+
+
+
 
 
 
@@ -1646,7 +3290,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   background:linear-gradient(140deg,rgba(232,200,119,.24),rgba(124,58,237,.2));
+
+
+
+
 
 
 
@@ -1654,7 +3306,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   box-shadow:0 0 36px -8px rgba(232,200,119,.55);
+
+
+
+
 
 
 
@@ -1662,7 +3322,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -1670,7 +3338,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   font-size:1.22rem;font-weight:800;letter-spacing:.1em;color:var(--gold-l);
+
+
+
+
 
 
 
@@ -1678,7 +3354,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -1686,11 +3370,23 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   font-size:.86rem;color:#8b91a7;line-height:1.95;margin-bottom:28px;
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -1698,7 +3394,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
 .download-actions{display:flex;flex-direction:column;gap:12px}
+
+
+
+
 
 
 
@@ -1706,7 +3410,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   display:inline-flex;align-items:center;justify-content:center;gap:.55em;
+
+
+
+
 
 
 
@@ -1714,7 +3426,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   font-family:inherit;font-size:.97rem;font-weight:800;letter-spacing:.12em;
+
+
+
+
 
 
 
@@ -1722,7 +3442,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   background:linear-gradient(135deg,var(--gold-l),var(--gold) 50%,#c9a04e);
+
+
+
+
 
 
 
@@ -1730,11 +3458,23 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   transition:.3s;
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -1742,7 +3482,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
 .btn-download:active{transform:translateY(-1px) scale(.99)}
+
+
+
+
 
 
 
@@ -1750,7 +3498,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
 .btn-skip{
+
+
+
+
 
 
 
@@ -1758,7 +3514,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   font-family:inherit;font-size:.84rem;letter-spacing:.1em;
+
+
+
+
 
 
 
@@ -1766,11 +3530,23 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   transition:.28s;
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -1778,7 +3554,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
 .download-note{
+
+
+
+
 
 
 
@@ -1786,7 +3570,19 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
 }
+
+
+
+
+
+
+
+
 
 
 
@@ -1798,7 +3594,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
 .launcher-modal .modal-card{width:min(460px,100%)}
+
+
+
+
 
 
 
@@ -1806,7 +3610,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
 .launcher-icon{
+
+
+
+
 
 
 
@@ -1814,7 +3626,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   display:grid;place-items:center;
+
+
+
+
 
 
 
@@ -1822,7 +3642,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   border:1px solid rgba(232,200,119,.42);
+
+
+
+
 
 
 
@@ -1830,11 +3658,23 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   animation:pop .5s cubic-bezier(.2,1.4,.4,1) both;
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -1842,7 +3682,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
 .launcher-flow{
+
+
+
+
 
 
 
@@ -1850,11 +3698,23 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   font-size:.78rem;color:#8b91a7;letter-spacing:.04em;margin-bottom:22px;line-height:2;
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -1862,7 +3722,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
 .launcher-flow .sep{color:rgba(255,255,255,.25)}
+
+
+
+
 
 
 
@@ -1870,7 +3738,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.025);
+
+
+
+
 
 
 
@@ -1878,7 +3754,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -1886,7 +3770,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   display:flex;justify-content:space-between;align-items:center;gap:14px;
+
+
+
+
 
 
 
@@ -1894,7 +3786,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -1902,7 +3802,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
 .launcher-meta .row b{color:#e2e5ef;font-weight:600}
+
+
+
+
 
 
 
@@ -1910,7 +3818,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   font-size:.72rem;color:var(--cyan);background:rgba(56,189,248,.08);
+
+
+
+
 
 
 
@@ -1918,7 +3834,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   letter-spacing:.04em;
+
+
+
+
 
 
 
@@ -1926,11 +3850,23 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
 .launcher-actions{display:flex;flex-direction:column;gap:12px}
 
 
 
+
+
+
+
 .launcher-note{margin-top:20px;font-size:.72rem;color:#5f6579;letter-spacing:.05em;line-height:1.8}
+
+
+
+
 
 
 
@@ -1942,7 +3878,19 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
+
+
+
+
 /* ===================== 启动器下载区块（融合独立启动器页） ===================== */
+
+
+
+
 
 
 
@@ -1950,7 +3898,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
 .lc-sec .sec-head{margin-bottom:34px}
+
+
+
+
 
 
 
@@ -1958,7 +3914,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
 .lc-flow b{color:var(--gold);font-weight:600}
+
+
+
+
 
 
 
@@ -1966,7 +3930,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
 .lc-dl-card{
+
+
+
+
 
 
 
@@ -1974,7 +3946,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   border:1px solid var(--line);border-radius:16px;
+
+
+
+
 
 
 
@@ -1982,7 +3962,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   padding:34px 30px 30px;
+
+
+
+
 
 
 
@@ -1990,7 +3978,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -1998,7 +3994,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   content:"";position:absolute;inset:0;border-radius:16px;padding:1px;pointer-events:none;
+
+
+
+
 
 
 
@@ -2006,7 +4010,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+
+
+
+
 
 
 
@@ -2014,7 +4026,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -2022,7 +4042,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
 .lc-dl-icon{
+
+
+
+
 
 
 
@@ -2030,7 +4058,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   background:linear-gradient(140deg,rgba(232,200,119,.18),rgba(124,58,237,.16));
+
+
+
+
 
 
 
@@ -2038,7 +4074,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -2046,7 +4090,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
 .lc-dl-head .t{font-weight:800;font-size:1.05rem;letter-spacing:.04em}
+
+
+
+
 
 
 
@@ -2054,7 +4106,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
 .lc-dl-meta{display:flex;justify-content:center;gap:26px;margin:22px 0 4px;font-size:.78rem;color:#8b92a6}
+
+
+
+
 
 
 
@@ -2062,7 +4122,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
 .lc-dl-btn{
+
+
+
+
 
 
 
@@ -2070,7 +4138,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   margin-top:22px;padding:16px 20px;font-size:1.08rem;font-weight:800;letter-spacing:.2em;
+
+
+
+
 
 
 
@@ -2078,11 +4154,23 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   border:none;cursor:pointer;text-decoration:none;
 
 
 
+
+
+
+
   clip-path:polygon(4% 0,100% 0,100% 72%,96% 100%,0 100%,0 28%);
+
+
+
+
 
 
 
@@ -2090,7 +4178,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   background-size:240% 240%;animation:lcRimFlow 6s linear infinite;
+
+
+
+
 
 
 
@@ -2098,11 +4194,23 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   -webkit-tap-highlight-color:transparent;
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -2110,7 +4218,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   content:"";position:absolute;inset:1.5px;z-index:1;
+
+
+
+
 
 
 
@@ -2118,7 +4234,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   background:
+
+
+
+
 
 
 
@@ -2126,11 +4250,23 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
     radial-gradient(130% 100% at 88% 96%,rgba(124,58,237,.18),transparent 52%),
 
 
 
+
+
+
+
     linear-gradient(135deg,rgba(5,6,11,.55),rgba(5,6,11,.25) 55%,rgba(5,6,11,.5));
+
+
+
+
 
 
 
@@ -2138,7 +4274,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   box-shadow:inset 0 1px 0 rgba(255,255,255,.18);
+
+
+
+
 
 
 
@@ -2146,7 +4290,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -2154,7 +4306,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   content:"";position:absolute;top:0;left:0;width:55%;height:100%;z-index:2;
+
+
+
+
 
 
 
@@ -2162,11 +4322,23 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   transform:translateX(-150%) skewX(-20deg);animation:lcSheen 4.6s ease-in-out infinite;pointer-events:none;
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -2174,7 +4346,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
 .lc-dl-btn-apk{
+
+
+
+
 
 
 
@@ -2182,7 +4362,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   background:linear-gradient(120deg,rgba(124,58,237,.95),rgba(255,255,255,.55) 22%,rgba(232,200,119,.8) 50%,rgba(255,255,255,.55) 78%,rgba(124,58,237,.95));
+
+
+
+
 
 
 
@@ -2190,7 +4378,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -2198,7 +4394,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   background:
+
+
+
+
 
 
 
@@ -2206,7 +4410,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
     radial-gradient(130% 100% at 88% 96%,rgba(232,200,119,.16),transparent 52%),
+
+
+
+
 
 
 
@@ -2214,7 +4426,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -2222,7 +4442,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
 .lc-dl-btn:hover::after{animation-duration:1.6s}
+
+
+
+
 
 
 
@@ -2230,7 +4458,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
 @keyframes lcSheen{0%,52%{transform:translateX(-150%) skewX(-20deg)}88%,100%{transform:translateX(320%) skewX(-20deg)}}
+
+
+
+
 
 
 
@@ -2238,7 +4474,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   0%,100%{box-shadow:inset 0 0 16px rgba(124,58,237,.1),inset 0 1px 0 rgba(255,255,255,.18)}
+
+
+
+
 
 
 
@@ -2246,7 +4490,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -2254,7 +4506,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
 .lc-dl-note a{color:var(--cyan)}
+
+
+
+
 
 
 
@@ -2262,7 +4522,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   margin:26px auto 0;max-width:560px;display:flex;align-items:center;justify-content:center;gap:10px;
+
+
+
+
 
 
 
@@ -2270,7 +4538,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   background:linear-gradient(135deg,rgba(232,200,119,.10),rgba(124,58,237,.10));
+
+
+
+
 
 
 
@@ -2278,11 +4554,23 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   font-size:.86rem;color:#c9cfdd;letter-spacing:.05em;text-align:center;flex-wrap:wrap;
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -2290,7 +4578,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   font-size:.72rem;font-weight:700;color:var(--gold-l);letter-spacing:.18em;
+
+
+
+
 
 
 
@@ -2298,11 +4594,23 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   background:rgba(232,200,119,.08);
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -2310,7 +4618,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
 .lc-safe-strip{display:flex;flex-wrap:wrap;justify-content:center;gap:12px 30px;margin-top:34px}
+
+
+
+
 
 
 
@@ -2318,7 +4634,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
 .lc-safe-strip svg{width:16px;height:16px;color:var(--gold)}
+
+
+
+
 
 
 
@@ -2326,7 +4650,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
 .lc-step{
+
+
+
+
 
 
 
@@ -2334,11 +4666,23 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   position:relative;overflow:hidden;transition:border-color .3s,transform .3s;
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -2346,7 +4690,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
 .lc-step .n{
+
+
+
+
 
 
 
@@ -2354,7 +4706,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   border:1px solid rgba(232,200,119,.3);border-radius:999px;
+
+
+
+
 
 
 
@@ -2362,11 +4722,23 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   background:rgba(232,200,119,.08);font-weight:700;
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -2374,7 +4746,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
 .lc-step p{font-size:.9rem;color:#9aa0b3}
+
+
+
+
 
 
 
@@ -2382,7 +4762,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
 .lc-step .ic svg{width:100%;height:100%}
+
+
+
+
 
 
 
@@ -2390,7 +4778,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
 .lc-panel{border:1px solid var(--line);border-radius:14px;background:var(--panel);padding:26px 24px}
+
+
+
+
 
 
 
@@ -2398,7 +4794,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
 .lc-panel h3 .g{width:10px;height:10px;flex:none;background:linear-gradient(135deg,var(--gold),var(--gold-d));transform:rotate(45deg)}
+
+
+
+
 
 
 
@@ -2406,7 +4810,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
 .lc-panel li{font-size:.85rem;color:#a9aec0;padding:7px 0 7px 20px;position:relative;border-bottom:1px dashed rgba(255,255,255,.06)}
+
+
+
+
 
 
 
@@ -2414,7 +4826,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
 .lc-panel li::before{content:"";position:absolute;left:2px;top:15px;width:6px;height:6px;border-left:1.5px solid var(--gold);border-bottom:1.5px solid var(--gold);transform:rotate(-45deg)}
+
+
+
+
 
 
 
@@ -2422,7 +4842,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
 .lc-faq details{border:1px solid var(--line);border-radius:12px;background:var(--panel);margin-top:12px;overflow:hidden}
+
+
+
+
 
 
 
@@ -2430,7 +4858,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   cursor:pointer;padding:16px 20px;font-size:.92rem;font-weight:600;letter-spacing:.04em;
+
+
+
+
 
 
 
@@ -2438,7 +4874,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -2446,7 +4890,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
 .lc-faq summary::after{content:"+";font-size:1.1rem;color:var(--gold);transition:transform .25s}
+
+
+
+
 
 
 
@@ -2454,7 +4906,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
 .lc-faq details p{padding:0 20px 16px;font-size:.85rem;color:#9aa0b3}
+
+
+
+
 
 
 
@@ -2462,7 +4922,15 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   .lc-steps{grid-template-columns:1fr}
+
+
+
+
 
 
 
@@ -2470,11 +4938,23 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   .lc-dl-card{padding:26px 18px 22px}
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -2482,11 +4962,27 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
   .lc-dl-btn,.lc-dl-btn::before,.lc-dl-btn::after{animation:none;transition:none}
 
 
 
+
+
+
+
 }
+
+
+
+
+
+
+
+
 
 
 
@@ -2502,7 +4998,19 @@ input[type=tel]:focus{
 
 
 
+
+
+
+
+
+
+
+
 footer{
+
+
+
+
 
 
 
@@ -2510,11 +5018,23 @@ footer{
 
 
 
+
+
+
+
   border-top:1px solid var(--line);position:relative;z-index:2;
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -2522,7 +5042,15 @@ footer .f-logo{
 
 
 
+
+
+
+
   font-size:1.05rem;font-weight:800;letter-spacing:.24em;margin-bottom:18px;
+
+
+
+
 
 
 
@@ -2530,11 +5058,23 @@ footer .f-logo{
 
 
 
+
+
+
+
   -webkit-background-clip:text;background-clip:text;color:transparent;
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -2542,7 +5082,15 @@ footer p{font-size:.78rem;color:#5a6078;line-height:2}
 
 
 
+
+
+
+
 footer .links{margin:18px 0;display:flex;gap:26px;justify-content:center;flex-wrap:wrap}
+
+
+
+
 
 
 
@@ -2550,7 +5098,15 @@ footer .links button{
 
 
 
+
+
+
+
   font-size:.78rem;color:#767c92;background:none;border:none;
+
+
+
+
 
 
 
@@ -2558,11 +5114,23 @@ footer .links button{
 
 
 
+
+
+
+
   text-underline-offset:3px;
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -2574,7 +5142,19 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
+
+
+
+
 /* ===================== 公告悬浮窗 ===================== */
+
+
+
+
 
 
 
@@ -2582,7 +5162,15 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
   position:fixed;right:24px;bottom:24px;z-index:180;
+
+
+
+
 
 
 
@@ -2590,7 +5178,15 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
   display:grid;place-items:center;cursor:pointer;padding:0;
+
+
+
+
 
 
 
@@ -2598,7 +5194,15 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
     radial-gradient(120% 120% at 30% 20%,rgba(232,200,119,.25),transparent 60%),
+
+
+
+
 
 
 
@@ -2606,7 +5210,15 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
     rgba(12,13,22,.92);
+
+
+
+
 
 
 
@@ -2614,7 +5226,15 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
   box-shadow:0 14px 36px -12px rgba(0,0,0,.9);
+
+
+
+
 
 
 
@@ -2622,7 +5242,15 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
   -webkit-backdrop-filter:blur(12px);
+
+
+
+
 
 
 
@@ -2630,7 +5258,15 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -2638,7 +5274,15 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
   box-shadow:0 18px 40px -12px rgba(232,200,119,.5)}
+
+
+
+
 
 
 
@@ -2646,7 +5290,15 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
 .notice-fab svg{width:26px;height:26px;stroke:var(--gold);fill:none;
+
+
+
+
 
 
 
@@ -2654,7 +5306,15 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
 .notice-fab.has-unread{animation:fabPulse 2.6s ease-in-out infinite}
+
+
+
+
 
 
 
@@ -2662,7 +5322,15 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
   0%,100%{box-shadow:0 14px 36px -12px rgba(0,0,0,.9),0 0 0 0 rgba(232,200,119,.55)}
+
+
+
+
 
 
 
@@ -2670,7 +5338,15 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -2678,7 +5354,15 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
   position:absolute;top:9px;right:9px;width:11px;height:11px;border-radius:50%;
+
+
+
+
 
 
 
@@ -2686,11 +5370,27 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
   box-shadow:0 0 10px rgba(255,90,90,.9);
 
 
 
+
+
+
+
 }
+
+
+
+
+
+
+
+
 
 
 
@@ -2702,7 +5402,15 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
   position:fixed;right:24px;bottom:96px;z-index:180;
+
+
+
+
 
 
 
@@ -2710,7 +5418,15 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
   max-height:min(68vh,580px);
+
+
+
+
 
 
 
@@ -2718,7 +5434,15 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
   border-radius:20px;
+
+
+
+
 
 
 
@@ -2726,7 +5450,15 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
   background:
+
+
+
+
 
 
 
@@ -2734,7 +5466,15 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
     radial-gradient(120% 90% at 100% 100%,rgba(232,200,119,.12),transparent 55%),
+
+
+
+
 
 
 
@@ -2742,7 +5482,15 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
   box-shadow:0 34px 80px -26px rgba(0,0,0,.95),0 0 0 1px rgba(255,255,255,.03);
+
+
+
+
 
 
 
@@ -2750,7 +5498,15 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
   transform:translateY(16px) scale(.96);
+
+
+
+
 
 
 
@@ -2758,7 +5514,15 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
   transition:opacity .32s,visibility .32s,transform .38s cubic-bezier(.2,.8,.3,1);
+
+
+
+
 
 
 
@@ -2766,7 +5530,15 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -2778,7 +5550,19 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
+
+
+
+
 .notice-head{
+
+
+
+
 
 
 
@@ -2786,7 +5570,15 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
   gap:12px;padding:20px 22px;
+
+
+
+
 
 
 
@@ -2794,7 +5586,15 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -2802,7 +5602,15 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
   font-size:1rem;font-weight:800;letter-spacing:.14em;
+
+
+
+
 
 
 
@@ -2810,7 +5618,15 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
   -webkit-background-clip:text;background-clip:text;color:transparent;
+
+
+
+
 
 
 
@@ -2818,7 +5634,15 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -2826,7 +5650,15 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
   content:"";width:7px;height:7px;border-radius:50%;
+
+
+
+
 
 
 
@@ -2834,7 +5666,15 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -2842,7 +5682,15 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
   width:32px;height:32px;flex:none;border-radius:50%;cursor:pointer;
+
+
+
+
 
 
 
@@ -2850,7 +5698,15 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
   color:#9aa0b5;background:rgba(255,255,255,.05);
+
+
+
+
 
 
 
@@ -2858,7 +5714,15 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
   transition:.28s;font-family:inherit;
+
+
+
+
 
 
 
@@ -2866,11 +5730,27 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
 .notice-close:hover{color:var(--gold);border-color:rgba(232,200,119,.6);
 
 
 
+
+
+
+
   background:rgba(232,200,119,.1);transform:rotate(90deg)}
+
+
+
+
+
+
+
+
 
 
 
@@ -2882,7 +5762,15 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
   padding:8px 22px 22px;overflow-y:auto;
+
+
+
+
 
 
 
@@ -2890,7 +5778,15 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -2898,7 +5794,15 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
 .notice-body::-webkit-scrollbar-track{background:rgba(255,255,255,.03)}
+
+
+
+
 
 
 
@@ -2906,7 +5810,15 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
   background:linear-gradient(180deg,var(--gold-d),var(--gold));
+
+
+
+
 
 
 
@@ -2914,7 +5826,19 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
 }
+
+
+
+
+
+
+
+
 
 
 
@@ -2926,11 +5850,23 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
   padding:18px 0;border-bottom:1px dashed rgba(255,255,255,.09);
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -2938,7 +5874,15 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
 .notice-item-head{
+
+
+
+
 
 
 
@@ -2946,7 +5890,15 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -2954,7 +5906,15 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
   padding:2px 10px;border-radius:999px;font-size:.68rem;letter-spacing:.14em;
+
+
+
+
 
 
 
@@ -2962,11 +5922,23 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
   background:rgba(232,200,119,.08);
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -2974,7 +5946,15 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
 .notice-new{
+
+
+
+
 
 
 
@@ -2982,7 +5962,15 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
   color:#1a1206;padding:2px 8px;border-radius:999px;
+
+
+
+
 
 
 
@@ -2990,11 +5978,23 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
   box-shadow:0 0 14px rgba(232,200,119,.6);
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -3002,7 +6002,15 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
   font-size:.93rem;font-weight:700;color:#e6e9f2;
+
+
+
+
 
 
 
@@ -3010,11 +6018,23 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
 }
 
 
 
+
+
+
+
 .notice-item p{font-size:.83rem;color:#8b91a7;line-height:1.95}
+
+
+
+
 
 
 
@@ -3026,7 +6046,19 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
+
+
+
+
 @media(max-width:600px){
+
+
+
+
 
 
 
@@ -3034,7 +6066,15 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
   .notice-fab svg{width:23px;height:23px}
+
+
+
+
 
 
 
@@ -3042,7 +6082,19 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
 }
+
+
+
+
+
+
+
+
 
 
 
@@ -3054,7 +6106,15 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
 .modal{
+
+
+
+
 
 
 
@@ -3062,7 +6122,15 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
   display:flex;align-items:center;justify-content:center;
+
+
+
+
 
 
 
@@ -3070,7 +6138,15 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
   background:rgba(3,4,9,.82);
+
+
+
+
 
 
 
@@ -3078,7 +6154,15 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
   -webkit-backdrop-filter:blur(8px);
+
+
+
+
 
 
 
@@ -3086,11 +6170,23 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
   transition:opacity .35s,visibility .35s;
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -3102,7 +6198,19 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
+
+
+
+
 .modal-card{
+
+
+
+
 
 
 
@@ -3110,7 +6218,15 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
   max-height:min(82vh,780px);
+
+
+
+
 
 
 
@@ -3118,7 +6234,15 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
   border-radius:22px;
+
+
+
+
 
 
 
@@ -3126,7 +6250,15 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
   background:
+
+
+
+
 
 
 
@@ -3134,7 +6266,15 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
     radial-gradient(120% 90% at 100% 100%,rgba(232,200,119,.12),transparent 55%),
+
+
+
+
 
 
 
@@ -3142,7 +6282,15 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
   box-shadow:0 40px 90px -30px rgba(0,0,0,.95),0 0 0 1px rgba(255,255,255,.03);
+
+
+
+
 
 
 
@@ -3150,7 +6298,15 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
   transition:transform .4s cubic-bezier(.2,.8,.3,1);
+
+
+
+
 
 
 
@@ -3158,7 +6314,15 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -3170,7 +6334,19 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
+
+
+
+
 .modal-head{
+
+
+
+
 
 
 
@@ -3178,7 +6354,15 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
   gap:16px;padding:24px clamp(22px,4vw,36px);
+
+
+
+
 
 
 
@@ -3186,11 +6370,23 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
   flex:none;
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -3198,7 +6394,15 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
   font-size:clamp(1.05rem,2.4vw,1.3rem);font-weight:800;letter-spacing:.1em;
+
+
+
+
 
 
 
@@ -3206,11 +6410,23 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
   -webkit-background-clip:text;background-clip:text;color:transparent;
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -3218,7 +6434,15 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
   width:38px;height:38px;flex:none;border-radius:50%;cursor:pointer;
+
+
+
+
 
 
 
@@ -3226,7 +6450,15 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
   color:#9aa0b5;background:rgba(255,255,255,.05);
+
+
+
+
 
 
 
@@ -3234,7 +6466,15 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
   transition:.28s;font-family:inherit;
+
+
+
+
 
 
 
@@ -3242,7 +6482,15 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
 .modal-close:hover{color:var(--gold);border-color:rgba(232,200,119,.6);
+
+
+
+
 
 
 
@@ -3254,7 +6502,19 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
+
+
+
+
 .modal-body{
+
+
+
+
 
 
 
@@ -3262,7 +6522,15 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
   overflow-y:auto;font-size:.9rem;color:#a8aec2;line-height:2;
+
+
+
+
 
 
 
@@ -3270,7 +6538,15 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -3278,7 +6554,15 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
 .modal-body::-webkit-scrollbar-track{background:rgba(255,255,255,.03)}
+
+
+
+
 
 
 
@@ -3286,7 +6570,15 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
   background:linear-gradient(180deg,var(--gold-d),var(--gold));
+
+
+
+
 
 
 
@@ -3294,7 +6586,15 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -3302,7 +6602,15 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
   color:var(--gold-l);font-size:.96rem;letter-spacing:.06em;
+
+
+
+
 
 
 
@@ -3310,7 +6618,15 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -3318,7 +6634,15 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
 .modal-body p{margin-bottom:12px}
+
+
+
+
 
 
 
@@ -3326,7 +6650,15 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
 .modal-body li{margin-bottom:8px}
+
+
+
+
 
 
 
@@ -3334,7 +6666,15 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
 .modal-body strong{color:#e2e5ef;font-weight:600}
+
+
+
+
 
 
 
@@ -3342,7 +6682,15 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
   margin-top:26px;padding-top:18px;border-top:1px dashed rgba(255,255,255,.12);
+
+
+
+
 
 
 
@@ -3350,11 +6698,23 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
 }
 
 
 
+
+
+
+
 .modal-body a{color:var(--gold);text-decoration:none}
+
+
+
+
 
 
 
@@ -3366,7 +6726,19 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
+
+
+
+
 .modal-foot{
+
+
+
+
 
 
 
@@ -3374,7 +6746,15 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
   border-top:1px solid rgba(232,200,119,.16);
+
+
+
+
 
 
 
@@ -3382,11 +6762,23 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
   background:rgba(255,255,255,.015);
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -3394,7 +6786,15 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
   padding:11px 32px;border-radius:999px;cursor:pointer;
+
+
+
+
 
 
 
@@ -3402,7 +6802,15 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
   color:#1a1206;border:none;
+
+
+
+
 
 
 
@@ -3410,7 +6818,15 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
   box-shadow:0 10px 26px -10px rgba(232,200,119,.8);
+
+
+
+
 
 
 
@@ -3418,11 +6834,27 @@ footer .links button:hover{color:var(--gold);text-decoration:underline}
 
 
 
+
+
+
+
 }
 
 
 
+
+
+
+
 .modal-ok:hover{transform:translateY(-2px);box-shadow:0 16px 32px -10px rgba(232,200,119,.95)}
+
+
+
+
+
+
+
+
 
 
 
@@ -3438,7 +6870,19 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
+
+
+
+
 /* ===================== Toast ===================== */
+
+
+
+
 
 
 
@@ -3446,7 +6890,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
   position:fixed;left:50%;bottom:44px;transform:translate(-50%,26px);
+
+
+
+
 
 
 
@@ -3454,7 +6906,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
   background:rgba(16,17,26,.96);border:1px solid rgba(232,200,119,.45);
+
+
+
+
 
 
 
@@ -3462,7 +6922,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
   opacity:0;transition:.4s cubic-bezier(.2,.8,.3,1);z-index:400;
+
+
+
+
 
 
 
@@ -3470,7 +6938,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -3479,33 +6955,46 @@ body.modal-open{overflow:hidden}
 
 
 
-.face-anim{
-  position:fixed;inset:0;z-index:6;display:none;align-items:center;justify-content:center;
-  background:radial-gradient(ellipse at center,#4ade80 0%,#16a34a 62%,#0b7a3b 100%);
-}
-.fa-iphone{
-  position:relative;width:132px;height:132px;animation:faPop .4s ease-out;
-  transform:perspective(600px) rotateX(2deg) rotateY(-4deg);
-}
-.fa-iphone svg{width:100%;height:100%;display:block;filter:drop-shadow(0 14px 30px rgba(0,40,10,.45));}
-.fa-scanline{
-  position:absolute;left:16%;right:16%;top:20%;height:3px;border-radius:3px;
-  background:linear-gradient(90deg,transparent,rgba(140,240,255,.95),transparent);
-  box-shadow:0 0 16px rgba(140,240,255,.95);
-  animation:faScan 1.15s ease-in-out infinite;
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
 @keyframes faScan{0%,100%{top:20%;}50%{top:74%;}}
-.fa-stage{text-align:center;}
-.fa-smile{animation:faPop .35s ease-out;}
-.fa-smile svg{width:112px;height:112px;filter:drop-shadow(0 0 24px rgba(255,213,79,.55));}
-.fa-spin-ring{width:96px;height:96px;border-radius:50%;border:8px solid rgba(255,255,255,.28);border-top-color:#ffffff;box-shadow:0 0 26px rgba(255,255,255,.35);animation:faRotate .8s linear infinite;}
-@keyframes faRotate{to{transform:rotate(360deg);}}
-.fa-ok svg{width:132px;height:132px;animation:faPop .3s ease-out;filter:drop-shadow(0 0 28px rgba(255,255,255,.55));}
-@keyframes faPop{0%{transform:scale(.4);opacity:0;}60%{transform:scale(1.08);}100%{transform:scale(1);opacity:1;}}
+
+
+
+
+
+
+
+
+
+}
+
+
+
+60%{transform:scale(1.08);}100%{transform:scale(1);opacity:1;}}
+
+
 
 .face-status.fail{color:#ff6b6b;font-weight:700;}
+
 .face-status.loading{color:#ffd166;}
+
 </style>
+
+
+
+
 
 
 
@@ -3513,25 +7002,22 @@ body.modal-open{overflow:hidden}
 
 
 
-<body>
-<div class="face-mask" id="faceMask">
-  <div class="face-card">
-    <div class="face-video-wrap">
-      <video id="faceVideo" autoplay playsinline muted></video>
-      <canvas id="faceCanvas"></canvas>
-      <div class="face-frame"></div>
-      <div class="face-scan"></div>
-      <div class="face-tip" id="faceTip">请正对摄像头，保持面部在取景框内</div>
-    </div>
-    <h3 class="face-title">首次进入 · 人脸验证</h3>
-    <p class="face-sub">请将面部对准取景框，完成录入后自动进入页面</p>
-    <button class="face-btn" id="faceBtn">开启摄像头</button>
-    <div class="face-status" id="faceStatus"></div>
-    <div class="face-anim" id="faceAnim"><div class="fa-stage" id="faStage"></div></div>
 
-    <div class="face-privacy">隐私说明：人脸画面仅在本机实时处理用于验证演示，不上传服务器、不保存照片</div>
-  </div>
-</div>
+
+
+
+<body>
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -3544,7 +7030,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
 <div class="aura aura-1"></div>
+
+
+
+
 
 
 
@@ -3552,7 +7046,19 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
 <div class="vignette"></div>
+
+
+
+
+
+
+
+
 
 
 
@@ -3568,7 +7074,19 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
+
+
+
+
   <!-- ============ 顶栏 ============ -->
+
+
+
+
 
 
 
@@ -3576,7 +7094,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
     <div class="logo">
+
+
+
+
 
 
 
@@ -3584,7 +7110,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
         <path d="M12 2l8 3.5v6c0 5-3.4 9.2-8 10.5-4.6-1.3-8-5.5-8-10.5v-6L12 2z"
+
+
+
+
 
 
 
@@ -3592,7 +7126,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
         <path d="M12 7l1.6 3.3 3.6.5-2.6 2.5.6 3.6-3.2-1.7-3.2 1.7.6-3.6-2.6-2.5 3.6-.5L12 7z"
+
+
+
+
 
 
 
@@ -3600,7 +7142,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
       </svg>
+
+
+
+
 
 
 
@@ -3608,7 +7158,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
     </div>
+
+
+
+
 
 
 
@@ -3616,7 +7174,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
       <a href="#features">游戏特色</a>
+
+
+
+
 
 
 
@@ -3624,11 +7190,23 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
     </nav>
 
 
 
+
+
+
+
     <a href="#reserve" class="top-btn">预约游戏</a>
+
+
+
+
 
 
 
@@ -3640,7 +7218,19 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
+
+
+
+
   <!-- ============ HERO ============ -->
+
+
+
+
 
 
 
@@ -3648,7 +7238,20 @@ body.modal-open{overflow:hidden}
 
 
 
-    <div class="badge"><span class="dot"></span>全平台预约现已开启</div>
+
+
+
+
+    <div class="badge badge-studio"><span class="dot"></span>墨隐工作室旗下新游 · 即将开启</div>
+<div class="badge"><span class="dot"></span>全平台预约现已开启</div>
+
+
+
+
+
+
+
+
 
 
 
@@ -3660,7 +7263,19 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
     <p class="tagline">当诸神陨落 · 凡人举起最后的战旗</p>
+
+
+
+
+
+
+
+
 
 
 
@@ -3672,7 +7287,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
       <a href="#reserve" class="btn btn-primary">立即预约</a>
+
+
+
+
 
 
 
@@ -3680,11 +7303,27 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
       <a href="#features" class="btn btn-ghost">游戏特色</a>
 
 
 
+
+
+
+
     </div>
+
+
+
+
+
+
+
+
 
 
 
@@ -3696,7 +7335,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
       <div class="cd-title">内测开启倒计时</div>
+
+
+
+
 
 
 
@@ -3704,11 +7351,23 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
         <div class="cd-item"><div class="cd-num" id="cdD">00</div><div class="cd-lab">天</div></div>
 
 
 
+
+
+
+
         <div class="cd-sep">:</div>
+
+
+
+
 
 
 
@@ -3716,7 +7375,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
         <div class="cd-sep">:</div>
+
+
+
+
 
 
 
@@ -3724,7 +7391,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
         <div class="cd-sep">:</div>
+
+
+
+
 
 
 
@@ -3732,7 +7407,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
       </div>
+
+
+
+
 
 
 
@@ -3740,7 +7423,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
         <span>2026 年 10 月 1 日</span>
+
+
+
+
 
 
 
@@ -3748,7 +7439,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
         <span>07:00 内测开启</span>
+
+
+
+
 
 
 
@@ -3756,7 +7455,19 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
     </div>
+
+
+
+
+
+
+
+
 
 
 
@@ -3768,7 +7479,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
       <span class="live"></span>
+
+
+
+
 
 
 
@@ -3776,11 +7495,27 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
     </div>
 
 
 
+
+
+
+
   </section>
+
+
+
+
+
+
+
+
 
 
 
@@ -3792,7 +7527,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
   <section id="features">
+
+
+
+
 
 
 
@@ -3800,7 +7543,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
       <div class="sec-head reveal">
+
+
+
+
 
 
 
@@ -3808,7 +7559,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
         <h2 class="sec-title">诸神黄昏后的新纪元</h2>
+
+
+
+
 
 
 
@@ -3816,7 +7575,19 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
       </div>
+
+
+
+
+
+
+
+
 
 
 
@@ -3828,7 +7599,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
         <div class="f-card reveal">
+
+
+
+
 
 
 
@@ -3836,7 +7615,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
           <div class="f-icon">⚔️</div>
+
+
+
+
 
 
 
@@ -3844,11 +7631,23 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
           <p>击败陨落的神明，夺取其神格碎片。每一次觉醒都会重塑你的技能树与战斗形态，没有两条相同的成神之路。</p>
 
 
 
+
+
+
+
         </div>
+
+
+
+
 
 
 
@@ -3856,7 +7655,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
           <div class="f-num">02</div>
+
+
+
+
 
 
 
@@ -3864,7 +7671,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
           <h3>万人军团战</h3>
+
+
+
+
 
 
 
@@ -3872,7 +7687,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
         </div>
+
+
+
+
 
 
 
@@ -3880,7 +7703,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
           <div class="f-num">03</div>
+
+
+
+
 
 
 
@@ -3888,7 +7719,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
           <h3>动态沙盘世界</h3>
+
+
+
+
 
 
 
@@ -3896,7 +7735,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
         </div>
+
+
+
+
 
 
 
@@ -3904,7 +7751,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
           <div class="f-num">04</div>
+
+
+
+
 
 
 
@@ -3912,7 +7767,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
           <h3>无 VIP 公平竞技</h3>
+
+
+
+
 
 
 
@@ -3920,7 +7783,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
         </div>
+
+
+
+
 
 
 
@@ -3928,11 +7799,27 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
     </div>
 
 
 
+
+
+
+
   </section>
+
+
+
+
+
+
+
+
 
 
 
@@ -3944,7 +7831,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
   <section id="launcher" class="lc-sec">
+
+
+
+
 
 
 
@@ -3952,7 +7847,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
       <div class="sec-head reveal">
+
+
+
+
 
 
 
@@ -3960,7 +7863,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
         <h2 class="sec-title">下载启动器 · 一键进入战场</h2>
+
+
+
+
 
 
 
@@ -3968,11 +7879,27 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
         <p class="lc-flow"><b>下载启动器</b><span>→</span><b>安全检测</b><span>→</span><b>启动器内下载游戏</b><span>→</span><b>独立窗口开始游戏</b></p>
 
 
 
+
+
+
+
       </div>
+
+
+
+
+
+
+
+
 
 
 
@@ -3984,7 +7911,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
         <div class="lc-dl-head">
+
+
+
+
 
 
 
@@ -3992,11 +7927,23 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
             <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="3" stroke="#e8c877" stroke-width="1.6"/><path d="M8 12l4 4 4-4" stroke="#e8c877" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 8v8" stroke="#e8c877" stroke-width="1.6" stroke-linecap="round"/></svg>
 
 
 
+
+
+
+
           </div>
+
+
+
+
 
 
 
@@ -4004,7 +7951,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
             <div class="t">终神之战：军团启动器</div>
+
+
+
+
 
 
 
@@ -4012,11 +7967,23 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
           </div>
 
 
 
+
+
+
+
         </div>
+
+
+
+
 
 
 
@@ -4024,7 +7991,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
           <span>大小<b id="lcSize">—</b></span>
+
+
+
+
 
 
 
@@ -4032,7 +8007,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
           <span>校验<b id="lcSha">SHA-256</b></span>
+
+
+
+
 
 
 
@@ -4040,8 +8023,18 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
         <button type="button" class="lc-dl-btn" id="lcDlBtn"><span>立即下载启动器</span></button>
+
         <button type="button" class="lc-dl-btn lc-dl-btn-apk" id="lcDlApk"><span>下载安卓版 APK</span></button>
+
+
+
+
+
 
 
 
@@ -4050,7 +8043,19 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
       </div>
+
+
+
+
+
+
+
+
 
 
 
@@ -4062,7 +8067,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
         <span class="tsr-tag">自研</span>
+
+
+
+
 
 
 
@@ -4070,7 +8083,19 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
       </div>
+
+
+
+
+
+
+
+
 
 
 
@@ -4082,7 +8107,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
         <span><svg viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v5c0 5-3.5 8.5-7 10-3.5-1.5-7-5-7-10V6Z" stroke="currentColor" stroke-width="1.6"/><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>系统 / 硬件 / 磁盘 / 防护 / 下载源 五项检测</span>
+
+
+
+
 
 
 
@@ -4090,7 +8123,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
         <span><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M3.5 9h17M3.5 15h17M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3Z" stroke="currentColor" stroke-width="1.6"/></svg>官方源下载 · 独立窗口运行</span>
+
+
+
+
 
 
 
@@ -4098,11 +8139,27 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
     </div>
 
 
 
+
+
+
+
   </section>
+
+
+
+
+
+
+
+
 
 
 
@@ -4114,7 +8171,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
     <div class="wrap">
+
+
+
+
 
 
 
@@ -4122,7 +8187,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
         <div class="sec-tag">HOW TO PLAY</div>
+
+
+
+
 
 
 
@@ -4130,11 +8203,23 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
         <p class="sec-desc">从下载启动器到开始游戏，全程约 1 分钟</p>
 
 
 
+
+
+
+
       </div>
+
+
+
+
 
 
 
@@ -4142,7 +8227,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
         <div class="lc-step reveal">
+
+
+
+
 
 
 
@@ -4150,7 +8243,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
           <h3>下载启动器</h3>
+
+
+
+
 
 
 
@@ -4158,11 +8259,23 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
           <div class="ic"><svg viewBox="0 0 24 24" fill="none"><path d="M8 12l4 4 4-4" stroke="#e8c877" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 4v12" stroke="#e8c877" stroke-width="1.4" stroke-linecap="round"/><path d="M4 20h16" stroke="#e8c877" stroke-width="1.4" stroke-linecap="round"/></svg></div>
 
 
 
+
+
+
+
         </div>
+
+
+
+
 
 
 
@@ -4170,7 +8283,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
           <div class="n">02</div>
+
+
+
+
 
 
 
@@ -4178,7 +8299,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
           <p>双击启动器，自动弹出安全检测窗口，完成系统、硬件、磁盘、防护与下载源五项检测。</p>
+
+
+
+
 
 
 
@@ -4186,7 +8315,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
         </div>
+
+
+
+
 
 
 
@@ -4194,7 +8331,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
           <div class="n">03</div>
+
+
+
+
 
 
 
@@ -4202,7 +8347,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
           <p>检测通过后，启动器自动从官方服务器下载游戏本体并校验完整性，随后在独立窗口进入游戏。</p>
+
+
+
+
 
 
 
@@ -4210,7 +8363,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
         </div>
+
+
+
+
 
 
 
@@ -4218,11 +8379,27 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
     </div>
 
 
 
+
+
+
+
   </section>
+
+
+
+
+
+
+
+
 
 
 
@@ -4234,7 +8411,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
     <div class="wrap">
+
+
+
+
 
 
 
@@ -4242,7 +8427,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
         <div class="sec-tag">REQUIREMENTS</div>
+
+
+
+
 
 
 
@@ -4250,7 +8443,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
       </div>
+
+
+
+
 
 
 
@@ -4258,7 +8459,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
         <div class="lc-panel reveal">
+
+
+
+
 
 
 
@@ -4266,7 +8475,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
           <ul>
+
+
+
+
 
 
 
@@ -4274,7 +8491,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
             <li>浏览器引擎：Microsoft Edge（系统自带）</li>
+
+
+
+
 
 
 
@@ -4282,7 +8507,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
             <li>网络：可访问官方下载源（约 26 KB 游戏包）</li>
+
+
+
+
 
 
 
@@ -4290,7 +8523,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
         </div>
+
+
+
+
 
 
 
@@ -4298,7 +8539,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
           <h3><span class="g"></span>安全机制</h3>
+
+
+
+
 
 
 
@@ -4306,7 +8555,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
             <li>启动前完成系统环境 / 硬件资源 / 磁盘空间检测</li>
+
+
+
+
 
 
 
@@ -4314,7 +8571,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
             <li>下载源可用性检测，失败即终止</li>
+
+
+
+
 
 
 
@@ -4322,7 +8587,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
           </ul>
+
+
+
+
 
 
 
@@ -4330,7 +8603,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
       </div>
+
+
+
+
 
 
 
@@ -4338,7 +8619,19 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
   </section>
+
+
+
+
+
+
+
+
 
 
 
@@ -4350,7 +8643,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
     <div class="wrap">
+
+
+
+
 
 
 
@@ -4358,7 +8659,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
         <div class="sec-tag">FAQ</div>
+
+
+
+
 
 
 
@@ -4366,7 +8675,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
       </div>
+
+
+
+
 
 
 
@@ -4374,7 +8691,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
         <details class="reveal">
+
+
+
+
 
 
 
@@ -4382,7 +8707,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
           <p>这是 Windows 对未签名程序的常规提示。本启动器由官方发布，请选择「保留 / 仍要下载」，可放心运行。</p>
+
+
+
+
 
 
 
@@ -4390,7 +8723,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
         <details class="reveal">
+
+
+
+
 
 
 
@@ -4398,7 +8739,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
           <p>首次运行未签名 exe 时，系统可能弹出 SmartScreen 提示，点击「更多信息 → 仍要运行」即可。启动器仅做系统检测并下载官方游戏文件。</p>
+
+
+
+
 
 
 
@@ -4406,7 +8755,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
         <details class="reveal">
+
+
+
+
 
 
 
@@ -4414,11 +8771,23 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
           <p>请检查磁盘剩余空间（需 64 MB 以上）、网络连接，并确认杀毒软件未拦截。重启启动器会重新检测与下载。</p>
 
 
 
+
+
+
+
         </details>
+
+
+
+
 
 
 
@@ -4426,7 +8795,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
           <summary>游戏更新后需要重新下载启动器吗？</summary>
+
+
+
+
 
 
 
@@ -4434,7 +8811,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
         </details>
+
+
+
+
 
 
 
@@ -4442,11 +8827,27 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
     </div>
 
 
 
+
+
+
+
   </section>
+
+
+
+
+
+
+
+
 
 
 
@@ -4458,7 +8859,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
   <section id="reserve">
+
+
+
+
 
 
 
@@ -4466,7 +8875,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
       <div class="reserve-card reveal">
+
+
+
+
 
 
 
@@ -4474,7 +8891,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
           <h2>锁定你的内测席位</h2>
+
+
+
+
 
 
 
@@ -4482,7 +8907,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
           <ul class="perks">
+
+
+
+
 
 
 
@@ -4490,7 +8923,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
             <li>自动参与首发内测资格抽取</li>
+
+
+
+
 
 
 
@@ -4498,7 +8939,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
             <li>专属预约头像框 &amp; 称号</li>
+
+
+
+
 
 
 
@@ -4506,7 +8955,19 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
         </div>
+
+
+
+
+
+
+
+
 
 
 
@@ -4518,7 +8979,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
           <form id="reserveForm" novalidate>
+
+
+
+
 
 
 
@@ -4526,7 +8995,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
             <div class="phone-field" id="phoneField">
+
+
+
+
 
 
 
@@ -4534,7 +9011,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
                      maxlength="11" inputmode="numeric" autocomplete="off">
+
+
+
+
 
 
 
@@ -4542,7 +9027,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
             </div>
+
+
+
+
 
 
 
@@ -4550,7 +9043,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
             <button type="submit" class="btn btn-primary btn-block">立即预约</button>
+
+
+
+
 
 
 
@@ -4558,7 +9059,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
               <button type="button" data-modal="terms"
+
+
+
+
 
 
 
@@ -4566,7 +9075,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
               与
+
+
+
+
 
 
 
@@ -4574,11 +9091,23 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
                       style="background:none;border:none;padding:0;font:inherit;color:#8b91a7;text-decoration:underline;text-underline-offset:2px;cursor:pointer">《隐私政策》</button>
 
 
 
+
+
+
+
             </p>
+
+
+
+
 
 
 
@@ -4590,7 +9119,19 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
+
+
+
+
           <div class="success" id="success">
+
+
+
+
 
 
 
@@ -4598,7 +9139,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
             <h3>你已完成预约</h3>
+
+
+
+
 
 
 
@@ -4606,7 +9155,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
             <div class="seat">席位编号 <b id="seatNo">#000000</b></div>
+
+
+
+
 
 
 
@@ -4614,7 +9171,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
         </div>
+
+
+
+
 
 
 
@@ -4622,7 +9187,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
     </div>
+
+
+
+
 
 
 
@@ -4634,7 +9207,19 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
+
+
+
+
   <!-- ============ 页脚 ============ -->
+
+
+
+
 
 
 
@@ -4642,7 +9227,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
     <div class="f-logo">终神之战：军团</div>
+
+
+
+
 
 
 
@@ -4650,7 +9243,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
       <button type="button" data-modal="terms">用户协议</button>
+
+
+
+
 
 
 
@@ -4658,7 +9259,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
       <button type="button" data-modal="minor">未成年人保护</button>
+
+
+
+
 
 
 
@@ -4666,11 +9275,23 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
     </div>
 
 
 
+
+
+
+
     <p>© 2026 终神之战：军团 项目组<br>健康游戏忠告：抵制不良游戏，拒绝盗版游戏。</p>
+
+
+
+
 
 
 
@@ -4682,7 +9303,23 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
+
+
+
+
 </div>
+
+
+
+
+
+
+
+
 
 
 
@@ -4694,7 +9331,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
 <button type="button" class="notice-fab has-unread" id="noticeFab" aria-label="查看公告">
+
+
+
+
 
 
 
@@ -4702,7 +9347,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
     <path d="M3 10v4a1 1 0 0 0 1 1h3l4 4V5L7 9H4a1 1 0 0 0-1 1z"/>
+
+
+
+
 
 
 
@@ -4710,7 +9363,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
     <path d="M18.5 5.5a8 8 0 0 1 0 13"/>
+
+
+
+
 
 
 
@@ -4718,7 +9379,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
   <span class="notice-dot" id="noticeDot"></span>
+
+
+
+
 
 
 
@@ -4730,7 +9399,19 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
+
+
+
+
 <div class="notice-panel" id="noticePanel" role="dialog" aria-label="游戏公告">
+
+
+
+
 
 
 
@@ -4738,7 +9419,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
     <h4>游戏公告</h4>
+
+
+
+
 
 
 
@@ -4746,7 +9435,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
   </div>
+
+
+
+
 
 
 
@@ -4754,7 +9451,19 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
 </div>
+
+
+
+
+
+
+
+
 
 
 
@@ -4766,7 +9475,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
 <div class="modal lottery-modal" id="lotteryModal" role="dialog" aria-modal="true" aria-label="抽取内测资格">
+
+
+
+
 
 
 
@@ -4774,7 +9491,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
     <div class="modal-head">
+
+
+
+
 
 
 
@@ -4782,7 +9507,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
       <button type="button" class="modal-close" id="lotteryClose" aria-label="关闭">✕</button>
+
+
+
+
 
 
 
@@ -4790,7 +9523,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
     <div class="lottery-body">
+
+
+
+
 
 
 
@@ -4798,7 +9539,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
         <div class="tick">✓</div>
+
+
+
+
 
 
 
@@ -4806,11 +9555,27 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
         <p>席位编号 <b id="lotterySeat">#000000</b></p>
 
 
 
+
+
+
+
       </div>
+
+
+
+
+
+
+
+
 
 
 
@@ -4822,7 +9587,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
         <div class="draw-num" id="drawNum">0000</div>
+
+
+
+
 
 
 
@@ -4830,7 +9603,19 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
       </div>
+
+
+
+
+
+
+
+
 
 
 
@@ -4842,7 +9627,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
     </div>
+
+
+
+
 
 
 
@@ -4850,7 +9643,19 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
 </div>
+
+
+
+
+
+
+
+
 
 
 
@@ -4862,7 +9667,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
 <div class="modal download-modal" id="downloadModal" role="dialog" aria-modal="true" aria-labelledby="download-title">
+
+
+
+
 
 
 
@@ -4870,7 +9683,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
     <div class="modal-head">
+
+
+
+
 
 
 
@@ -4878,11 +9699,23 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
       <button type="button" class="modal-close" id="downloadClose" aria-label="关闭">✕</button>
 
 
 
+
+
+
+
     </div>
+
+
+
+
 
 
 
@@ -4890,7 +9723,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
       <div class="download-icon">💻</div>
+
+
+
+
 
 
 
@@ -4898,7 +9739,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
       <p>《终神之战：军团》内测启动器现已开放下载<br>
+
+
+
+
 
 
 
@@ -4906,7 +9755,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
       <div class="download-actions">
+
+
+
+
 
 
 
@@ -4914,7 +9771,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
           <span>立即下载内测版</span><span class="arr">⬇</span>
+
+
+
+
 
 
 
@@ -4922,7 +9787,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
         <button type="button" class="btn-skip" id="downloadNo">暂不下载</button>
+
+
+
+
 
 
 
@@ -4930,7 +9803,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
       <p class="download-note" id="apkSizeNote">选择暂不下载，不影响你的预约与内测资格</p>
+
+
+
+
 
 
 
@@ -4938,11 +9819,27 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
   </div>
 
 
 
+
+
+
+
 </div>
+
+
+
+
+
+
+
+
 
 
 
@@ -4954,7 +9851,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
 <div class="modal launcher-modal" id="launcherModal" role="dialog" aria-modal="true" aria-labelledby="launcher-title">
+
+
+
+
 
 
 
@@ -4962,7 +9867,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
     <div class="modal-head">
+
+
+
+
 
 
 
@@ -4970,11 +9883,23 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
       <button type="button" class="modal-close" id="launcherClose" aria-label="关闭">✕</button>
 
 
 
+
+
+
+
     </div>
+
+
+
+
 
 
 
@@ -4982,7 +9907,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
       <div class="launcher-icon">
+
+
+
+
 
 
 
@@ -4990,7 +9923,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
           <path d="M12 2 4 5.2v5.6c0 4.6 3.3 8.4 8 9.7 4.7-1.3 8-5.1 8-9.7V5.2Z"/>
+
+
+
+
 
 
 
@@ -4998,11 +9939,23 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
         </svg>
 
 
 
+
+
+
+
       </div>
+
+
+
+
 
 
 
@@ -5010,7 +9963,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
       <div class="launcher-flow">
+
+
+
+
 
 
 
@@ -5018,7 +9979,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
         <b>安全检测</b><span class="sep">→</span>
+
+
+
+
 
 
 
@@ -5026,11 +9995,23 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
         <b>独立窗口开始游戏</b>
 
 
 
+
+
+
+
       </div>
+
+
+
+
 
 
 
@@ -5038,7 +10019,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
         <div class="row"><span>文件</span><b id="launcherName">终神之战：军团启动器.exe</b></div>
+
+
+
+
 
 
 
@@ -5046,7 +10035,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
         <div class="row"><span>版本</span><b>v2.7</b></div>
+
+
+
+
 
 
 
@@ -5054,7 +10051,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
       </div>
+
+
+
+
 
 
 
@@ -5062,7 +10067,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
         <button type="button" class="btn-download" id="launcherDlYes">
+
+
+
+
 
 
 
@@ -5070,7 +10083,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
         </button>
+
+
+
+
 
 
 
@@ -5078,7 +10099,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
       <p class="launcher-note">浏览器可能提示"该文件可能有害"，请选择<b>「保留」</b>后运行；启动器会自动完成环境安全检测并下载游戏本体。</p>
+
+
+
+
 
 
 
@@ -5086,11 +10115,27 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
   </div>
 
 
 
+
+
+
+
 </div>
+
+
+
+
+
+
+
+
 
 
 
@@ -5102,7 +10147,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
 <div class="modal" id="modal-terms" role="dialog" aria-modal="true" aria-labelledby="terms-title">
+
+
+
+
 
 
 
@@ -5110,7 +10163,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
     <div class="modal-head">
+
+
+
+
 
 
 
@@ -5118,7 +10179,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
       <button type="button" class="modal-close" data-close aria-label="关闭">✕</button>
+
+
+
+
 
 
 
@@ -5126,7 +10195,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
     <div class="modal-body">
+
+
+
+
 
 
 
@@ -5138,7 +10215,19 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
+
+
+
+
       <h4>一、协议的接受与变更</h4>
+
+
+
+
 
 
 
@@ -5150,7 +10239,19 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
+
+
+
+
       <h4>二、账号与预约信息</h4>
+
+
+
+
 
 
 
@@ -5158,7 +10259,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
         <li>您在预约时提供的手机号码应当真实、准确、合法、有效，并为您本人所有或已获得合法授权。</li>
+
+
+
+
 
 
 
@@ -5166,7 +10275,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
         <li>您应妥善保管账号及密码，因保管不善造成的损失由您自行承担。</li>
+
+
+
+
 
 
 
@@ -5174,7 +10291,19 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
       </ul>
+
+
+
+
+
+
+
+
 
 
 
@@ -5186,7 +10315,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
       <ul>
+
+
+
+
 
 
 
@@ -5194,7 +10331,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
         <li>预约奖励与内测充值返还将按照活动页面公示的规则发放，请留意相关说明。</li>
+
+
+
+
 
 
 
@@ -5202,7 +10347,19 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
       </ul>
+
+
+
+
+
+
+
+
 
 
 
@@ -5214,7 +10371,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
       <p>您承诺在使用本游戏过程中遵守中华人民共和国相关法律法规，不得从事下列行为：</p>
+
+
+
+
 
 
 
@@ -5222,7 +10387,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
         <li>使用外挂、加速器、脚本或其他作弊工具；</li>
+
+
+
+
 
 
 
@@ -5230,7 +10403,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
         <li>发布违法、色情、暴力、辱骂、歧视或其他不良信息；</li>
+
+
+
+
 
 
 
@@ -5238,11 +10419,27 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
         <li>以任何方式干扰游戏的正常运行或攻击服务器。</li>
 
 
 
+
+
+
+
       </ul>
+
+
+
+
+
+
+
+
 
 
 
@@ -5254,7 +10451,19 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
       <p>因系统维护、升级、故障或不可抗力导致服务中断的，运营团队将尽力及时恢复。若您严重违反本协议，运营团队有权视情节采取警告、限制功能、封禁账号等措施。</p>
+
+
+
+
+
+
+
+
 
 
 
@@ -5266,7 +10475,19 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
       <p>本游戏为虚拟娱乐产品，运营团队不对因您个人操作不当、设备故障、网络异常等非运营团队原因造成的损失承担责任。在法律允许的最大范围内，运营团队对本游戏所承担的赔偿责任以您实际支付的费用为限。</p>
+
+
+
+
+
+
+
+
 
 
 
@@ -5278,7 +10499,19 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
       <p>本协议适用中华人民共和国法律。因本协议产生的争议，双方应友好协商解决；协商不成的，任何一方可向运营团队所在地有管辖权的人民法院提起诉讼。</p>
+
+
+
+
+
+
+
+
 
 
 
@@ -5290,7 +10523,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
     </div>
+
+
+
+
 
 
 
@@ -5298,7 +10539,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
       <button type="button" class="modal-ok" data-close>我已知晓</button>
+
+
+
+
 
 
 
@@ -5306,11 +10555,27 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
   </div>
 
 
 
+
+
+
+
 </div>
+
+
+
+
+
+
+
+
 
 
 
@@ -5322,7 +10587,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
 <div class="modal" id="modal-privacy" role="dialog" aria-modal="true" aria-labelledby="privacy-title">
+
+
+
+
 
 
 
@@ -5330,7 +10603,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
     <div class="modal-head">
+
+
+
+
 
 
 
@@ -5338,7 +10619,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
       <button type="button" class="modal-close" data-close aria-label="关闭">✕</button>
+
+
+
+
 
 
 
@@ -5346,7 +10635,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
     <div class="modal-body">
+
+
+
+
 
 
 
@@ -5358,7 +10655,19 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
+
+
+
+
       <h4>一、我们收集的信息</h4>
+
+
+
+
 
 
 
@@ -5366,7 +10675,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
         <li><strong>预约信息：</strong>您主动填写的手机号码，用于预约登记与开服通知。</li>
+
+
+
+
 
 
 
@@ -5374,7 +10691,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
         <li><strong>日志信息：</strong>登录时间、游戏内操作记录、崩溃日志等，用于故障排查与服务优化。</li>
+
+
+
+
 
 
 
@@ -5382,7 +10707,19 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
       </ul>
+
+
+
+
+
+
+
+
 
 
 
@@ -5394,7 +10731,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
       <ul>
+
+
+
+
 
 
 
@@ -5402,7 +10747,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
         <li>提供、维护与改进游戏服务，优化游戏体验；</li>
+
+
+
+
 
 
 
@@ -5410,7 +10763,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
         <li>识别并防范作弊、外挂、盗号等安全风险；</li>
+
+
+
+
 
 
 
@@ -5418,7 +10779,19 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
       </ul>
+
+
+
+
+
+
+
+
 
 
 
@@ -5430,7 +10803,19 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
       <p>您的个人信息将存储于中华人民共和国境内的服务器。我们仅在实现本政策所述目的所必需的期限内保留您的信息，法律法规另有规定的除外。超出保留期限后，我们将对信息进行删除或匿名化处理。</p>
+
+
+
+
+
+
+
+
 
 
 
@@ -5442,7 +10827,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
       <p>我们不会向任何第三方出售您的个人信息。在下列情形下，我们可能有限度地共享必要信息：</p>
+
+
+
+
 
 
 
@@ -5450,7 +10843,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
         <li>获得您的明确同意；</li>
+
+
+
+
 
 
 
@@ -5458,7 +10859,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
         <li>根据法律法规、司法机关或行政机关的强制性要求；</li>
+
+
+
+
 
 
 
@@ -5466,7 +10875,19 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
       </ul>
+
+
+
+
+
+
+
+
 
 
 
@@ -5478,7 +10899,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
       <ul>
+
+
+
+
 
 
 
@@ -5486,7 +10915,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
         <li><strong>删除：</strong>您有权要求删除您的个人信息，但法律法规另有规定的除外。</li>
+
+
+
+
 
 
 
@@ -5494,11 +10931,23 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
         <li><strong>注销：</strong>您有权申请注销账号，注销后我们将删除或匿名化相关个人信息。</li>
 
 
 
+
+
+
+
       </ul>
+
+
+
+
 
 
 
@@ -5510,7 +10959,19 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
+
+
+
+
       <h4>六、信息安全</h4>
+
+
+
+
 
 
 
@@ -5522,7 +10983,19 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
+
+
+
+
       <h4>七、未成年人信息保护</h4>
+
+
+
+
 
 
 
@@ -5534,7 +11007,19 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
+
+
+
+
       <h4>八、政策更新</h4>
+
+
+
+
 
 
 
@@ -5546,11 +11031,27 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
+
+
+
+
       <div class="meta">版本号：V1.0 &nbsp;·&nbsp; 生效日期：2026 年 9 月 13 日 &nbsp;·&nbsp; 更新日期：2026 年 9 月 13 日</div>
 
 
 
+
+
+
+
     </div>
+
+
+
+
 
 
 
@@ -5558,7 +11059,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
       <button type="button" class="modal-ok" data-close>我已知晓</button>
+
+
+
+
 
 
 
@@ -5566,11 +11075,27 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
   </div>
 
 
 
+
+
+
+
 </div>
+
+
+
+
+
+
+
+
 
 
 
@@ -5582,7 +11107,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
 <div class="modal" id="modal-minor" role="dialog" aria-modal="true" aria-labelledby="minor-title">
+
+
+
+
 
 
 
@@ -5590,7 +11123,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
     <div class="modal-head">
+
+
+
+
 
 
 
@@ -5598,7 +11139,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
       <button type="button" class="modal-close" data-close aria-label="关闭">✕</button>
+
+
+
+
 
 
 
@@ -5606,7 +11155,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
     <div class="modal-body">
+
+
+
+
 
 
 
@@ -5618,7 +11175,19 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
+
+
+
+
       <h4>一、实名认证</h4>
+
+
+
+
 
 
 
@@ -5630,7 +11199,19 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
+
+
+
+
       <h4>二、游戏时长限制</h4>
+
+
+
+
 
 
 
@@ -5638,7 +11219,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
         <li>未满 18 周岁的用户，仅可在<strong>周五、周六、周日及法定节假日每日 20:00 至 21:00</strong>登录游戏，其余时间无法登录。</li>
+
+
+
+
 
 
 
@@ -5646,11 +11235,27 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
         <li>法定节假日以国务院办公厅公布的放假安排为准。</li>
 
 
 
+
+
+
+
       </ul>
+
+
+
+
+
+
+
+
 
 
 
@@ -5662,7 +11267,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
       <ul>
+
+
+
+
 
 
 
@@ -5670,7 +11283,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
         <li>8 周岁至未满 16 周岁的用户，单次充值不得超过 50 元，每月累计不得超过 200 元。</li>
+
+
+
+
 
 
 
@@ -5678,11 +11299,27 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
         <li>若发现未成年人未经监护人同意进行充值，监护人可依据相关流程申请退款。</li>
 
 
 
+
+
+
+
       </ul>
+
+
+
+
+
+
+
+
 
 
 
@@ -5694,7 +11331,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
       <p>我们提供家长监护相关服务，监护人可通过"联系我们"申请以下功能：</p>
+
+
+
+
 
 
 
@@ -5702,7 +11347,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
         <li>查询未成年子女的账号信息与消费记录；</li>
+
+
+
+
 
 
 
@@ -5710,7 +11363,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
         <li>对异常消费进行申诉与退款处理。</li>
+
+
+
+
 
 
 
@@ -5722,7 +11383,19 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
+
+
+
+
       <h4>五、内容与社交管理</h4>
+
+
+
+
 
 
 
@@ -5734,7 +11407,19 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
+
+
+
+
       <h4>六、健康游戏忠告</h4>
+
+
+
+
 
 
 
@@ -5746,11 +11431,27 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
+
+
+
+
       <div class="meta">版本号：V1.0 &nbsp;·&nbsp; 生效日期：2026 年 9 月 13 日 &nbsp;·&nbsp; 更新日期：2026 年 9 月 13 日</div>
 
 
 
+
+
+
+
     </div>
+
+
+
+
 
 
 
@@ -5758,7 +11459,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
       <button type="button" class="modal-ok" data-close>我已知晓</button>
+
+
+
+
 
 
 
@@ -5766,11 +11475,27 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
   </div>
 
 
 
+
+
+
+
 </div>
+
+
+
+
+
+
+
+
 
 
 
@@ -5782,7 +11507,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
 <div class="modal" id="modal-contact" role="dialog" aria-modal="true" aria-labelledby="contact-title">
+
+
+
+
 
 
 
@@ -5790,7 +11523,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
     <div class="modal-head">
+
+
+
+
 
 
 
@@ -5798,7 +11539,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
       <button type="button" class="modal-close" data-close aria-label="关闭">✕</button>
+
+
+
+
 
 
 
@@ -5806,7 +11555,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
     <div class="modal-body">
+
+
+
+
 
 
 
@@ -5818,11 +11575,27 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
+
+
+
+
       <h4>客服邮箱</h4>
 
 
 
+
+
+
+
       <p><a href="mailto:support@zhongshen-legion.com">support@zhongshen-legion.com</a><br>
+
+
+
+
 
 
 
@@ -5834,7 +11607,19 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
+
+
+
+
       <h4>客服热线</h4>
+
+
+
+
 
 
 
@@ -5846,7 +11631,19 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
+
+
+
+
       <h4>官方 QQ 群</h4>
+
+
+
+
 
 
 
@@ -5858,11 +11655,27 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
+
+
+
+
       <h4>官方社区</h4>
 
 
 
+
+
+
+
       <p>微博 / 哔哩哔哩 / TapTap 搜索「终神之战：军团」<br>
+
+
+
+
 
 
 
@@ -5874,7 +11687,19 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
+
+
+
+
       <h4>运营主体</h4>
+
+
+
+
 
 
 
@@ -5882,7 +11707,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
       地址：中国 · 某市某区某路 2027 号<br>
+
+
+
+
 
 
 
@@ -5894,7 +11727,19 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
+
+
+
+
       <h4>家长监护专线</h4>
+
+
+
+
 
 
 
@@ -5906,11 +11751,27 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
+
+
+
+
       <div class="meta">本页面信息仅供参考，如遇调整请以游戏内公告为准。</div>
 
 
 
+
+
+
+
     </div>
+
+
+
+
 
 
 
@@ -5918,7 +11779,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
       <button type="button" class="modal-ok" data-close>关闭</button>
+
+
+
+
 
 
 
@@ -5926,7 +11795,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
   </div>
+
+
+
+
 
 
 
@@ -5938,7 +11815,19 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
+
+
+
+
 <script>
+
+
+
+
 
 
 
@@ -5946,7 +11835,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
    ★★★ 公告内容配置区 ★★★
+
+
+
+
 
 
 
@@ -5954,7 +11851,15 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
    最新的公告请放在数组最前面（会自动显示 NEW 标记）。
+
+
+
+
 
 
 
@@ -5962,11 +11867,23 @@ body.modal-open{overflow:hidden}
 
 
 
+
+
+
+
 const ANNOUNCEMENTS = [
 
 
 
+
+
+
+
   {
+
+
+
+
 
 
 
@@ -5974,7 +11891,15 @@ const ANNOUNCEMENTS = [
 
 
 
+
+
+
+
     date: '2026-09-13',
+
+
+
+
 
 
 
@@ -5982,7 +11907,15 @@ const ANNOUNCEMENTS = [
 
 
 
+
+
+
+
     content: '完成手机号预约后，每位玩家均可获得一次内测资格抽取机会，中奖率为 10%，中奖玩家将获得专属内测激活码。'
+
+
+
+
 
 
 
@@ -5990,7 +11923,15 @@ const ANNOUNCEMENTS = [
 
 
 
+
+
+
+
   {
+
+
+
+
 
 
 
@@ -5998,7 +11939,15 @@ const ANNOUNCEMENTS = [
 
 
 
+
+
+
+
     date: '2026-09-10',
+
+
+
+
 
 
 
@@ -6006,7 +11955,15 @@ const ANNOUNCEMENTS = [
 
 
 
+
+
+
+
     content: '《终神之战：军团》首次删档内测将于 2026 年 10 月 1 日 07:00 正式开启，届时将以短信形式通知获得资格的玩家。'
+
+
+
+
 
 
 
@@ -6014,7 +11971,15 @@ const ANNOUNCEMENTS = [
 
 
 
+
+
+
+
   {
+
+
+
+
 
 
 
@@ -6022,7 +11987,15 @@ const ANNOUNCEMENTS = [
 
 
 
+
+
+
+
     date: '2026-09-05',
+
+
+
+
 
 
 
@@ -6030,7 +12003,15 @@ const ANNOUNCEMENTS = [
 
 
 
+
+
+
+
     content: '所有预约奖励将在公测开启后 7 个工作日内发放至游戏内邮箱，请保持手机号畅通以便接收通知。'
+
+
+
+
 
 
 
@@ -6038,7 +12019,15 @@ const ANNOUNCEMENTS = [
 
 
 
+
+
+
+
 ];
+
+
+
+
 
 
 
@@ -6050,7 +12039,19 @@ const ANNOUNCEMENTS = [
 
 
 
+
+
+
+
+
+
+
+
 /* ================= 星空背景 ================= */
+
+
+
+
 
 
 
@@ -6058,7 +12059,15 @@ const ANNOUNCEMENTS = [
 
 
 
+
+
+
+
   const canvas = document.getElementById('stars');
+
+
+
+
 
 
 
@@ -6066,7 +12075,15 @@ const ANNOUNCEMENTS = [
 
 
 
+
+
+
+
   let W = 0, H = 0, dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+
+
+
 
 
 
@@ -6078,7 +12095,19 @@ const ANNOUNCEMENTS = [
 
 
 
+
+
+
+
+
+
+
+
   function resize() {
+
+
+
+
 
 
 
@@ -6086,7 +12115,15 @@ const ANNOUNCEMENTS = [
 
 
 
+
+
+
+
     H = canvas.height = innerHeight * dpr;
+
+
+
+
 
 
 
@@ -6094,7 +12131,15 @@ const ANNOUNCEMENTS = [
 
 
 
+
+
+
+
     canvas.style.height = innerHeight + 'px';
+
+
+
+
 
 
 
@@ -6102,7 +12147,19 @@ const ANNOUNCEMENTS = [
 
 
 
+
+
+
+
   }
+
+
+
+
+
+
+
+
 
 
 
@@ -6114,7 +12171,15 @@ const ANNOUNCEMENTS = [
 
 
 
+
+
+
+
     const count = Math.min(220, Math.floor(innerWidth * innerHeight / 9000));
+
+
+
+
 
 
 
@@ -6122,7 +12187,15 @@ const ANNOUNCEMENTS = [
 
 
 
+
+
+
+
     for (let i = 0; i < count; i++) {
+
+
+
+
 
 
 
@@ -6130,7 +12203,15 @@ const ANNOUNCEMENTS = [
 
 
 
+
+
+
+
         x: Math.random() * W,
+
+
+
+
 
 
 
@@ -6138,7 +12219,15 @@ const ANNOUNCEMENTS = [
 
 
 
+
+
+
+
         r: (Math.random() * 1.3 + 0.3) * dpr,
+
+
+
+
 
 
 
@@ -6146,7 +12235,15 @@ const ANNOUNCEMENTS = [
 
 
 
+
+
+
+
         sp: Math.random() * 0.018 + 0.004,
+
+
+
+
 
 
 
@@ -6154,7 +12251,15 @@ const ANNOUNCEMENTS = [
 
 
 
+
+
+
+
         gold: Math.random() > 0.72
+
+
+
+
 
 
 
@@ -6162,11 +12267,27 @@ const ANNOUNCEMENTS = [
 
 
 
+
+
+
+
     }
 
 
 
+
+
+
+
   }
+
+
+
+
+
+
+
+
 
 
 
@@ -6178,7 +12299,15 @@ const ANNOUNCEMENTS = [
 
 
 
+
+
+
+
     if (Math.random() > 0.985) {
+
+
+
+
 
 
 
@@ -6186,7 +12315,15 @@ const ANNOUNCEMENTS = [
 
 
 
+
+
+
+
         x: Math.random() * W * 0.8,
+
+
+
+
 
 
 
@@ -6194,7 +12331,15 @@ const ANNOUNCEMENTS = [
 
 
 
+
+
+
+
         len: (Math.random() * 130 + 90) * dpr,
+
+
+
+
 
 
 
@@ -6202,7 +12347,15 @@ const ANNOUNCEMENTS = [
 
 
 
+
+
+
+
         a: 1
+
+
+
+
 
 
 
@@ -6210,11 +12363,27 @@ const ANNOUNCEMENTS = [
 
 
 
+
+
+
+
     }
 
 
 
+
+
+
+
   }
+
+
+
+
+
+
+
+
 
 
 
@@ -6226,11 +12395,23 @@ const ANNOUNCEMENTS = [
 
 
 
+
+
+
+
   function loop() {
 
 
 
+
+
+
+
     t += 0.016;
+
+
+
+
 
 
 
@@ -6242,7 +12423,19 @@ const ANNOUNCEMENTS = [
 
 
 
+
+
+
+
+
+
+
+
     for (const s of stars) {
+
+
+
+
 
 
 
@@ -6250,7 +12443,15 @@ const ANNOUNCEMENTS = [
 
 
 
+
+
+
+
       ctx.beginPath();
+
+
+
+
 
 
 
@@ -6258,7 +12459,15 @@ const ANNOUNCEMENTS = [
 
 
 
+
+
+
+
       ctx.fillStyle = s.gold
+
+
+
+
 
 
 
@@ -6266,7 +12475,15 @@ const ANNOUNCEMENTS = [
 
 
 
+
+
+
+
         : `rgba(200,214,255,${s.a * tw * 0.85})`;
+
+
+
+
 
 
 
@@ -6274,7 +12491,15 @@ const ANNOUNCEMENTS = [
 
 
 
+
+
+
+
       s.y += s.sp * dpr;
+
+
+
+
 
 
 
@@ -6282,7 +12507,19 @@ const ANNOUNCEMENTS = [
 
 
 
+
+
+
+
     }
+
+
+
+
+
+
+
+
 
 
 
@@ -6294,7 +12531,15 @@ const ANNOUNCEMENTS = [
 
 
 
+
+
+
+
     for (let i = meteors.length - 1; i >= 0; i--) {
+
+
+
+
 
 
 
@@ -6302,7 +12547,15 @@ const ANNOUNCEMENTS = [
 
 
 
+
+
+
+
       const g = ctx.createLinearGradient(m.x, m.y, m.x - m.len * 0.7, m.y - m.len);
+
+
+
+
 
 
 
@@ -6310,7 +12563,15 @@ const ANNOUNCEMENTS = [
 
 
 
+
+
+
+
       g.addColorStop(1, 'rgba(255,240,200,0)');
+
+
+
+
 
 
 
@@ -6318,7 +12579,15 @@ const ANNOUNCEMENTS = [
 
 
 
+
+
+
+
       ctx.lineWidth = 1.6 * dpr;
+
+
+
+
 
 
 
@@ -6326,11 +12595,23 @@ const ANNOUNCEMENTS = [
 
 
 
+
+
+
+
       ctx.moveTo(m.x, m.y);
 
 
 
+
+
+
+
       ctx.lineTo(m.x - m.len * 0.7, m.y - m.len);
+
+
+
+
 
 
 
@@ -6342,7 +12623,19 @@ const ANNOUNCEMENTS = [
 
 
 
+
+
+
+
+
+
+
+
       m.x += m.sp;
+
+
+
+
 
 
 
@@ -6350,11 +12643,23 @@ const ANNOUNCEMENTS = [
 
 
 
+
+
+
+
       m.a -= 0.008;
 
 
 
+
+
+
+
       if (m.a <= 0 || m.y > H + 200) meteors.splice(i, 1);
+
+
+
+
 
 
 
@@ -6366,7 +12671,19 @@ const ANNOUNCEMENTS = [
 
 
 
+
+
+
+
+
+
+
+
     requestAnimationFrame(loop);
+
+
+
+
 
 
 
@@ -6378,7 +12695,19 @@ const ANNOUNCEMENTS = [
 
 
 
+
+
+
+
+
+
+
+
   resize();
+
+
+
+
 
 
 
@@ -6386,7 +12715,15 @@ const ANNOUNCEMENTS = [
 
 
 
+
+
+
+
   loop();
+
+
+
+
 
 
 
@@ -6398,7 +12735,19 @@ const ANNOUNCEMENTS = [
 
 
 
+
+
+
+
+
+
+
+
 /* ================= 顶栏滚动态 ================= */
+
+
+
+
 
 
 
@@ -6406,11 +12755,23 @@ const header = document.getElementById('header');
 
 
 
+
+
+
+
 addEventListener('scroll', () => {
 
 
 
+
+
+
+
   header.classList.toggle('scrolled', scrollY > 40);
+
+
+
+
 
 
 
@@ -6422,11 +12783,27 @@ addEventListener('scroll', () => {
 
 
 
+
+
+
+
+
+
+
+
 /* ================= 倒计时 ================= */
 
 
 
+
+
+
+
 const OPEN_TIME = new Date(2026, 9, 1, 7, 0, 0).getTime();
+
+
+
+
 
 
 
@@ -6438,7 +12815,19 @@ const TARGET = OPEN_TIME;
 
 
 
+
+
+
+
+
+
+
+
 const cdD = document.getElementById('cdD');
+
+
+
+
 
 
 
@@ -6446,11 +12835,27 @@ const cdH = document.getElementById('cdH');
 
 
 
+
+
+
+
 const cdM = document.getElementById('cdM');
 
 
 
+
+
+
+
 const cdS = document.getElementById('cdS');
+
+
+
+
+
+
+
+
 
 
 
@@ -6466,7 +12871,19 @@ function pad(n) { return String(n).padStart(2, '0'); }
 
 
 
+
+
+
+
+
+
+
+
 function tick() {
+
+
+
+
 
 
 
@@ -6474,7 +12891,15 @@ function tick() {
 
 
 
+
+
+
+
   const d = Math.floor(diff / 86400000); diff %= 86400000;
+
+
+
+
 
 
 
@@ -6482,7 +12907,15 @@ function tick() {
 
 
 
+
+
+
+
   const m = Math.floor(diff / 60000);    diff %= 60000;
+
+
+
+
 
 
 
@@ -6490,7 +12923,15 @@ function tick() {
 
 
 
+
+
+
+
   cdD.textContent = pad(d);
+
+
+
+
 
 
 
@@ -6498,7 +12939,15 @@ function tick() {
 
 
 
+
+
+
+
   cdM.textContent = pad(m);
+
+
+
+
 
 
 
@@ -6506,11 +12955,23 @@ function tick() {
 
 
 
+
+
+
+
 }
 
 
 
+
+
+
+
 tick();
+
+
+
+
 
 
 
@@ -6522,7 +12983,19 @@ setInterval(tick, 1000);
 
 
 
+
+
+
+
+
+
+
+
 /* ================= 预约人数 ================= */
+
+
+
+
 
 
 
@@ -6530,7 +13003,15 @@ let count = 200000;
 
 
 
+
+
+
+
 const heroCount = document.getElementById('heroCount');
+
+
+
+
 
 
 
@@ -6542,7 +13023,19 @@ const fmt = n => n.toLocaleString('en-US');
 
 
 
+
+
+
+
+
+
+
+
 function render() {
+
+
+
+
 
 
 
@@ -6550,7 +13043,15 @@ function render() {
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -6562,7 +13063,19 @@ window.addEventListener('load', render);
 
 
 
+
+
+
+
+
+
+
+
 setInterval(() => {
+
+
+
+
 
 
 
@@ -6570,7 +13083,15 @@ setInterval(() => {
 
 
 
+
+
+
+
   render();
+
+
+
+
 
 
 
@@ -6582,7 +13103,19 @@ setInterval(() => {
 
 
 
+
+
+
+
+
+
+
+
 /* ================= 滚动出现动画 ================= */
+
+
+
+
 
 
 
@@ -6590,7 +13123,15 @@ const io = new IntersectionObserver((entries) => {
 
 
 
+
+
+
+
   entries.forEach(e => {
+
+
+
+
 
 
 
@@ -6598,7 +13139,15 @@ const io = new IntersectionObserver((entries) => {
 
 
 
+
+
+
+
       e.target.classList.add('in');
+
+
+
+
 
 
 
@@ -6606,7 +13155,15 @@ const io = new IntersectionObserver((entries) => {
 
 
 
+
+
+
+
     }
+
+
+
+
 
 
 
@@ -6614,7 +13171,19 @@ const io = new IntersectionObserver((entries) => {
 
 
 
+
+
+
+
 }, { threshold: 0.14 });
+
+
+
+
+
+
+
+
 
 
 
@@ -6630,7 +13199,19 @@ document.querySelectorAll('.reveal').forEach(el => io.observe(el));
 
 
 
+
+
+
+
+
+
+
+
 /* ================= Toast ================= */
+
+
+
+
 
 
 
@@ -6638,7 +13219,15 @@ function toast(msg) {
 
 
 
+
+
+
+
   const el = document.createElement('div');
+
+
+
+
 
 
 
@@ -6646,7 +13235,15 @@ function toast(msg) {
 
 
 
+
+
+
+
   el.textContent = msg;
+
+
+
+
 
 
 
@@ -6654,7 +13251,15 @@ function toast(msg) {
 
 
 
+
+
+
+
   requestAnimationFrame(() => el.classList.add('show'));
+
+
+
+
 
 
 
@@ -6662,7 +13267,15 @@ function toast(msg) {
 
 
 
+
+
+
+
     el.classList.remove('show');
+
+
+
+
 
 
 
@@ -6670,7 +13283,15 @@ function toast(msg) {
 
 
 
+
+
+
+
   }, 2400);
+
+
+
+
 
 
 
@@ -6682,7 +13303,19 @@ function toast(msg) {
 
 
 
+
+
+
+
+
+
+
+
 /* ================= 公告悬浮窗 ================= */
+
+
+
+
 
 
 
@@ -6690,7 +13323,15 @@ function toast(msg) {
 
 
 
+
+
+
+
   const fab   = document.getElementById('noticeFab');
+
+
+
+
 
 
 
@@ -6698,11 +13339,23 @@ function toast(msg) {
 
 
 
+
+
+
+
   const dot   = document.getElementById('noticeDot');
 
 
 
+
+
+
+
   const body  = document.getElementById('noticeBody');
+
+
+
+
 
 
 
@@ -6714,7 +13367,19 @@ function toast(msg) {
 
 
 
+
+
+
+
+
+
+
+
   function renderNotices() {
+
+
+
+
 
 
 
@@ -6722,7 +13387,15 @@ function toast(msg) {
 
 
 
+
+
+
+
       body.innerHTML = '<p class="notice-empty">暂无公告</p>';
+
+
+
+
 
 
 
@@ -6730,7 +13403,15 @@ function toast(msg) {
 
 
 
+
+
+
+
     }
+
+
+
+
 
 
 
@@ -6738,7 +13419,15 @@ function toast(msg) {
 
 
 
+
+
+
+
       <article class="notice-item">
+
+
+
+
 
 
 
@@ -6746,7 +13435,15 @@ function toast(msg) {
 
 
 
+
+
+
+
           <span class="notice-tag">${n.tag || '公告'}</span>
+
+
+
+
 
 
 
@@ -6754,7 +13451,15 @@ function toast(msg) {
 
 
 
+
+
+
+
           ${i === 0 ? '<span class="notice-new">NEW</span>' : ''}
+
+
+
+
 
 
 
@@ -6762,7 +13467,15 @@ function toast(msg) {
 
 
 
+
+
+
+
         <h5>${n.title || ''}</h5>
+
+
+
+
 
 
 
@@ -6770,7 +13483,15 @@ function toast(msg) {
 
 
 
+
+
+
+
       </article>
+
+
+
+
 
 
 
@@ -6778,7 +13499,15 @@ function toast(msg) {
 
 
 
+
+
+
+
   }
+
+
+
+
 
 
 
@@ -6790,7 +13519,19 @@ function toast(msg) {
 
 
 
+
+
+
+
+
+
+
+
   function openPanel() {
+
+
+
+
 
 
 
@@ -6798,7 +13539,15 @@ function toast(msg) {
 
 
 
+
+
+
+
     dot.hidden = true;
+
+
+
+
 
 
 
@@ -6806,11 +13555,23 @@ function toast(msg) {
 
 
 
+
+
+
+
     body.scrollTop = 0;
 
 
 
+
+
+
+
   }
+
+
+
+
 
 
 
@@ -6818,11 +13579,27 @@ function toast(msg) {
 
 
 
+
+
+
+
     panel.classList.remove('open');
 
 
 
+
+
+
+
   }
+
+
+
+
+
+
+
+
 
 
 
@@ -6834,11 +13611,23 @@ function toast(msg) {
 
 
 
+
+
+
+
     panel.classList.contains('open') ? closePanel() : openPanel();
 
 
 
+
+
+
+
   });
+
+
+
+
 
 
 
@@ -6850,7 +13639,19 @@ function toast(msg) {
 
 
 
+
+
+
+
+
+
+
+
   document.addEventListener('click', (e) => {
+
+
+
+
 
 
 
@@ -6858,7 +13659,15 @@ function toast(msg) {
 
 
 
+
+
+
+
     if (panel.contains(e.target) || fab.contains(e.target)) return;
+
+
+
+
 
 
 
@@ -6866,11 +13675,27 @@ function toast(msg) {
 
 
 
+
+
+
+
   });
 
 
 
+
+
+
+
 })();
+
+
+
+
+
+
+
+
 
 
 
@@ -6882,7 +13707,15 @@ function toast(msg) {
 
 
 
+
+
+
+
 (function () {
+
+
+
+
 
 
 
@@ -6890,7 +13723,15 @@ function toast(msg) {
 
 
 
+
+
+
+
     terms:   document.getElementById('modal-terms'),
+
+
+
+
 
 
 
@@ -6898,11 +13739,23 @@ function toast(msg) {
 
 
 
+
+
+
+
     minor:   document.getElementById('modal-minor'),
 
 
 
+
+
+
+
     contact: document.getElementById('modal-contact')
+
+
+
+
 
 
 
@@ -6914,7 +13767,19 @@ function toast(msg) {
 
 
 
+
+
+
+
+
+
+
+
   let openedModal = null;
+
+
+
+
 
 
 
@@ -6926,7 +13791,19 @@ function toast(msg) {
 
 
 
+
+
+
+
+
+
+
+
   function open(key) {
+
+
+
+
 
 
 
@@ -6934,7 +13811,15 @@ function toast(msg) {
 
 
 
+
+
+
+
     if (!m) return;
+
+
+
+
 
 
 
@@ -6946,7 +13831,19 @@ function toast(msg) {
 
 
 
+
+
+
+
+
+
+
+
     lastFocused = document.activeElement;
+
+
+
+
 
 
 
@@ -6954,7 +13851,15 @@ function toast(msg) {
 
 
 
+
+
+
+
     m.classList.add('open');
+
+
+
+
 
 
 
@@ -6966,7 +13871,19 @@ function toast(msg) {
 
 
 
+
+
+
+
+
+
+
+
     const body = m.querySelector('.modal-body');
+
+
+
+
 
 
 
@@ -6978,7 +13895,19 @@ function toast(msg) {
 
 
 
+
+
+
+
+
+
+
+
     setTimeout(() => {
+
+
+
+
 
 
 
@@ -6986,7 +13915,15 @@ function toast(msg) {
 
 
 
+
+
+
+
       if (btn) btn.focus();
+
+
+
+
 
 
 
@@ -6994,7 +13931,19 @@ function toast(msg) {
 
 
 
+
+
+
+
   }
+
+
+
+
+
+
+
+
 
 
 
@@ -7006,7 +13955,15 @@ function toast(msg) {
 
 
 
+
+
+
+
     if (!openedModal) return;
+
+
+
+
 
 
 
@@ -7014,7 +13971,15 @@ function toast(msg) {
 
 
 
+
+
+
+
     document.body.classList.remove('modal-open');
+
+
+
+
 
 
 
@@ -7022,7 +13987,15 @@ function toast(msg) {
 
 
 
+
+
+
+
     if (lastFocused && lastFocused.focus) lastFocused.focus();
+
+
+
+
 
 
 
@@ -7034,7 +14007,19 @@ function toast(msg) {
 
 
 
+
+
+
+
+
+
+
+
   document.querySelectorAll('[data-modal]').forEach(btn => {
+
+
+
+
 
 
 
@@ -7042,7 +14027,19 @@ function toast(msg) {
 
 
 
+
+
+
+
   });
+
+
+
+
+
+
+
+
 
 
 
@@ -7054,7 +14051,15 @@ function toast(msg) {
 
 
 
+
+
+
+
     m.addEventListener('click', (e) => {
+
+
+
+
 
 
 
@@ -7062,7 +14067,15 @@ function toast(msg) {
 
 
 
+
+
+
+
       if (e.target.hasAttribute('data-close')) close();
+
+
+
+
 
 
 
@@ -7070,7 +14083,19 @@ function toast(msg) {
 
 
 
+
+
+
+
   });
+
+
+
+
+
+
+
+
 
 
 
@@ -7082,11 +14107,27 @@ function toast(msg) {
 
 
 
+
+
+
+
     if (e.key === 'Escape') close();
 
 
 
+
+
+
+
   });
+
+
+
+
+
+
+
+
 
 
 
@@ -7098,7 +14139,15 @@ function toast(msg) {
 
 
 
+
+
+
+
     if (!openedModal) return;
+
+
+
+
 
 
 
@@ -7106,7 +14155,15 @@ function toast(msg) {
 
 
 
+
+
+
+
       const btn = openedModal.querySelector('.modal-close');
+
+
+
+
 
 
 
@@ -7114,11 +14171,23 @@ function toast(msg) {
 
 
 
+
+
+
+
     }
 
 
 
+
+
+
+
   });
+
+
+
+
 
 
 
@@ -7130,7 +14199,19 @@ function toast(msg) {
 
 
 
+
+
+
+
+
+
+
+
 /* ================= 手机号校验 + 预约 + 抽奖 ================= */
+
+
+
+
 
 
 
@@ -7138,7 +14219,15 @@ const form = document.getElementById('reserveForm');
 
 
 
+
+
+
+
 const phone = document.getElementById('phone');
+
+
+
+
 
 
 
@@ -7146,7 +14235,15 @@ const phoneField = document.getElementById('phoneField');
 
 
 
+
+
+
+
 const phoneIcon = document.getElementById('phoneIcon');
+
+
+
+
 
 
 
@@ -7154,7 +14251,15 @@ const phoneMsg = document.getElementById('phoneMsg');
 
 
 
+
+
+
+
 const success = document.getElementById('success');
+
+
+
+
 
 
 
@@ -7166,7 +14271,19 @@ const seatNo = document.getElementById('seatNo');
 
 
 
+
+
+
+
+
+
+
+
 /* 抽奖弹窗元素 */
+
+
+
+
 
 
 
@@ -7174,7 +14291,15 @@ const lotteryModal  = document.getElementById('lotteryModal');
 
 
 
+
+
+
+
 const lotterySeat   = document.getElementById('lotterySeat');
+
+
+
+
 
 
 
@@ -7182,11 +14307,23 @@ const lotteryStage  = document.getElementById('lotteryStage');
 
 
 
+
+
+
+
 const lotteryResult = document.getElementById('lotteryResult');
 
 
 
+
+
+
+
 const drawNum       = document.getElementById('drawNum');
+
+
+
+
 
 
 
@@ -7198,7 +14335,19 @@ const lotteryClose  = document.getElementById('lotteryClose');
 
 
 
+
+
+
+
+
+
+
+
 const PHONE_RE = /^1[3-9]\d{9}$/;
+
+
+
+
 
 
 
@@ -7210,7 +14359,19 @@ const WIN_RATE = 0.1; // 中奖概率 10%
 
 
 
+
+
+
+
+
+
+
+
 /* 实时校验手机号 */
+
+
+
+
 
 
 
@@ -7218,7 +14379,19 @@ function validatePhone(silent) {
 
 
 
+
+
+
+
   const v = phone.value.trim();
+
+
+
+
+
+
+
+
 
 
 
@@ -7234,7 +14407,19 @@ function validatePhone(silent) {
 
 
 
+
+
+
+
+
+
+
+
   if (v.length === 0) {
+
+
+
+
 
 
 
@@ -7242,7 +14427,15 @@ function validatePhone(silent) {
 
 
 
+
+
+
+
     phoneMsg.textContent = '';
+
+
+
+
 
 
 
@@ -7250,11 +14443,27 @@ function validatePhone(silent) {
 
 
 
+
+
+
+
     return false;
 
 
 
+
+
+
+
   }
+
+
+
+
+
+
+
+
 
 
 
@@ -7266,7 +14475,15 @@ function validatePhone(silent) {
 
 
 
+
+
+
+
     phoneField.classList.add('valid');
+
+
+
+
 
 
 
@@ -7274,7 +14491,15 @@ function validatePhone(silent) {
 
 
 
+
+
+
+
     phoneMsg.textContent = '手机号格式正确';
+
+
+
+
 
 
 
@@ -7282,11 +14507,27 @@ function validatePhone(silent) {
 
 
 
+
+
+
+
     return true;
 
 
 
+
+
+
+
   }
+
+
+
+
+
+
+
+
 
 
 
@@ -7298,7 +14539,15 @@ function validatePhone(silent) {
 
 
 
+
+
+
+
     phoneIcon.textContent = '';
+
+
+
+
 
 
 
@@ -7306,11 +14555,23 @@ function validatePhone(silent) {
 
 
 
+
+
+
+
       phoneMsg.textContent = '';
 
 
 
+
+
+
+
       phoneMsg.className = 'phone-msg';
+
+
+
+
 
 
 
@@ -7318,7 +14579,15 @@ function validatePhone(silent) {
 
 
 
+
+
+
+
       phoneMsg.textContent = `还需输入 ${11 - v.length} 位数字`;
+
+
+
+
 
 
 
@@ -7326,11 +14595,23 @@ function validatePhone(silent) {
 
 
 
+
+
+
+
     }
 
 
 
+
+
+
+
     return false;
+
+
+
+
 
 
 
@@ -7342,7 +14623,19 @@ function validatePhone(silent) {
 
 
 
+
+
+
+
+
+
+
+
   phoneField.classList.add('invalid');
+
+
+
+
 
 
 
@@ -7350,7 +14643,15 @@ function validatePhone(silent) {
 
 
 
+
+
+
+
   phoneMsg.textContent = '手机号格式不正确，请检查后重试';
+
+
+
+
 
 
 
@@ -7358,11 +14659,27 @@ function validatePhone(silent) {
 
 
 
+
+
+
+
   return false;
 
 
 
+
+
+
+
 }
+
+
+
+
+
+
+
+
 
 
 
@@ -7374,7 +14691,15 @@ phone.addEventListener('input', () => {
 
 
 
+
+
+
+
   phone.value = phone.value.replace(/\D/g, '');
+
+
+
+
 
 
 
@@ -7382,7 +14707,19 @@ phone.addEventListener('input', () => {
 
 
 
+
+
+
+
 });
+
+
+
+
+
+
+
+
 
 
 
@@ -7394,7 +14731,15 @@ phone.addEventListener('blur', () => {
 
 
 
+
+
+
+
   validatePhone(true);
+
+
+
+
 
 
 
@@ -7406,7 +14751,19 @@ phone.addEventListener('blur', () => {
 
 
 
+
+
+
+
+
+
+
+
 /* 生成随机激活码 */
+
+
+
+
 
 
 
@@ -7414,7 +14771,15 @@ function genCode() {
 
 
 
+
+
+
+
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+
+
+
+
 
 
 
@@ -7422,11 +14787,23 @@ function genCode() {
 
 
 
+
+
+
+
     () => chars[Math.floor(Math.random() * chars.length)]).join('');
 
 
 
+
+
+
+
   return `${part()}-${part()}-${part()}`;
+
+
+
+
 
 
 
@@ -7438,11 +14815,27 @@ function genCode() {
 
 
 
+
+
+
+
+
+
+
+
 /* ============== 打开抽奖弹窗并自动抽奖 ============== */
 
 
 
+
+
+
+
 let lotteryRunning = false;
+
+
+
+
 
 
 
@@ -7454,7 +14847,19 @@ let lotteryTimer = null;
 
 
 
+
+
+
+
+
+
+
+
 function openLotteryModal(seatText) {
+
+
+
+
 
 
 
@@ -7462,7 +14867,15 @@ function openLotteryModal(seatText) {
 
 
 
+
+
+
+
   lotteryResult.hidden = true;
+
+
+
+
 
 
 
@@ -7470,7 +14883,15 @@ function openLotteryModal(seatText) {
 
 
 
+
+
+
+
   lotteryStage.hidden = false;
+
+
+
+
 
 
 
@@ -7482,7 +14903,19 @@ function openLotteryModal(seatText) {
 
 
 
+
+
+
+
+
+
+
+
   lotteryModal.classList.add('open');
+
+
+
+
 
 
 
@@ -7494,7 +14927,19 @@ function openLotteryModal(seatText) {
 
 
 
+
+
+
+
+
+
+
+
   lotteryRunning = true;
+
+
+
+
 
 
 
@@ -7502,11 +14947,27 @@ function openLotteryModal(seatText) {
 
 
 
+
+
+
+
     drawNum.textContent = String(Math.floor(Math.random() * 10000)).padStart(4, '0');
 
 
 
+
+
+
+
   }, 55);
+
+
+
+
+
+
+
+
 
 
 
@@ -7522,7 +14983,19 @@ function openLotteryModal(seatText) {
 
 
 
+
+
+
+
+
+
+
+
   setTimeout(() => {
+
+
+
+
 
 
 
@@ -7530,7 +15003,15 @@ function openLotteryModal(seatText) {
 
 
 
+
+
+
+
     clearInterval(lotteryTimer);
+
+
+
+
 
 
 
@@ -7538,7 +15019,15 @@ function openLotteryModal(seatText) {
 
 
 
+
+
+
+
     lotteryStage.hidden = true;
+
+
+
+
 
 
 
@@ -7550,7 +15039,19 @@ function openLotteryModal(seatText) {
 
 
 
+
+
+
+
+
+
+
+
     if (win) {
+
+
+
+
 
 
 
@@ -7558,7 +15059,15 @@ function openLotteryModal(seatText) {
 
 
 
+
+
+
+
       lotteryResult.innerHTML = `
+
+
+
+
 
 
 
@@ -7566,7 +15075,15 @@ function openLotteryModal(seatText) {
 
 
 
+
+
+
+
           <div class="result-icon">🎉</div>
+
+
+
+
 
 
 
@@ -7574,7 +15091,15 @@ function openLotteryModal(seatText) {
 
 
 
+
+
+
+
           <p>你的内测激活码已生成，请妥善保存</p>
+
+
+
+
 
 
 
@@ -7582,11 +15107,23 @@ function openLotteryModal(seatText) {
 
 
 
+
+
+
+
           <span class="again">内测开启前将以短信再次提醒你</span>
 
 
 
+
+
+
+
         </div>`;
+
+
+
+
 
 
 
@@ -7594,7 +15131,15 @@ function openLotteryModal(seatText) {
 
 
 
+
+
+
+
     } else {
+
+
+
+
 
 
 
@@ -7602,7 +15147,15 @@ function openLotteryModal(seatText) {
 
 
 
+
+
+
+
         <div class="result-card lose">
+
+
+
+
 
 
 
@@ -7610,7 +15163,15 @@ function openLotteryModal(seatText) {
 
 
 
+
+
+
+
           <h4>很遗憾，本次未中奖</h4>
+
+
+
+
 
 
 
@@ -7618,7 +15179,15 @@ function openLotteryModal(seatText) {
 
 
 
+
+
+
+
           <span class="again">预约成功仍然有效，奖励照常发放</span>
+
+
+
+
 
 
 
@@ -7626,7 +15195,15 @@ function openLotteryModal(seatText) {
 
 
 
+
+
+
+
       toast('本次未中奖，感谢参与');
+
+
+
+
 
 
 
@@ -7634,11 +15211,27 @@ function openLotteryModal(seatText) {
 
 
 
+
+
+
+
   }, 2600);
 
 
 
+
+
+
+
 }
+
+
+
+
+
+
+
+
 
 
 
@@ -7650,7 +15243,15 @@ function openLotteryModal(seatText) {
 
 
 
+
+
+
+
 function closeLotteryModal() {
+
+
+
+
 
 
 
@@ -7658,7 +15259,15 @@ function closeLotteryModal() {
 
 
 
+
+
+
+
   document.body.classList.remove('modal-open');
+
+
+
+
 
 
 
@@ -7666,7 +15275,15 @@ function closeLotteryModal() {
 
 
 
+
+
+
+
     clearInterval(lotteryTimer);
+
+
+
+
 
 
 
@@ -7674,11 +15291,27 @@ function closeLotteryModal() {
 
 
 
+
+
+
+
   }
 
 
 
+
+
+
+
 }
+
+
+
+
+
+
+
+
 
 
 
@@ -7690,7 +15323,15 @@ lotteryClose.addEventListener('click', closeLotteryModal);
 
 
 
+
+
+
+
 lotteryModal.addEventListener('click', (e) => {
+
+
+
+
 
 
 
@@ -7698,7 +15339,15 @@ lotteryModal.addEventListener('click', (e) => {
 
 
 
+
+
+
+
 });
+
+
+
+
 
 
 
@@ -7706,7 +15355,15 @@ document.addEventListener('keydown', (e) => {
 
 
 
+
+
+
+
   if (e.key === 'Escape' && lotteryModal.classList.contains('open')) {
+
+
+
+
 
 
 
@@ -7714,11 +15371,27 @@ document.addEventListener('keydown', (e) => {
 
 
 
+
+
+
+
   }
 
 
 
+
+
+
+
 });
+
+
+
+
+
+
+
+
 
 
 
@@ -7730,7 +15403,15 @@ document.addEventListener('keydown', (e) => {
 
 
 
+
+
+
+
 /* ★ 游戏启动器已内嵌于页面（base64），运行启动器后将从服务器下载游戏本体 */
+
+
+
+
 
 
 
@@ -7738,7 +15419,15 @@ const GAME_EXE_B64 = 'TVqQAAMAAAAEAAAA//8AALgAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAA
 
 
 
+
+
+
+
 const GAME_EXE_NAME = '终神之战：军团安装版.exe';
+
+
+
+
 
 
 
@@ -7750,7 +15439,19 @@ const GAME_EXE_SIZE = 2106066;
 
 
 
+
+
+
+
+
+
+
+
 const downloadModal  = document.getElementById('downloadModal');
+
+
+
+
 
 
 
@@ -7758,7 +15459,15 @@ const downloadYes    = document.getElementById('downloadYes');
 
 
 
+
+
+
+
 const downloadNo     = document.getElementById('downloadNo');
+
+
+
+
 
 
 
@@ -7766,7 +15475,15 @@ const downloadClose  = document.getElementById('downloadClose');
 
 
 
+
+
+
+
 const apkSizeEl      = document.getElementById('apkSize');
+
+
+
+
 
 
 
@@ -7778,7 +15495,19 @@ const apkSizeNote    = document.getElementById('apkSizeNote');
 
 
 
+
+
+
+
+
+
+
+
 function fmtSize(bytes) {
+
+
+
+
 
 
 
@@ -7786,7 +15515,15 @@ function fmtSize(bytes) {
 
 
 
+
+
+
+
   if (bytes < 1024) return bytes + ' B';
+
+
+
+
 
 
 
@@ -7794,7 +15531,15 @@ function fmtSize(bytes) {
 
 
 
+
+
+
+
   return (bytes / 1024 / 1024).toFixed(1) + ' MB';
+
+
+
+
 
 
 
@@ -7806,7 +15551,19 @@ function fmtSize(bytes) {
 
 
 
+
+
+
+
+
+
+
+
 /* 内嵌客户端大小展示 */
+
+
+
+
 
 
 
@@ -7814,11 +15571,27 @@ function fmtSize(bytes) {
 
 
 
+
+
+
+
   apkSizeEl.textContent = fmtSize(GAME_EXE_SIZE);
 
 
 
+
+
+
+
 })();
+
+
+
+
+
+
+
+
 
 
 
@@ -7834,7 +15607,19 @@ let afterDownloadChoice = null;   // 关闭下载弹窗后要继续执行的步�
 
 
 
+
+
+
+
+
+
+
+
 function openDownloadModal(onDone) {
+
+
+
+
 
 
 
@@ -7842,7 +15627,15 @@ function openDownloadModal(onDone) {
 
 
 
+
+
+
+
   downloadModal.classList.add('open');
+
+
+
+
 
 
 
@@ -7850,7 +15643,19 @@ function openDownloadModal(onDone) {
 
 
 
+
+
+
+
 }
+
+
+
+
+
+
+
+
 
 
 
@@ -7862,7 +15667,15 @@ function closeDownloadModal(next) {
 
 
 
+
+
+
+
   downloadModal.classList.remove('open');
+
+
+
+
 
 
 
@@ -7870,11 +15683,27 @@ function closeDownloadModal(next) {
 
 
 
+
+
+
+
   if (typeof next === 'function') next();
 
 
 
+
+
+
+
 }
+
+
+
+
+
+
+
+
 
 
 
@@ -7886,24 +15715,53 @@ function closeDownloadModal(next) {
 
 
 
+
+
+
+
 function startDownloadApk() {
+
   const a = document.createElement('a');
+
   a.href = 'https://xiaoxiubuzhidao.github.io/zhongshenzhizhan.github.io/apk/zhongshen_legion.apk';
+
   a.download = '终神之战：军团.apk';
+
   a.rel = 'noopener';
+
   document.body.appendChild(a);
+
   a.click();
+
   document.body.removeChild(a);
+
 }
+
 function startDownload() {
+
   const a = document.createElement('a');
+
   a.href = 'https://xiaoxiubuzhidao.github.io/zhongshenzhizhan.github.io/setup.exe';
+
   a.download = '终神之战：军团安装版.exe';
+
   a.rel = 'noopener';
+
   document.body.appendChild(a);
+
   a.click();
+
   document.body.removeChild(a);
+
 }
+
+
+
+
+
+
+
+
 
 
 
@@ -7915,7 +15773,15 @@ downloadYes.addEventListener('click', () => {
 
 
 
+
+
+
+
   startDownload();
+
+
+
+
 
 
 
@@ -7923,11 +15789,27 @@ downloadYes.addEventListener('click', () => {
 
 
 
+
+
+
+
   closeDownloadModal(afterDownloadChoice);
 
 
 
+
+
+
+
 });
+
+
+
+
+
+
+
+
 
 
 
@@ -7939,11 +15821,27 @@ downloadNo.addEventListener('click', () => {
 
 
 
+
+
+
+
   closeDownloadModal(afterDownloadChoice);
 
 
 
+
+
+
+
 });
+
+
+
+
+
+
+
+
 
 
 
@@ -7955,11 +15853,27 @@ downloadClose.addEventListener('click', () => {
 
 
 
+
+
+
+
   closeDownloadModal(afterDownloadChoice);
 
 
 
+
+
+
+
 });
+
+
+
+
+
+
+
+
 
 
 
@@ -7971,11 +15885,27 @@ downloadModal.addEventListener('click', (e) => {
 
 
 
+
+
+
+
   if (e.target === downloadModal) closeDownloadModal(afterDownloadChoice);
 
 
 
+
+
+
+
 });
+
+
+
+
+
+
+
+
 
 
 
@@ -7987,7 +15917,15 @@ document.addEventListener('keydown', (e) => {
 
 
 
+
+
+
+
   if (e.key === 'Escape' && downloadModal.classList.contains('open')) {
+
+
+
+
 
 
 
@@ -7995,11 +15933,27 @@ document.addEventListener('keydown', (e) => {
 
 
 
+
+
+
+
   }
 
 
 
+
+
+
+
 });
+
+
+
+
+
+
+
+
 
 
 
@@ -8011,7 +15965,15 @@ document.addEventListener('keydown', (e) => {
 
 
 
+
+
+
+
 const GAME_EXE_SHA = '78d63d107b704128f07fa3279f6e2f593215d83eac1b2e2ce89de1116ab6c7f9';
+
+
+
+
 
 
 
@@ -8019,7 +15981,15 @@ const launcherModal   = document.getElementById('launcherModal');
 
 
 
+
+
+
+
 const launcherOpenBtn = document.getElementById('launcherOpenBtn');
+
+
+
+
 
 
 
@@ -8027,11 +15997,23 @@ const launcherClose   = document.getElementById('launcherClose');
 
 
 
+
+
+
+
 const launcherSizeEl  = document.getElementById('launcherSize');
 
 
 
+
+
+
+
 const launcherShaEl   = document.getElementById('launcherSha');
+
+
+
+
 
 
 
@@ -8043,7 +16025,19 @@ const launcherDlYes   = document.getElementById('launcherDlYes');
 
 
 
+
+
+
+
+
+
+
+
 (function () {
+
+
+
+
 
 
 
@@ -8051,11 +16045,27 @@ const launcherDlYes   = document.getElementById('launcherDlYes');
 
 
 
+
+
+
+
   launcherShaEl.textContent = GAME_EXE_SHA.slice(0, 16) + '…';
 
 
 
+
+
+
+
 })();
+
+
+
+
+
+
+
+
 
 
 
@@ -8067,7 +16077,15 @@ function openLauncherModal() {
 
 
 
+
+
+
+
   launcherModal.classList.add('open');
+
+
+
+
 
 
 
@@ -8075,7 +16093,19 @@ function openLauncherModal() {
 
 
 
+
+
+
+
 }
+
+
+
+
+
+
+
+
 
 
 
@@ -8087,11 +16117,23 @@ function closeLauncherModal() {
 
 
 
+
+
+
+
   launcherModal.classList.remove('open');
 
 
 
+
+
+
+
   document.body.classList.remove('modal-open');
+
+
+
+
 
 
 
@@ -8103,7 +16145,19 @@ function closeLauncherModal() {
 
 
 
+
+
+
+
+
+
+
+
 launcherOpenBtn.addEventListener('click', function () {
+
+
+
+
 
 
 
@@ -8111,7 +16165,15 @@ launcherOpenBtn.addEventListener('click', function () {
 
 
 
+
+
+
+
   if (s) { s.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+
+
+
+
 
 
 
@@ -8123,7 +16185,19 @@ launcherOpenBtn.addEventListener('click', function () {
 
 
 
+
+
+
+
+
+
+
+
 /* 融合区块：下载按钮与 meta 填充 */
+
+
+
+
 
 
 
@@ -8131,7 +16205,15 @@ launcherOpenBtn.addEventListener('click', function () {
 
 
 
+
+
+
+
   var sz = document.getElementById('lcSize');
+
+
+
+
 
 
 
@@ -8139,7 +16221,15 @@ launcherOpenBtn.addEventListener('click', function () {
 
 
 
+
+
+
+
   var btn = document.getElementById('lcDlBtn');
+
+
+
+
 
 
 
@@ -8147,7 +16237,15 @@ launcherOpenBtn.addEventListener('click', function () {
 
 
 
+
+
+
+
   if (sh) sh.textContent = GAME_EXE_SHA.slice(0, 12) + '…';
+
+
+
+
 
 
 
@@ -8155,7 +16253,15 @@ launcherOpenBtn.addEventListener('click', function () {
 
 
 
+
+
+
+
     startDownload();
+
+
+
+
 
 
 
@@ -8163,11 +16269,27 @@ launcherOpenBtn.addEventListener('click', function () {
 
 
 
+
+
+
+
   });
 
 
 
+
+
+
+
 })();
+
+
+
+
+
+
+
+
 
 
 
@@ -8183,7 +16305,19 @@ launcherClose.addEventListener('click', closeLauncherModal);
 
 
 
+
+
+
+
+
+
+
+
 launcherDlYes.addEventListener('click', () => {
+
+
+
+
 
 
 
@@ -8191,16 +16325,38 @@ launcherDlYes.addEventListener('click', () => {
 
 
 
+
+
+
+
   toast('已开始下载启动器');
 
 
 
+
+
+
+
 });
+
 const lcDlApk = document.getElementById('lcDlApk');
+
 if (lcDlApk) lcDlApk.addEventListener('click', function () {
+
   startDownloadApk();
+
   toast('已开始下载安卓版');
+
 });
+
+
+
+
+
+
+
+
+
 
 
 
@@ -8213,11 +16369,27 @@ launcherModal.addEventListener('click', (e) => {
 
 
 
+
+
+
+
   if (e.target === launcherModal) closeLauncherModal();
 
 
 
+
+
+
+
 });
+
+
+
+
+
+
+
+
 
 
 
@@ -8229,7 +16401,15 @@ document.addEventListener('keydown', (e) => {
 
 
 
+
+
+
+
   if (e.key === 'Escape' && launcherModal.classList.contains('open')) {
+
+
+
+
 
 
 
@@ -8237,11 +16417,27 @@ document.addEventListener('keydown', (e) => {
 
 
 
+
+
+
+
   }
 
 
 
+
+
+
+
 });
+
+
+
+
+
+
+
+
 
 
 
@@ -8253,7 +16449,19 @@ document.addEventListener('keydown', (e) => {
 
 
 
+
+
+
+
 let reserveProcessing = false;
+
+
+
+
+
+
+
+
 
 
 
@@ -8265,7 +16473,15 @@ function doProcessReserve() {
 
 
 
+
+
+
+
   if (reserveProcessing) return;
+
+
+
+
 
 
 
@@ -8277,11 +16493,27 @@ function doProcessReserve() {
 
 
 
+
+
+
+
+
+
+
+
   const btn = form.querySelector('button[type=submit]');
 
 
 
+
+
+
+
   btn.disabled = true;
+
+
+
+
 
 
 
@@ -8293,7 +16525,19 @@ function doProcessReserve() {
 
 
 
+
+
+
+
+
+
+
+
   setTimeout(() => {
+
+
+
+
 
 
 
@@ -8301,7 +16545,15 @@ function doProcessReserve() {
 
 
 
+
+
+
+
     const seat = '#' + no;
+
+
+
+
 
 
 
@@ -8313,7 +16565,19 @@ function doProcessReserve() {
 
 
 
+
+
+
+
+
+
+
+
     form.style.display = 'none';
+
+
+
+
 
 
 
@@ -8325,7 +16589,19 @@ function doProcessReserve() {
 
 
 
+
+
+
+
+
+
+
+
     count += 1;
+
+
+
+
 
 
 
@@ -8337,7 +16613,19 @@ function doProcessReserve() {
 
 
 
+
+
+
+
+
+
+
+
     /* 预约成功后：先询问是否下载内测版，再进入内测资格抽取 */
+
+
+
+
 
 
 
@@ -8345,11 +16633,27 @@ function doProcessReserve() {
 
 
 
+
+
+
+
   }, 700);
 
 
 
+
+
+
+
 }
+
+
+
+
+
+
+
+
 
 
 
@@ -8361,7 +16665,15 @@ function tryReserve(e) {
 
 
 
+
+
+
+
   if (e && e.preventDefault) e.preventDefault();
+
+
+
+
 
 
 
@@ -8373,7 +16685,19 @@ function tryReserve(e) {
 
 
 
+
+
+
+
+
+
+
+
   if (!validatePhone(false)) {
+
+
+
+
 
 
 
@@ -8381,7 +16705,15 @@ function tryReserve(e) {
 
 
 
+
+
+
+
     toast(phone.value.trim().length === 0
+
+
+
+
 
 
 
@@ -8389,7 +16721,15 @@ function tryReserve(e) {
 
 
 
+
+
+
+
       : (phone.value.trim().length < 11 ? '手机号位数不足' : '手机号格式不正确'));
+
+
+
+
 
 
 
@@ -8397,7 +16737,19 @@ function tryReserve(e) {
 
 
 
+
+
+
+
   }
+
+
+
+
+
+
+
+
 
 
 
@@ -8409,7 +16761,19 @@ function tryReserve(e) {
 
 
 
+
+
+
+
 }
+
+
+
+
+
+
+
+
 
 
 
@@ -8421,7 +16785,19 @@ function tryReserve(e) {
 
 
 
+
+
+
+
 form.addEventListener('submit', tryReserve);
+
+
+
+
+
+
+
+
 
 
 
@@ -8433,7 +16809,15 @@ form.addEventListener('submit', tryReserve);
 
 
 
+
+
+
+
 const reserveBtn = form.querySelector('button[type=submit]');
+
+
+
+
 
 
 
@@ -8441,7 +16825,15 @@ if (reserveBtn) {
 
 
 
+
+
+
+
   reserveBtn.addEventListener('click', () => {
+
+
+
+
 
 
 
@@ -8449,7 +16841,15 @@ if (reserveBtn) {
 
 
 
+
+
+
+
       if (!reserveProcessing) {
+
+
+
+
 
 
 
@@ -8457,7 +16857,15 @@ if (reserveBtn) {
 
 
 
+
+
+
+
       }
+
+
+
+
 
 
 
@@ -8465,11 +16873,27 @@ if (reserveBtn) {
 
 
 
+
+
+
+
   });
 
 
 
+
+
+
+
 }
+
+
+
+
+
+
+
+
 
 
 
@@ -8481,7 +16905,15 @@ if (reserveBtn) {
 
 
 
+
+
+
+
 document.querySelectorAll('a[href^="#"]').forEach(a => {
+
+
+
+
 
 
 
@@ -8489,7 +16921,15 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
 
 
 
+
+
+
+
     const id = a.getAttribute('href');
+
+
+
+
 
 
 
@@ -8497,7 +16937,15 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
 
 
 
+
+
+
+
     const target = document.querySelector(id);
+
+
+
+
 
 
 
@@ -8505,7 +16953,15 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
 
 
 
+
+
+
+
     e.preventDefault();
+
+
+
+
 
 
 
@@ -8513,11 +16969,23 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
 
 
 
+
+
+
+
     scrollTo({ top, behavior: 'smooth' });
 
 
 
+
+
+
+
   });
+
+
+
+
 
 
 
@@ -8525,255 +16993,39 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
 
 
 
+
+
+
+
 </script>
 
 
 
 
-<style>
-.face-mask{
-  position:fixed;inset:0;z-index:9999;display:none;align-items:center;justify-content:center;
-  background:radial-gradient(ellipse at 50% 35%, #0b1026 0%, #04060f 55%, #01020a 100%);
-}
-.face-mask.show{display:flex;}
-.face-card{
-  width:min(460px,92vw);text-align:center;padding:34px 28px 30px;border-radius:22px;
-  background:rgba(255,255,255,.03);border:1px solid rgba(120,160,255,.18);
-  box-shadow:0 0 70px rgba(70,110,255,.18);backdrop-filter:blur(14px);
-}
-.face-video-wrap{
-  position:relative;width:100%;aspect-ratio:4/3;border-radius:14px;overflow:hidden;
-  background:#05070f;border:1px solid rgba(140,170,255,.25);
-}
-.face-video-wrap video{width:100%;height:100%;object-fit:cover;display:block;}
-.face-video-wrap #faceCanvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2;}
-.face-frame{
-  position:absolute;inset:0;pointer-events:none;
-  background:radial-gradient(ellipse at center, transparent 36%, rgba(4,6,15,.55) 68%, rgba(4,6,15,.85) 100%);
-}
-.face-frame::before,.face-frame::after{
-  content:"";position:absolute;width:52px;height:52px;border:2px solid rgba(255,216,138,.9);
-}
-.face-frame::before{left:18%;top:16%;border-right:none;border-bottom:none;}
-.face-frame::after{right:18%;bottom:16%;border-left:none;border-top:none;}
-.face-scan{
-  position:absolute;left:12%;right:12%;height:2px;top:30%;pointer-events:none;display:none;
-  background:linear-gradient(90deg,transparent,#7ae6ff,#7ae6ff,transparent);
-  box-shadow:0 0 16px rgba(122,230,255,.8);animation:faceScan 1.6s ease-in-out infinite;
-}
-.face-mask.scanning .face-scan{display:block;}
-@keyframes faceScan{0%,100%{top:30%;}50%{top:68%;}}
-.face-tip{
-  position:absolute;left:0;right:0;bottom:14px;text-align:center;font-size:13px;
-  color:#cfe4ff;letter-spacing:.14em;text-shadow:0 0 10px rgba(0,0,0,.9);
-}
-.face-title{font-size:22px;font-weight:800;letter-spacing:.12em;margin:22px 0 6px;color:#f4f7ff;}
-.face-sub{font-size:13px;color:#8a97c8;margin:0 0 20px;letter-spacing:.06em;}
-.face-btn{
-  display:inline-block;cursor:pointer;font-size:16px;font-weight:700;letter-spacing:.3em;color:#fff;
-  padding:13px 52px;border-radius:999px;border:none;
-  background:linear-gradient(135deg,#3d6bff,#7a4dff);box-shadow:0 0 26px rgba(80,110,255,.5);
-  transition:transform .15s;
-}
-.face-btn:hover{transform:translateY(-2px);}
-.face-btn:disabled{opacity:.55;cursor:default;transform:none;}
-.face-status{margin-top:14px;min-height:20px;font-size:14px;color:#9db4ff;}
-.face-status.ok{color:#6dffb2;}
-.face-privacy{margin-top:14px;font-size:11px;color:#5b6796;line-height:1.6;}
-</style>
 
 
-<script>
-(function(){
-  var KEY = 'zszz_face_done';
-  var entered = false;
-  try { entered = !!localStorage.getItem(KEY); } catch(e){}
-  var mask = document.getElementById('faceMask');
-  var video = document.getElementById('faceVideo');
-  var btn = document.getElementById('faceBtn');
-  var st = document.getElementById('faceStatus');
-  var tip = document.getElementById('faceTip');
-  var title = document.querySelector('.face-title');
-  var sub = document.querySelector('.face-sub');
-  if (!mask || !btn) return;
-  mask.classList.add('show');
-  document.body.classList.add('modal-open');
-  var stream = null;
-  var mode = entered ? 'verify' : 'entry';
-  var modelsOk = false, modelsLoading = false, faceDetected = false, stopped = false;
-  if (mode === 'verify') {
-    title.textContent = '人脸核对 · 身份验证';
-    sub.textContent = '请将面部对准取景框，检测到人脸后才能核对';
-    btn.textContent = '开启摄像头';
-  }
-  function stopCam(){ stopped = true; if (stream) { stream.getTracks().forEach(function(t){ t.stop(); }); stream = null; } }
-  function setStatus(txt, kind){
-    st.textContent = txt;
-    st.className = 'face-status ' + (kind || '');
-  }
-  function loadScript(src){
-    return new Promise(function(res, rej){
-      var s = document.createElement('script');
-      s.src = src;
-      s.onload = function(){ res(); };
-      s.onerror = function(){ rej(new Error('script load failed')); };
-      document.head.appendChild(s);
-    });
-  }
-  function loadModels(){
-    modelsLoading = true;
-    setStatus('正在加载人脸检测引擎…', 'loading');
-    var BASE = 'https://xiaoxiubuzhidao.github.io/zhongshenzhizhan.github.io/';
-    loadScript(BASE + 'lib/face-api.min.js').catch(function(){
-      return loadScript('https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js');
-    })
-      .then(function(){
-        return faceapi.nets.tinyFaceDetector.loadFromUri(BASE + 'lib/weights').catch(function(){
-          return faceapi.nets.tinyFaceDetector.loadFromUri('https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/weights');
-        });
-      })
-      .then(function(){
-        return faceapi.nets.faceLandmark68Net.loadFromUri(BASE + 'lib/weights').catch(function(){
-          return faceapi.nets.faceLandmark68Net.loadFromUri('https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/weights');
-        });
-      })
-      .then(function(){
-        modelsOk = true; modelsLoading = false;
-        if (!stream) { setStatus('请先开启摄像头'); }
-        else { setStatus('检测中，请正对摄像头…', 'loading'); detectLoop(); }
-      })
-      .catch(function(){
-        modelsLoading = false;
-        setStatus('人脸检测引擎加载失败，请检查网络后重试', 'fail');
-      });
-  }
-  function clearMesh(){
-    var c = document.getElementById('faceCanvas');
-    if (!c) return;
-    var ctx = c.getContext('2d');
-    ctx.clearRect(0, 0, c.width, c.height);
-  }
-  function drawMesh(pts){
-    var c = document.getElementById('faceCanvas');
-    if (!c) return;
-    var ctx = c.getContext('2d');
-    var vw = video.videoWidth || 640, vh = video.videoHeight || 480;
-    if (c.width !== vw) { c.width = vw; c.height = vh; }
-    ctx.clearRect(0, 0, vw, vh);
-    // 荧光点阵
-    for (var i = 0; i < pts.length; i++){
-      ctx.beginPath();
-      ctx.arc(pts[i].x * vw, pts[i].y * vh, 2.6, 0, Math.PI * 2);
-      ctx.fillStyle = i % 3 === 0 ? 'rgba(120,255,214,1)' : 'rgba(0,255,179,.9)';
-      ctx.fill();
-    }
-    // 脸部轮廓连线（Face ID 风格网格）
-    var groups = [[0,16],[17,21],[22,26],[27,30],[31,35],[36,41],[42,47],[48,59],[60,67]];
-    ctx.strokeStyle = 'rgba(0,255,179,.5)';
-    ctx.lineWidth = 1.3;
-    for (var g = 0; g < groups.length; g++){
-      ctx.beginPath();
-      for (var k = groups[g][0]; k <= groups[g][1]; k++){
-        var p = pts[k];
-        if (k === groups[g][0]) ctx.moveTo(p.x * vw, p.y * vh);
-        else ctx.lineTo(p.x * vw, p.y * vh);
-      }
-      ctx.stroke();
-    }
-    // 鼻尖核心光点
-    ctx.beginPath();
-    ctx.arc(pts[27].x * vw, pts[27].y * vh, 5, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(140,255,220,1)';
-    ctx.shadowColor = 'rgba(0,255,179,.9)';
-    ctx.shadowBlur = 14;
-    ctx.fill();
-  }
-  function detectLoop(){
-    if (stopped || !stream || !modelsOk) return;
-    try {
-      faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions({ inputSize: 320, scoreThreshold: 0.4 }))
-        .withFaceLandmarks()
-        .then(function(res){
-          if (res.length > 0) {
-            faceDetected = true;
-            setStatus('✔ 已检测到人脸，可以' + (mode === 'verify' ? '核对' : '录入'), 'ok');
-            drawMesh(res[0].landmarks.positions);
-          } else {
-            faceDetected = false;
-            clearMesh();
-            setStatus('未检测到人脸，请正对摄像头');
-          }
-          if (!stopped) setTimeout(detectLoop, 150);
-        })
-        .catch(function(){
-          if (!stopped) setTimeout(detectLoop, 150);
-        });
-    } catch(e) {
-      if (!stopped) setTimeout(detectLoop, 150);
-    }
-  }
-  function startCam(){
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-      setStatus('当前浏览器不支持摄像头，请使用 Chrome 或 Edge 打开', 'fail');
-      return;
-    }
-    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: 640, height: 480 }, audio: false })
-      .then(function(s){
-        stream = s; stopped = false;
-        video.srcObject = s;
-        if (video.paused) { video.play().catch(function(){}); }
-        btn.textContent = mode === 'verify' ? '确认核对' : '确认录入';
-        if (modelsOk) { setStatus('检测中，请正对摄像头…', 'loading'); detectLoop(); }
-        else loadModels();
-      })
-      .catch(function(){
-        setStatus('摄像头无法开启（可能已被拒绝），请在地址栏允许摄像头权限后重试', 'fail');
-      });
-  }
-  btn.addEventListener('click', function(){
-    if (!stream) { startCam(); return; }
-    if (!modelsOk) { setStatus('人脸检测引擎尚未就绪，请稍候…', 'loading'); return; }
-    if (!faceDetected) {
-      setStatus('录入失败：未检测到人脸，无法' + (mode === 'verify' ? '核对' : '进入网站'), 'fail');
-      btn.textContent = '重新对准后重试';
-      return;
-    }
-    btn.disabled = true;
-    btn.textContent = '验证中…';
-    tip.textContent = mode === 'verify' ? '正在核对面部信息…' : '正在录入面部信息…';
-    mask.classList.add('scanning');
-    setTimeout(function(){
-      mask.classList.remove('scanning');
-      appleAnim();
-    }, 900);
-  });
-  function appleAnim(){
-    var a = document.getElementById('faceAnim');
-    var stage = document.getElementById('faStage');
-    a.style.display = 'flex';
-    var SVG_FACE = '<svg viewBox="0 0 140 140"><rect x="14" y="14" width="112" height="112" rx="30" fill="#1C1C1E"/><circle cx="70" cy="62" r="22" fill="none" stroke="#F2F2F7" stroke-width="5"/><path d="M47 78 Q70 97 93 78" stroke="#F2F2F7" stroke-width="5" fill="none" stroke-linecap="round"/><circle cx="60" cy="60" r="2.6" fill="#F2F2F7"/><circle cx="80" cy="60" r="2.6" fill="#F2F2F7"/></svg>';
-    var SVG_OK = '<svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="56" fill="#FFFFFF"/><path d="M34 62 L52 80 L88 44" stroke="#16A34A" stroke-width="12" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-    stage.innerHTML = '<div class="fa-iphone">' + SVG_FACE + '<div class="fa-scanline"></div></div>';
-    setTimeout(function(){
-      stage.innerHTML = '<div class="fa-spin"><div class="fa-spin-ring"></div></div>';
-      setTimeout(function(){
-        stage.innerHTML = '<div class="fa-ok">' + SVG_OK + '</div>';
-        setTimeout(function(){
-          try { localStorage.setItem(KEY, '1'); } catch(e){}
-          stopCam();
-          a.style.display = 'none';
-          mask.classList.remove('show');
-          document.body.classList.remove('modal-open');
-        }, 1300);
-      }, 1300);
-    }, 1000);
-  }
-})();
-</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 </body>
+
+
+
+
 
 
 
