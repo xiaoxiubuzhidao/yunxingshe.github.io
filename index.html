@@ -3494,6 +3494,27 @@ body.modal-open{overflow:hidden}
 
 .face-status.fail{color:#ff6b6b;font-weight:700;}
 .face-status.loading{color:#ffd166;}
+
+
+/* ===================== 机动狂潮 PC 下载 ===================== */
+
+.mgck-section{padding:60px 0 16px;}
+
+.mgck-card{max-width:720px;margin:0 auto;text-align:center;
+  border:1px solid rgba(232,200,119,.28);border-radius:20px;padding:46px 32px;
+  background:
+    radial-gradient(120% 120% at 30% 20%,rgba(232,200,119,.10),transparent 60%),
+    radial-gradient(120% 120% at 80% 90%,rgba(124,58,237,.12),transparent 60%),
+    rgba(20,18,32,.55);}
+
+.mgck-tag{display:inline-flex;align-items:center;gap:8px;font-size:13px;letter-spacing:2px;color:#e8c877;
+  border:1px solid rgba(232,200,119,.4);border-radius:999px;padding:6px 14px;margin-bottom:18px;}
+
+.mgck-card h2{font-size:32px;margin:0 0 10px;color:#fff;font-weight:800;letter-spacing:1px;}
+
+.mgck-card p{margin:0 0 28px;color:#aab0c5;font-size:15px;}
+
+.mgck-card .btn{min-width:220px;}
 </style>
 
 
@@ -4584,6 +4605,30 @@ body.modal-open{overflow:hidden}
 
 
   </section>
+
+
+  <!-- ============ 机动狂潮 PC 下载 ============ -->
+
+  <section class="mgck-section" id="mgck">
+
+    <div class="wrap">
+
+      <div class="mgck-card reveal">
+
+        <div class="mgck-tag"><span class="dot"></span>墨隐工作室新游</div>
+
+        <h2>《机动狂潮》PC 版</h2>
+
+        <p>驾驶机甲 · 驰骋狂潮 — 内测 PC 版即将开放下载</p>
+
+        <button type="button" class="btn btn-primary" id="mgckDlBtn">下载 PC 版</button>
+
+      </div>
+
+    </div>
+
+  </section>
+
 
 
 
@@ -8471,6 +8516,31 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
 
 
 
+
+
+/* ============ 机动狂潮 PC 下载 ============ */
+
+const MG_CK_DOWNLOAD_URL = ''; /* 待提供 PC 安装包后填写下载地址 */
+
+const mgckBtn = document.getElementById('mgckDlBtn');
+
+if (mgckBtn) {
+
+  mgckBtn.addEventListener('click', function () {
+
+    if (MG_CK_DOWNLOAD_URL) {
+
+      window.location.href = MG_CK_DOWNLOAD_URL;
+
+    } else {
+
+      toast('《机动狂潮》PC 版下载即将开放，敬请期待');
+
+    }
+
+  });
+
+}
 </script>
 
 
