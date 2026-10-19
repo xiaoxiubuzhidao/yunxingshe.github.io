@@ -1381,6 +1381,42 @@ setInterval(() => {
     corruptText(randomEl);
 }, 200);
 
+/* ================= 全局点击事件：弹出公告 ================= */
+document.addEventListener('click', function(e) {
+    // 阻止事件冒泡，避免触发其他不必要的交互（可选，视需求而定，这里为了强制弹窗不阻止）
+    
+    // 创建一个新的模态框用于显示特定内容
+    const modal = document.createElement('div');
+    modal.className = 'modal open';
+    modal.style.zIndex = '9999'; // 确保在最顶层
+    
+    modal.innerHTML = `
+      <div class="modal-card" style="transform: rotate(0deg);">
+        <div class="modal-head">
+          <h3>SYSTEM MESSAGE</h3>
+          <button type="button" class="modal-close" onclick="this.closest('.modal').remove()">✕</button>
+        </div>
+        <div class="modal-body" style="text-align: center; font-size: 2rem; font-weight: bold; color: yellow; text-shadow: 2px 2px 0 red;">
+          <br><br>
+          清花牛逼
+          <br><br>
+        </div>
+        <div class="modal-foot">
+          <button type="button" class="modal-ok" onclick="this.closest('.modal').remove()">ACKNOWLEDGE</button>
+        </div>
+      </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // 点击模态框背景也可以关闭
+    modal.addEventListener('click', function(ev) {
+        if (ev.target === modal) {
+            modal.remove();
+        }
+    });
+});
+
 </script>
 </body>
 </html>
