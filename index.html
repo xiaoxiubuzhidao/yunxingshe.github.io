@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>云星社</title>
+<style>
+/* ============ 基础 ============ */
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --primary:#4A6CF7;
+  --primary2:#7C5CFC;
+  --grad:linear-gradient(135deg,#4A6CF7 0%,#7C5CFC 100%);
+  --bg:#F4F6FB;
+  --card:#FFFFFF;
+  --text:#1F2433;
+  --sub:#8A90A6;
+  --line:#EEF0F6;
+  --gold:#FFB43A;
+  --radius:16px;
+}
+html{scroll-behavior:smooth}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","HarmonyOS Sans SC","Microsoft YaHei",sans-serif;
+  background:var(--bg);color:var(--text);
+  max-width:480px;margin:0 auto;
+  padding-bottom:64px;
+  -webkit-font-smoothing:antialiased;
+  user-select:none;
+}
+/* ============ 顶部 ============ */
+.topbar{
+  position:sticky;top:0;z-index:50;
+  background:rgba(255,255,255,.96);backdrop-filter:blur(10px);
+  padding:12px 16px 10px;border-bottom:1px solid var(--line);
+  display:flex;align-items:center;gap:12px;
+}
+.logo{display:flex;align-items:center;gap:7px;font-weight:800;font-size:19px;letter-spacing:.5px;color:var(--text);white-space:nowrap}
+.logo i{width:26px;height:26px;border-radius:8px;background:var(--grad);display:inline-flex;align-items:center;justify-content:center;color:#fff;font-style:normal;font-size:15px;box-shadow:0 4px 10px rgba(74,108,247,.35)}
+.searchbox{flex:1;display:flex;align-items:center;background:#F0F3FA;border-radius:20px;padding:8px 14px;color:var(--sub);font-size:13px;gap:6px}
+.searchbox svg{width:15px;height:15px;opacity:.6}
+.checkin{margin-left:auto;white-space:nowrap;background:var(--grad);color:#fff;font-size:12px;font-weight:700;padding:7px 14px;border-radius:18px;box-shadow:0 4px 12px rgba(74,108,247,.4)}
+/* ============ 轮播 ============ */
+.banner{padding:14px 14px 4px;position:relative;overflow:hidden}
+.bswrap{display:flex;border-radius:18px;overflow:hidden;position:relative}
+.bslide{min-width:100%;height:150px;background:var(--grad);color:#fff;padding:22px 20px;display:flex;flex-direction:column;justify-content:center;position:relative;overflow:hidden}
+.bslide::after{content:"";position:absolute;right:-30px;top:-30px;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,.12)}
+.bslide.g2{background:linear-gradient(135deg,#1F2440 0%,#4A6CF7 100%)}
+.bslide.g3{background:linear-gradient(135deg,#FF9A3D 0%,#FF5E7E 100%)}
+.bslide .tag{font-size:11px;padding:4px 10px;border-radius:12px;background:rgba(255,255,255,.2);display:inline-block;width:fit-content;margin-bottom:10px;letter-spacing:1px}
+.bslide h2{font-size:20px;font-weight:800;margin-bottom:6px;letter-spacing:.5px}
+.bslide p{font-size:12px;opacity:.85;line-height:1.6}
+.bslide .btn{margin-top:12px;font-size:12px;font-weight:700;background:#fff;color:var(--primary);padding:7px 16px;border-radius:16px;width:fit-content}
+.dots{display:flex;justify-content:center;gap:6px;padding:10px 0 2px}
+.dots i{width:6px;height:6px;border-radius:3px;background:#C9D0E0;transition:.3s}
+.dots i.on{width:18px;background:var(--primary)}
+/* ============ 快捷宫格 ============ */
+.grid{padding:12px 14px;display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.gitem{background:var(--card);border-radius:var(--radius);padding:14px 6px;text-align:center;box-shadow:0 2px 8px rgba(30,40,90,.05)}
+.gitem .ic{width:40px;height:40px;border-radius:12px;margin:0 auto 7px;display:flex;align-items:center;justify-content:center;font-size:20px}
+.gitem b{font-size:12px;font-weight:600;color:var(--text)}
+.gitem span{display:block;font-size:10px;color:var(--sub);margin-top:2px}
+.ic.blue{background:#EDF2FF}.ic.purple{background:#F2EDFF}.ic.orange{background:#FFF3E6}.ic.green{background:#E8FAF0}
+.ic.red{background:#FFECEF}.ic.cyan{background:#E6FAFD}.ic.gold{background:#FFF7E0}.ic.gray{background:#F1F3F8}
+/* ============ 区块 ============ */
+.sec{padding:16px 14px 2px}
+.sec-h{display:flex;align-items:baseline;gap:8px;margin-bottom:12px}
+.sec-h h3{font-size:16px;font-weight:800;letter-spacing:.3px}
+.sec-h em{font-style:normal;font-size:11px;color:var(--sub);flex:1}
+.sec-h a{font-size:12px;color:var(--primary);font-weight:600;text-decoration:none}
+/* ============ 资讯列表 ============ */
+.news{background:var(--card);border-radius:var(--radius);padding:2px 14px;box-shadow:0 2px 8px rgba(30,40,90,.05)}
+.nitem{display:flex;gap:12px;padding:14px 0;border-bottom:1px solid var(--line);align-items:center}
+.nitem:last-child{border-bottom:none}
+.nitem .ntag{font-size:10px;font-weight:700;padding:3px 8px;border-radius:8px;flex-shrink:0;height:fit-content;margin-top:2px}
+.ntag.hot{background:#FFF0F0;color:#FF4D4F}.ntag.new{background:#EDF2FF;color:#4A6CF7}.ntag.act{background:#FFF3E6;color:#FF8A00}.ntag.info{background:#E8FAF0;color:#00B578}
+.nitem .txt{flex:1;min-width:0}
+.nitem .txt b{font-size:14px;font-weight:700;display:block;margin-bottom:3px;line-height:1.4}
+.nitem .txt span{font-size:11px;color:var(--sub)}
+.nitem .pic{width:72px;height:72px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:26px;color:#fff}
+/* ============ 广场帖子 ============ */
+.post{background:var(--card);border-radius:var(--radius);padding:16px;margin-bottom:10px;box-shadow:0 2px 8px rgba(30,40,90,.05)}
+.phead{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.avatar{width:38px;height:38px;border-radius:50%;background:var(--grad);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;flex-shrink:0}
+.phead .who{flex:1;min-width:0}
+.phead .who b{font-size:13px;font-weight:700;display:block}
+.phead .who span{font-size:11px;color:var(--sub)}
+.follow{font-size:11px;color:var(--primary);border:1px solid var(--primary);border-radius:14px;padding:4px 12px;font-weight:600}
+.post p{font-size:14px;line-height:1.65;margin-bottom:10px}
+.pimg{width:100%;height:150px;border-radius:12px;margin-bottom:10px;display:flex;align-items:center;justify-content:center;font-size:38px;color:#fff}
+.pbar{display:flex;gap:24px;color:var(--sub);font-size:12px}
+.pbar i{font-style:normal;display:flex;align-items:center;gap:4px}
+/* ============ 工具 ============ */
+.tools{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:0 14px}
+.tool{background:var(--card);border-radius:var(--radius);padding:16px;display:flex;gap:12px;align-items:center;box-shadow:0 2px 8px rgba(30,40,90,.05)}
+.tool .ic{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.tool b{font-size:14px;font-weight:700;display:block;margin-bottom:2px}
+.tool span{font-size:11px;color:var(--sub)}
+/* ============ 消息 ============ */
+.msg{background:var(--card);border-radius:var(--radius);box-shadow:0 2px 8px rgba(30,40,90,.05);overflow:hidden}
+.mitem{display:flex;gap:12px;padding:15px 14px;border-bottom:1px solid var(--line);align-items:flex-start}
+.mitem:last-child{border-bottom:none}
+.mitem .ic{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.mitem .mtxt{flex:1;min-width:0}
+.mitem .mtxt b{font-size:13px;font-weight:700;display:block;margin-bottom:3px}
+.mitem .mtxt p{font-size:12px;color:var(--sub);line-height:1.5}
+.mitem .mtxt span{display:block;font-size:10px;color:#B4BACB;margin-top:3px}
+.badge{width:18px;height:18px;border-radius:50%;background:#FF4D4F;color:#fff;font-size:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;font-weight:700}
+/* ============ 我的 ============ */
+.me-card{background:var(--grad);border-radius:var(--radius);margin:14px;padding:22px 18px;color:#fff;display:flex;align-items:center;gap:14px;box-shadow:0 8px 20px rgba(74,108,247,.3)}
+.me-card .avatar{width:58px;height:58px;background:rgba(255,255,255,.25);font-size:22px}
+.me-card .mi{flex:1}
+.me-card .mi b{font-size:18px;font-weight:800;display:block;margin-bottom:4px}
+.me-card .mi span{font-size:11px;opacity:.85}
+.me-card .lv{background:rgba(255,255,255,.2);padding:4px 12px;border-radius:14px;font-size:11px;font-weight:700}
+.menu{background:var(--card);border-radius:var(--radius);margin:0 14px 14px;box-shadow:0 2px 8px rgba(30,40,90,.05);overflow:hidden}
+.mrow{display:flex;align-items:center;gap:12px;padding:15px 16px;border-bottom:1px solid var(--line)}
+.mrow:last-child{border-bottom:none}
+.mrow .ic{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px}
+.mrow b{flex:1;font-size:14px;font-weight:600}
+.mrow .arr{color:#C4C9D6;font-size:12px}
+/* ============ 页面切换 ============ */
+.page{display:none}
+.page.on{display:block;animation:fade .25s ease}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+/* ============ 底部导航 ============ */
+.tabbar{
+  position:fixed;bottom:0;left:50%;transform:translateX(-50%);
+  width:100%;max-width:480px;z-index:60;
+  background:rgba(255,255,255,.97);backdrop-filter:blur(12px);
+  border-top:1px solid var(--line);
+  display:flex;padding:6px 0 calc(6px + env(safe-area-inset-bottom));
+}
+.tab{flex:1;text-align:center;color:#A0A6B8;font-size:10px;padding:4px 0;cursor:pointer;transition:.2s;position:relative}
+.tab .tico{display:flex;align-items:center;justify-content:center;height:26px;margin-bottom:2px}
+.tab svg{width:24px;height:24px}
+.tab.on{color:var(--primary);font-weight:700}
+.tab.on::before{content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);width:24px;height:3px;border-radius:0 0 3px 3px;background:var(--grad)}
+/* ============ Toast ============ */
+.toast{position:fixed;top:60px;left:50%;transform:translateX(-50%);background:rgba(20,24,40,.9);color:#fff;font-size:13px;padding:10px 20px;border-radius:20px;z-index:100;opacity:0;transition:.3s;pointer-events:none;white-space:nowrap;max-width:85%;overflow:hidden;text-overflow:ellipsis}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(4px)}
+</style>
+</head>
+<body>
+
+<!-- 顶部 -->
+<header class="topbar">
+  <div class="logo"><i>✦</i>云星社</div>
+  <div class="searchbox">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+    搜索游戏、攻略、玩家…
+  </div>
+  <span class="checkin" onclick="toast('已签到，获得 20 星钻')">签到</span>
+</header>
+
+<!-- 首页 -->
+<main class="page on" id="page-home">
+  <div class="banner">
+    <div class="bswrap" id="bswrap">
+      <div class="bslide"><span class="tag">官方公告</span><h2>终神之战：军团</h2><p>新纪元版本开启，神格觉醒系统上线</p><span class="btn">查看详情</span></div>
+      <div class="bslide g2"><span class="tag">新游预告</span><h2>机动狂潮</h2><p>速度与激情的赛车竞速，内测在即</p><span class="btn">预约关注</span></div>
+      <div class="bslide g3"><span class="tag">限时活动</span><h2>星辉嘉年华</h2><p>登录即领限定皮肤 · 签到送星钻</p><span class="btn">立即参与</span></div>
+    </div>
+    <div class="dots" id="dots"><i class="on"></i><i></i><i></i></div>
+  </div>
+
+  <div class="grid">
+    <div class="gitem"><div class="ic blue">✔</div><b>每日签到</b><span>领星钻</span></div>
+    <div class="gitem"><div class="ic purple">📖</div><b>攻略大全</b><span>新手上路</span></div>
+    <div class="gitem"><div class="ic orange">🏆</div><b>战绩查询</b><span>一键直达</span></div>
+    <div class="gitem"><div class="ic green">🎁</div><b>活动中心</b><span>限时福利</span></div>
+    <div class="gitem"><div class="ic red">⚔</div><b>阵容推荐</b><span>搭配思路</span></div>
+    <div class="gitem"><div class="ic cyan">💬</div><b>玩家互助</b><span>问答社区</span></div>
+    <div class="gitem"><div class="ic gold">🔁</div><b>兑换中心</b><span>码券兑换</span></div>
+    <div class="gitem"><div class="ic gray">🎧</div><b>客服</b><span>在线支持</span></div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-h"><h3>最新资讯</h3><em>官方 · 攻略 · 活动</em><a onclick="toast('更多资讯敬请期待')">更多 ›</a></div>
+    <div class="news">
+      <div class="nitem"><span class="ntag hot">热门</span><div class="txt"><b>《终神之战：军团》10月大版本更新内容前瞻</b><span>官方 · 2小时前</span></div><div class="pic" style="background:linear-gradient(135deg,#4A6CF7,#7C5CFC)">⚔</div></div>
+      <div class="nitem"><span class="ntag new">新游</span><div class="txt"><b>《机动狂潮》内测资格预约现已开启</b><span>官方 · 5小时前</span></div><div class="pic" style="background:linear-gradient(135deg,#FF9A3D,#FF5E7E)">🏎</div></div>
+      <div class="nitem"><span class="ntag act">活动</span><div class="txt"><b>星辉嘉年华：签到 7 天领限定皮肤</b><span>活动 · 昨天</span></div><div class="pic" style="background:linear-gradient(135deg,#00B578,#4A6CF7)">🎁</div></div>
+      <div class="nitem"><span class="ntag info">攻略</span><div class="txt"><b>新手必看：神格觉醒系统入门指南</b><span>攻略 · 3天前</span></div><div class="pic" style="background:linear-gradient(135deg,#7C5CFC,#FF5E7E)">📖</div></div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-h"><h3>社区热帖</h3><em>玩家都在聊</em><a onclick="goTab(1)">进入广场 ›</a></div>
+    <div class="post"><div class="phead"><div class="avatar">夜</div><div class="who"><b>夜之咏叹</b><span>Lv.42 · 来自星穹</span></div><span class="follow" onclick="this.textContent='已关注';this.style.borderColor='#C4C9D6';this.style.color='#C4C9D6'">+关注</span></div><p>神格觉醒终于开了！熬夜肝了 3 个小时，拿到了第一个觉醒碎片，这波操作值了，兄弟们冲！</p><div class="pimg" style="background:linear-gradient(135deg,#1F2440,#4A6CF7)">🌌</div><div class="pbar"><i>♥ 1.2k</i><i>💬 386</i><i>↗ 分享</i></div></div>
+    <div class="post"><div class="phead"><div class="avatar" style="background:linear-gradient(135deg,#FF9A3D,#FF5E7E)">风</div><div class="who"><b>疾风之刃</b><span>Lv.28 · 竞速达人</span></div><span class="follow" onclick="this.textContent='已关注';this.style.borderColor='#C4C9D6';this.style.color='#C4C9D6'">+关注</span></div><p>《机动狂潮》内测预约开了！听说这次有全新赛道和氮气系统，老司机们冲不冲？</p><div class="pimg" style="background:linear-gradient(135deg,#FF9A3D,#FF5E7E)">🏎</div><div class="pbar"><i>♥ 856</i><i>💬 204</i><i>↗ 分享</i></div></div>
+  </div>
+</main>
+
+<!-- 广场 -->
+<main class="page" id="page-square">
+  <div class="sec"><div class="sec-h"><h3>广场</h3><em>发现精彩玩家内容</em></div></div>
+  <div style="padding:0 14px">
+    <div class="post"><div class="phead"><div class="avatar">苏</div><div class="who"><b>苏苏不困</b><span>Lv.35 · 攻略组</span></div><span class="follow" onclick="this.textContent='已关注';this.style.borderColor='#C4C9D6';this.style.color='#C4C9D6'">+关注</span></div><p>整理了一份神格觉醒速成攻略：先打世界 Boss 拿核心碎片，再去星陨秘境刷材料，效率翻倍！</p><div class="pimg" style="background:linear-gradient(135deg,#00B578,#4A6CF7)">🗺</div><div class="pbar"><i>♥ 2.3k</i><i>💬 512</i><i>↗ 分享</i></div></div>
+    <div class="post"><div class="phead"><div class="avatar" style="background:linear-gradient(135deg,#FF5E7E,#7C5CFC)">星</div><div class="who"><b>星海拾光</b><span>Lv.51 · 团长</span></div><span class="follow" onclick="this.textContent='已关注';this.style.borderColor='#C4C9D6';this.style.color='#C4C9D6'">+关注</span></div><p>军团招人！公会「星穹守望」备战新版本，每周固定开荒团，萌新大佬都欢迎，进来一起玩～</p><div class="pimg" style="background:linear-gradient(135deg,#4A6CF7,#1F2440)">🛡</div><div class="pbar"><i>♥ 634</i><i>💬 178</i><i>↗ 分享</i></div></div>
+    <div class="post"><div class="phead"><div class="avatar" style="background:linear-gradient(135deg,#FFB43A,#FF5E7E)">云</div><div class="who"><b>云端旅人</b><span>Lv.19 · 萌新</span></div><span class="follow" onclick="this.textContent='已关注';this.style.borderColor='#C4C9D6';this.style.color='#C4C9D6'">+关注</span></div><p>第一次玩这种类型的游戏，请问签到和活动在哪看呀？感觉好复杂，求大佬带带。</p><div class="pbar"><i>♥ 98</i><i>💬 64</i><i>↗ 分享</i></div></div>
+    <div class="post"><div class="phead"><div class="avatar" style="background:linear-gradient(135deg,#00B578,#FFB43A)">影</div><div class="who"><b>影之残响</b><span>Lv.47 · 同人画手</span></div><span class="follow" onclick="this.textContent='已关注';this.style.borderColor='#C4C9D6';this.style.color='#C4C9D6'">+关注</span></div><p>画了一张机动狂潮的主题壁纸，献给所有热爱竞速的朋友！</p><div class="pimg" style="background:linear-gradient(135deg,#7C5CFC,#FF9A3D)">🎨</div><div class="pbar"><i>♥ 3.1k</i><i>💬 289</i><i>↗ 分享</i></div></div>
+  </div>
+</main>
+
+<!-- 工具 -->
+<main class="page" id="page-tools">
+  <div class="sec"><div class="sec-h"><h3>游戏工具</h3><em>玩家常用工具箱</em></div></div>
+  <div class="tools">
+    <div class="tool" onclick="toast('签到成功，获得 20 星钻')"><div class="ic blue">✔</div><div><b>每日签到</b><span>连续签到领好礼</span></div></div>
+    <div class="tool" onclick="toast('功能开发中，敬请期待')"><div class="ic purple">🏆</div><div><b>战绩查询</b><span>输入 ID 一键查询</span></div></div>
+    <div class="tool" onclick="toast('功能开发中，敬请期待')"><div class="ic orange">📖</div><div><b>攻略大全</b><span>全攻略一站查</span></div></div>
+    <div class="tool" onclick="toast('功能开发中，敬请期待')"><div class="ic green">🗓</div><div><b>活动日历</b><span>不错过每个活动</span></div></div>
+    <div class="tool" onclick="toast('功能开发中，敬请期待')"><div class="ic red">⚙</div><div><b>资源计算</b><span>升级材料速算</span></div></div>
+    <div class="tool" onclick="toast('功能开发中，敬请期待')"><div class="ic cyan">🔁</div><div><b>兑换中心</b><span>兑换码一键兑换</span></div></div>
+    <div class="tool" onclick="toast('功能开发中，敬请期待')"><div class="ic gold">🛡</div><div><b>防沉迷查询</b><span>健康系统状态</span></div></div>
+    <div class="tool" onclick="toast('功能开发中，敬请期待')"><div class="ic gray">🎧</div><div><b>在线客服</b><span>7×24 小时服务</span></div></div>
+  </div>
+  <div class="sec"><div class="sec-h"><h3>热门工具榜</h3><em>本周 TOP3</em></div></div>
+  <div style="padding:0 14px" class="news">
+    <div class="nitem"><span class="ntag hot">1</span><div class="txt"><b>每日签到</b><span>本周 128,340 人使用</span></div><div class="pic" style="background:linear-gradient(135deg,#4A6CF7,#7C5CFC)">✔</div></div>
+    <div class="nitem"><span class="ntag act">2</span><div class="txt"><b>战绩查询</b><span>本周 96,120 人使用</span></div><div class="pic" style="background:linear-gradient(135deg,#FF9A3D,#FF5E7E)">🏆</div></div>
+    <div class="nitem"><span class="ntag info">3</span><div class="txt"><b>攻略大全</b><span>本周 72,890 人使用</span></div><div class="pic" style="background:linear-gradient(135deg,#00B578,#4A6CF7)">📖</div></div>
+  </div>
+</main>
+
+<!-- 消息 -->
+<main class="page" id="page-msg">
+  <div class="sec"><div class="sec-h"><h3>消息</h3><em>你的互动动态</em></div></div>
+  <div style="padding:0 14px" class="msg">
+    <div class="mitem"><div class="ic blue">🔔</div><div class="mtxt"><b>系统通知</b><p>欢迎加入云星社！首次签到可获得 20 星钻奖励</p><span>刚刚</span></div><div class="badge">新</div></div>
+    <div class="mitem"><div class="ic purple">♥</div><div class="mtxt"><b>有人赞了你的帖子</b><p>「夜之咏叹」赞了你的动态《新手必看攻略》</p><span>10分钟前</span></div><div class="badge">3</div></div>
+    <div class="mitem"><div class="ic orange">💬</div><div class="mtxt"><b>评论回复</b><p>「苏苏不困」回复了你：这个思路真的有用，感谢分享！</p><span>1小时前</span></div></div>
+    <div class="mitem"><div class="ic green">➕</div><div class="mtxt"><b>新增关注</b><p>「星海拾光」关注了你</p><span>昨天</span></div></div>
+    <div class="mitem"><div class="ic red">🎁</div><div class="mtxt"><b>活动提醒</b><p>星辉嘉年华活动将在 3 天后结束，记得签到领奖</p><span>昨天</span></div></div>
+    <div class="mitem"><div class="ic cyan">⚔</div><div class="mtxt"><b>游戏更新</b><p>《终神之战：军团》新版本已发布，点击查看更新日志</p><span>3天前</span></div></div>
+    <div class="mitem"><div class="ic gold">🏎</div><div class="mtxt"><b>新游预约</b><p>《机动狂潮》内测预约已开启，快来报名吧</p><span>3天前</span></div></div>
+  </div>
+</main>
+
+<!-- 我的 -->
+<main class="page" id="page-me">
+  <div class="me-card">
+    <div class="avatar">云</div>
+    <div class="mi"><b>云星旅人</b><span>UID 100086 · 星穹服务器</span></div>
+    <span class="lv">Lv.12</span>
+  </div>
+  <div style="padding:0 14px 6px" class="news">
+    <div class="nitem"><div class="ntag act">星钻</div><div class="txt"><b>星钻余额</b><span>360 星钻</span></div></div>
+  </div>
+  <div class="menu" style="margin-top:10px">
+    <div class="mrow" onclick="toast('功能开发中，敬请期待')"><div class="ic blue">📦</div><b>我的订单</b><span class="arr">›</span></div>
+    <div class="mrow" onclick="toast('功能开发中，敬请期待')"><div class="ic purple">🎁</div><b>我的奖励</b><span class="arr">›</span></div>
+    <div class="mrow" onclick="toast('功能开发中，敬请期待')"><div class="ic orange">⭐</div><b>收藏与关注</b><span class="arr">›</span></div>
+    <div class="mrow" onclick="toast('功能开发中，敬请期待')"><div class="ic green">🛡</div><b>账号与安全</b><span class="arr">›</span></div>
+  </div>
+  <div class="menu">
+    <div class="mrow" onclick="toast('功能开发中，敬请期待')"><div class="ic cyan">🖌</div><b>个人资料编辑</b><span class="arr">›</span></div>
+    <div class="mrow" onclick="checkUpdate()"><div class="ic blue">🔄</div><b>检查更新</b><span class="arr">›</span></div>
+    <div class="mrow" onclick="toast('云星社 v1.0.0')"><div class="ic gold">ℹ</div><b>关于云星社</b><span class="arr">›</span></div>
+    <div class="mrow" onclick="toast('感谢你的反馈，我们会尽快处理')"><div class="ic red">✉</div><b>意见反馈</b><span class="arr">›</span></div>
+    <div class="mrow" onclick="toast('功能开发中，敬请期待')"><div class="ic gray">⚙</div><b>设置</b><span class="arr">›</span></div>
+  </div>
+</main>
+
+<!-- 底部导航 -->
+<nav class="tabbar">
+  <div class="tab on" data-page="home">
+    <div class="tico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 10l9-7 9 7v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 21V12h6v9"/></svg></div>首页
+  </div>
+  <div class="tab" data-page="square">
+    <div class="tico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="5" cy="5" r="2"/><circle cx="19" cy="5" r="2"/><circle cx="5" cy="19" r="2"/><circle cx="19" cy="19" r="2"/><path d="M7 5h10M5 7v10M19 7v10M7 19h10"/></svg></div>广场
+  </div>
+  <div class="tab" data-page="tools">
+    <div class="tico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18M9 21V9"/></svg></div>工具
+  </div>
+  <div class="tab" data-page="msg">
+    <div class="tico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>消息
+  </div>
+  <div class="tab" data-page="me">
+    <div class="tico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg></div>我的
+  </div>
+</nav>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============ 底部导航切换 ============ */
+function goTab(i){
+  var tabs=document.querySelectorAll('.tab');
+  var pages=['home','square','tools','msg','me'];
+  if(i===undefined){ /* noop */ }
+  tabs.forEach(function(t,idx){ t.classList.toggle('on',idx===i); });
+  document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('on'); });
+  var el=document.getElementById('page-'+pages[i]);
+  if(el){ el.classList.add('on'); window.scrollTo(0,0); }
+}
+document.querySelectorAll('.tab').forEach(function(t,i){
+  t.addEventListener('click',function(){ goTab(i); });
+});
+
+/* ============ 轮播 ============ */
+var idx=0, timer=null;
+function showBanner(i){
+  var s=document.getElementById('bswrap');
+  idx=(i+3)%3;
+  s.style.transition='transform .45s ease';
+  s.style.transform='translateX(-'+idx*100+'%)';
+  var dots=document.querySelectorAll('#dots i');
+  dots.forEach(function(d,j){ d.classList.toggle('on',j===idx); });
+}
+function startBanner(){ timer=setInterval(function(){ showBanner(idx+1); },4000); }
+document.addEventListener('touchstart',function(){ if(timer){clearInterval(timer);} },{passive:true});
+document.addEventListener('touchend',function(){ startBanner(); },{passive:true});
+startBanner();
+
+/* ============ Toast ============ */
+var tt;
+function toast(msg){
+  var t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('on');
+  clearTimeout(tt);
+  tt=setTimeout(function(){ t.classList.remove('on'); },1800);
+}
+
+/* 为所有 .btn/.pic 等装饰元素附加点击反馈 */
+document.querySelectorAll('.bslide .btn, .gitem, .nitem, .nitem .pic').forEach(function(el){
+  el.addEventListener('click',function(){ toast('功能开发中，敬请期待'); });
+});
+
+/* ============ 检查更新（调用原生） ============ */
+function checkUpdate(){
+  if (window.Android && window.Android.checkUpdate) {
+    window.Android.checkUpdate();
+  } else {
+    toast('已是最新版本');
+  }
+}
+</script>
+</body>
+</html>
