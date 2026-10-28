@@ -139,9 +139,42 @@ body{
 /* ============ Toast ============ */
 .toast{position:fixed;top:60px;left:50%;transform:translateX(-50%);background:rgba(20,24,40,.9);color:#fff;font-size:13px;padding:10px 20px;border-radius:20px;z-index:100;opacity:0;transition:.3s;pointer-events:none;white-space:nowrap;max-width:85%;overflow:hidden;text-overflow:ellipsis}
 .toast.on{opacity:1;transform:translateX(-50%) translateY(4px)}
+
+/* ============ 登录墙 ============ */
+.auth-screen{position:fixed;inset:0;z-index:200;background:linear-gradient(160deg,#232B4D 0%,#4A6CF7 60%,#7C5CFC 100%);display:flex;align-items:center;justify-content:center;padding:24px}
+.auth-screen.hide{display:none}
+.auth-card{width:100%;max-width:340px;background:rgba(255,255,255,.98);border-radius:22px;padding:30px 26px;box-shadow:0 20px 60px rgba(10,15,50,.5)}
+.auth-logo{display:flex;align-items:center;justify-content:center;gap:8px;font-size:24px;font-weight:800;color:#1F2443}
+.auth-logo i{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#4A6CF7,#7C5CFC);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-style:normal;font-size:18px}
+.auth-sub{text-align:center;color:#8A90A6;font-size:13px;margin:8px 0 22px}
+.auth-tabs{display:flex;background:#F0F3FA;border-radius:14px;padding:4px;margin-bottom:18px}
+.auth-tabs span{flex:1;text-align:center;padding:9px 0;font-size:14px;font-weight:700;color:#8A90A6;border-radius:11px;transition:.2s}
+.auth-tabs span.on{background:#fff;color:#4A6CF7;box-shadow:0 2px 8px rgba(30,40,90,.1)}
+.auth-card input{width:100%;border:1.5px solid #E6E9F2;border-radius:12px;padding:12px 14px;font-size:15px;margin-bottom:12px;background:#FAFBFE;outline:none;color:#1F2433}
+.auth-card input:focus{border-color:#4A6CF7;background:#fff}
+.auth-err{color:#FF4D4F;font-size:12px;min-height:18px;margin-bottom:6px;display:none}
+.auth-err.on{display:block}
+.auth-btn{width:100%;background:linear-gradient(135deg,#4A6CF7,#7C5CFC);color:#fff;border:none;border-radius:12px;padding:13px 0;font-size:16px;font-weight:800;letter-spacing:4px;box-shadow:0 8px 20px rgba(74,108,247,.4)}
+.auth-btn:active{opacity:.85}
+.auth-tip{text-align:center;color:#B4BACB;font-size:11px;margin-top:14px}
 </style>
 </head>
 <body>
+<!-- 登录墙 -->
+<div class="auth-screen" id="authScreen">
+  <div class="auth-card">
+    <div class="auth-logo"><i>✦</i>云星社</div>
+    <p class="auth-sub">登录后开启云星之旅</p>
+    <div class="auth-tabs"><span class="on" id="tabLogin">登 录</span><span id="tabReg">注 册</span></div>
+    <input id="authPhone" type="tel" maxlength="11" placeholder="手机号" autocomplete="off">
+    <input id="authPwd" type="password" placeholder="密码（6 位以上）" autocomplete="off">
+    <div class="auth-err" id="authErr"></div>
+    <button class="auth-btn" id="authBtn">登 录</button>
+    <p class="auth-tip">注册/登录即代表同意云星社用户协议</p>
+  </div>
+</div>
+
+
 
 <!-- 顶部 -->
 <header class="topbar">
@@ -175,15 +208,7 @@ body{
     <div class="gitem"><div class="ic gray">🎧</div><b>客服</b><span>在线支持</span></div>
   </div>
 
-  <div class="sec">
-    <div class="sec-h"><h3>最新资讯</h3><em>官方 · 攻略 · 活动</em><a onclick="toast('更多资讯敬请期待')">更多 ›</a></div>
-    <div class="news">
-      <div class="nitem"><span class="ntag hot">热门</span><div class="txt"><b>《终神之战：军团》10月大版本更新内容前瞻</b><span>官方 · 2小时前</span></div><div class="pic" style="background:linear-gradient(135deg,#4A6CF7,#7C5CFC)">⚔</div></div>
-      <div class="nitem"><span class="ntag new">新游</span><div class="txt"><b>《机动狂潮》内测资格预约现已开启</b><span>官方 · 5小时前</span></div><div class="pic" style="background:linear-gradient(135deg,#FF9A3D,#FF5E7E)">🏎</div></div>
-      <div class="nitem"><span class="ntag act">活动</span><div class="txt"><b>星辉嘉年华：签到 7 天领限定皮肤</b><span>活动 · 昨天</span></div><div class="pic" style="background:linear-gradient(135deg,#00B578,#4A6CF7)">🎁</div></div>
-      <div class="nitem"><span class="ntag info">攻略</span><div class="txt"><b>新手必看：神格觉醒系统入门指南</b><span>攻略 · 3天前</span></div><div class="pic" style="background:linear-gradient(135deg,#7C5CFC,#FF5E7E)">📖</div></div>
-    </div>
-  </div>
+
 
   <div class="sec">
     <div class="sec-h"><h3>社区热帖</h3><em>玩家都在聊</em><a onclick="goTab(1)">进入广场 ›</a></div>
@@ -241,8 +266,8 @@ body{
 <!-- 我的 -->
 <main class="page" id="page-me">
   <div class="me-card">
-    <div class="avatar">云</div>
-    <div class="mi"><b>云星旅人</b><span>UID 100086 · 星穹服务器</span></div>
+    <div class="avatar" id="meAvatar">云</div>
+    <div class="mi"><b id="meNick">云星旅人</b><span id="mePhone">未登录</span></div>
     <span class="lv">Lv.12</span>
   </div>
   <div style="padding:0 14px 6px" class="news">
@@ -257,9 +282,11 @@ body{
   <div class="menu">
     <div class="mrow" onclick="toast('功能开发中，敬请期待')"><div class="ic cyan">🖌</div><b>个人资料编辑</b><span class="arr">›</span></div>
     <div class="mrow" onclick="checkUpdate()"><div class="ic blue">🔄</div><b>检查更新</b><span class="arr">›</span></div>
-    <div class="mrow" onclick="toast('云星社 v1.0.0')"><div class="ic gold">ℹ</div><b>关于云星社</b><span class="arr">›</span></div>
-    <div class="mrow" onclick="toast('感谢你的反馈，我们会尽快处理')"><div class="ic red">✉</div><b>意见反馈</b><span class="arr">›</span></div>
-    <div class="mrow" onclick="toast('功能开发中，敬请期待')"><div class="ic gray">⚙</div><b>设置</b><span class="arr">›</span></div>
+    <div class="mrow" onclick="toast('云星社 v1.1.0')"><div class="ic gold">ℹ</div><b>关于云星社</b><span class="arr">›</span></div>
+    <div class="mrow" onclick="toast('意见已收到，感谢反馈')"><div class="ic red">✉</div><b>意见反馈</b><span class="arr">›</span></div>
+    <div class="mrow" onclick="showSettings()"><div class="ic gray">⚙</div><b>设置</b><span class="arr">›</span></div>
+    <div class="mrow" onclick="exportUsers()"><div class="ic purple">📤</div><b>导出注册数据</b><span class="arr">›</span></div>
+    <div class="mrow" onclick="logout()"><div class="ic cyan">⏻</div><b>退出登录</b><span class="arr">›</span></div>
   </div>
 </main>
 
@@ -336,6 +363,126 @@ function checkUpdate(){
     toast('已是最新版本');
   }
 }
+
+
+/* ============ 云星社账号系统（本地版） ============ */
+
+const USERS_KEY = 'yxs_users';
+const SESSION_KEY = 'yxs_user';
+
+function loadUsers() {
+  try { return JSON.parse(localStorage.getItem(USERS_KEY) || '{}'); } catch (e) { return {}; }
+}
+function saveUsers(u) {
+  try { localStorage.setItem(USERS_KEY, JSON.stringify(u)); } catch (e) {}
+}
+
+let currentUser = null;
+try { currentUser = JSON.parse(localStorage.getItem(SESSION_KEY) || 'null'); } catch (e) { currentUser = null; }
+
+async function sha256(text) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+  return Array.from(new Uint8Array(buf)).map(function (b) { return b.toString(16).padStart(2, '0'); }).join('');
+}
+
+function authErr(msg) {
+  var el = document.getElementById('authErr');
+  el.textContent = msg;
+  el.classList.add('on');
+}
+function clearAuthErr() { document.getElementById('authErr').classList.remove('on'); }
+
+function switchTab(mode) {
+  document.getElementById('tabLogin').classList.toggle('on', mode === 'login');
+  document.getElementById('tabReg').classList.toggle('on', mode === 'reg');
+  document.getElementById('authBtn').textContent = mode === 'login' ? '登 录' : '注 册';
+  clearAuthErr();
+}
+document.getElementById('tabLogin').addEventListener('click', function () { switchTab('login'); });
+document.getElementById('tabReg').addEventListener('click', function () { switchTab('reg'); });
+
+document.getElementById('authBtn').addEventListener('click', async function () {
+  var mode = document.getElementById('tabReg').classList.contains('on') ? 'reg' : 'login';
+  var phone = document.getElementById('authPhone').value.trim();
+  var pwd = document.getElementById('authPwd').value;
+  if (!/^1\d{10}$/.test(phone)) { authErr('请输入正确的 11 位手机号'); return; }
+  if (pwd.length < 6) { authErr('密码至少 6 位'); return; }
+  var users = loadUsers();
+  if (mode === 'reg') {
+    if (users[phone]) { authErr('该手机号已注册，请直接登录'); return; }
+    var h = await sha256(pwd);
+    var now = new Date().toISOString();
+    users[phone] = { phone: phone, password_hash: h, nickname: '云星玩家' + phone.slice(-4), created_at: now, last_login: now };
+    saveUsers(users);
+    loginOk(users[phone]);
+    toast('注册成功，欢迎加入云星社');
+  } else {
+    if (!users[phone]) { authErr('手机号未注册，请先注册'); return; }
+    var h2 = await sha256(pwd);
+    if (users[phone].password_hash !== h2) { authErr('密码错误'); return; }
+    users[phone].last_login = new Date().toISOString();
+    saveUsers(users);
+    loginOk(users[phone]);
+    toast('登录成功，欢迎回来');
+  }
+});
+
+function loginOk(u) {
+  currentUser = { id: u.phone, phone: u.phone, nickname: u.nickname || '云星玩家' + u.phone.slice(-4) };
+  try { localStorage.setItem(SESSION_KEY, JSON.stringify(currentUser)); } catch (e) {}
+  document.getElementById('authScreen').classList.add('hide');
+  refreshMe();
+}
+
+function refreshMe() {
+  if (!currentUser) return;
+  document.getElementById('meNick').textContent = currentUser.nickname;
+  document.getElementById('mePhone').textContent = '手机号 ' + currentUser.phone.replace(/^(\d{3})\d{4}(\d{4})$/, '$1****$2');
+  document.getElementById('meAvatar').textContent = (currentUser.nickname || '云').charAt(0);
+}
+
+function logout() {
+  try { localStorage.removeItem(SESSION_KEY); } catch (e) {}
+  currentUser = null;
+  document.getElementById('authPhone').value = '';
+  document.getElementById('authPwd').value = '';
+  document.getElementById('authScreen').classList.remove('hide');
+  switchTab('login');
+  toast('已退出登录');
+}
+
+function showSettings() {
+  var s = '云星社设置\n\n';
+  s += '账号：' + (currentUser ? currentUser.phone : '未登录') + '\n';
+  s += '昵称：' + (currentUser ? currentUser.nickname : '-') + '\n';
+  s += '版本：v1.1.0\n\n';
+  s += '点击确定：清除本地缓存并刷新（登录信息也会清除）';
+  var r = confirm(s);
+  if (r) {
+    try { localStorage.clear(); } catch (e) {}
+    toast('缓存已清除');
+    setTimeout(function () { location.reload(); }, 600);
+  }
+}
+
+/* 导出本机注册数据（粘贴到账号管理后台查看统计） */
+function exportUsers() {
+  var users = loadUsers();
+  var arr = Object.keys(users).map(function (k) {
+    var u = users[k];
+    return { phone: u.phone, nickname: u.nickname, created_at: u.created_at, last_login: u.last_login };
+  });
+  if (arr.length === 0) { toast('暂无注册数据'); return; }
+  prompt('复制以下注册数据，粘贴到电脑上的「云星社账号管理后台」查看统计：', JSON.stringify(arr));
+}
+
+/* ============ 启动登录检查 ============ */
+(function initAuth() {
+  if (currentUser) {
+    document.getElementById('authScreen').classList.add('hide');
+    refreshMe();
+  }
+})();
 </script>
 </body>
 </html>
