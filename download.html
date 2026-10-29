@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>云星社 · 星穹之下，云上之社</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%234A6CF7'/%3E%3Cpath d='M32 10l6.2 13.8 15.1 1.8-11.2 10.3 3.1 14.9L32 42.7 18.8 50.8l3.1-14.9L10.7 25.6l15.1-1.8z' fill='%23fff'/%3E%3C/svg%3E">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif;background:#0B0E1E;color:#E8ECFF;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+/* ===== 星空背景 ===== */
+.stars{position:fixed;inset:0;z-index:0;background:radial-gradient(1200px 700px at 75% 10%,rgba(74,108,247,.28),transparent 60%),radial-gradient(900px 600px at 15% 85%,rgba(124,92,252,.22),transparent 55%),linear-gradient(160deg,#0B0E1E 0%,#141A3A 55%,#1C2348 100%);overflow:hidden}
+.stars i{position:absolute;display:block;width:2px;height:2px;background:#fff;border-radius:50%;opacity:.5;animation:tw 4s ease-in-out infinite}
+@keyframes tw{0%,100%{opacity:.25}50%{opacity:.9}}
+.wrap{position:relative;z-index:1;max-width:1080px;margin:0 auto;padding:0 22px}
+/* ===== 顶栏 ===== */
+.top{display:flex;align-items:center;justify-content:space-between;padding:22px 0}
+.logo{display:flex;align-items:center;gap:12px;font-weight:800;font-size:22px;letter-spacing:1px}
+.logo .star{width:42px;height:42px;border-radius:13px;background:linear-gradient(135deg,#4A6CF7,#7C5CFC);display:inline-flex;align-items:center;justify-content:center;box-shadow:0 8px 24px rgba(74,108,247,.45)}
+.logo .star svg{width:24px;height:24px}
+.top .ver{font-size:12px;color:#9AA4C9;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);padding:5px 12px;border-radius:20px}
+/* ===== Hero ===== */
+.hero{text-align:center;padding:72px 0 44px}
+.hero .badge{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:#AFC0FF;background:rgba(74,108,247,.14);border:1px solid rgba(74,108,247,.4);padding:7px 16px;border-radius:30px;margin-bottom:24px}
+.hero h1{font-size:56px;font-weight:900;background:linear-gradient(120deg,#FFFFFF 30%,#AFC0FF 60%,#C3B1FF 90%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:2px;line-height:1.15}
+.hero .slogan{margin-top:16px;font-size:19px;color:#B9C2E6;letter-spacing:4px}
+.hero .desc{margin:18px auto 0;max-width:560px;font-size:14px;color:#7E89B3;line-height:1.8}
+/* ===== 下载区 ===== */
+.dl{display:flex;flex-direction:column;align-items:center;gap:14px;margin:38px 0 10px}
+.dl-main{display:flex;align-items:center;gap:16px;background:linear-gradient(135deg,rgba(74,108,247,.22),rgba(124,92,252,.18));border:1px solid rgba(124,108,252,.45);border-radius:22px;padding:26px 34px;box-shadow:0 18px 50px rgba(74,108,247,.22)}
+.dl-main .apk-ic{width:64px;height:64px;border-radius:16px;background:linear-gradient(135deg,#4A6CF7,#7C5CFC);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.dl-main .apk-ic svg{width:34px;height:34px}
+.dl-main .info{text-align:left}
+.dl-main .info b{font-size:18px;display:block}
+.dl-main .info span{font-size:12px;color:#9AA4C9;margin-top:4px;display:block}
+.dl-btn{background:linear-gradient(135deg,#4A6CF7,#7C5CFC);border:none;color:#fff;font-size:17px;font-weight:800;letter-spacing:3px;padding:15px 40px;border-radius:16px;cursor:pointer;box-shadow:0 12px 30px rgba(74,108,247,.5);transition:transform .15s,box-shadow .15s}
+.dl-btn:hover{transform:translateY(-2px);box-shadow:0 16px 36px rgba(124,92,252,.55)}
+.dl-btn:active{transform:scale(.97)}
+.dl-sub{display:flex;gap:14px;font-size:12px;color:#7E89B3;flex-wrap:wrap;justify-content:center}
+.dl-sub a{color:#AFC0FF;border-bottom:1px dashed rgba(175,192,255,.4);padding-bottom:2px}
+.dl-note{font-size:12px;color:#5D6790;margin-top:6px}
+/* ===== 功能亮点 ===== */
+.sec{padding:52px 0 6px}
+.sec h2{font-size:26px;font-weight:800;text-align:center;margin-bottom:8px}
+.sec .sub{text-align:center;color:#7E89B3;font-size:13px;margin-bottom:30px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+.fcard{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:24px 20px;transition:transform .2s,border-color .2s}
+.fcard:hover{transform:translateY(-4px);border-color:rgba(124,108,252,.5)}
+.fcard .ic{width:46px;height:46px;border-radius:13px;display:flex;align-items:center;justify-content:center;margin-bottom:14px;background:linear-gradient(135deg,rgba(74,108,247,.35),rgba(124,92,252,.3));border:1px solid rgba(124,108,252,.35)}
+.fcard .ic svg{width:24px;height:24px}
+.fcard b{font-size:16px;display:block;margin-bottom:6px}
+.fcard p{font-size:12.5px;color:#8E98C0;line-height:1.7}
+/* ===== 更新日志 ===== */
+.notes{margin-top:8px;display:flex;flex-direction:column;gap:12px}
+.note{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:18px 20px;display:flex;gap:16px;align-items:flex-start}
+.note .vtag{font-size:12px;font-weight:800;background:linear-gradient(135deg,#4A6CF7,#7C5CFC);border-radius:9px;padding:6px 12px;white-space:nowrap;flex-shrink:0}
+.note .vtag.old{background:rgba(255,255,255,.1)}
+.note ul{list-style:none;font-size:13px;color:#B9C2E6;line-height:1.9}
+.note li{padding-left:16px;position:relative}
+.note li:before{content:'';position:absolute;left:0;top:9px;width:5px;height:5px;border-radius:50%;background:#7C5CFC}
+/* ===== 页脚 ===== */
+footer{text-align:center;padding:56px 0 34px;color:#5D6790;font-size:12px;line-height:2}
+footer .fline{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:6px;color:#8E98C0}
+footer .fline svg{width:16px;height:16px}
+@media (max-width:640px){
+  .hero{padding:52px 0 30px}
+  .hero h1{font-size:38px}
+  .hero .slogan{font-size:15px;letter-spacing:2px}
+  .dl-main{flex-direction:column;text-align:center;width:100%;padding:22px}
+  .dl-main .info{text-align:center}
+  .dl-btn{width:100%;font-size:16px;padding:14px 0}
+}
+</style>
+</head>
+<body>
+<div class="stars" id="stars"></div>
+
+<div class="wrap">
+  <div class="top">
+    <div class="logo"><span class="star"><svg viewBox="0 0 24 24"><path d="M12 2l2.6 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.2 6.2 20.6l1.4-6.8L2.5 9.1l6.9-.8z" fill="#fff"/></svg></span>云星社</div>
+    <span class="ver">v1.1.0 · 安卓版</span>
+  </div>
+
+  <div class="hero">
+    <span class="badge">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#AFC0FF" stroke-width="2"><path d="M12 2l2.6 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.2 6.2 20.6l1.4-6.8L2.5 9.1l6.9-.8z"/></svg>
+      米游社风格 · 星穹社区
+    </span>
+    <h1>云星社</h1>
+    <div class="slogan">星穹之下 · 云上之社</div>
+    <p class="desc">汇聚游戏同好的一站式社区 App：广场动态、实用工具、星钻体系与即时消息，开启你的云星之旅。</p>
+
+    <div class="dl">
+      <div class="dl-main">
+        <div class="apk-ic"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3"/><path d="M7 8l5-5 5 5"/><path d="M4 16v4a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-4"/></svg></div>
+        <div class="info"><b>云星社 Android 版</b><span>v1.1.0 · 3.0 MB · 支持 Android 8.0+</span></div>
+        <button class="dl-btn" onclick="startDownload()">立即下载</button>
+      </div>
+      <div class="dl-sub">
+        <a href="https://raw.githubusercontent.com/xiaoxiubuzhidao/yunxingshe.github.io/main/apk/yunxingshe_v1.1.0.apk">备用直链下载</a>
+        <a href="https://github.com/xiaoxiubuzhidao/yunxingshe.github.io" target="_blank" rel="noopener">GitHub 仓库</a>
+      </div>
+      <div class="dl-note">下载安装后，后续版本在 App 内自动更新，无需重新下载</div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <h2>功能亮点</h2>
+    <div class="sub">社区 · 工具 · 星钻 · 消息，一应俱全</div>
+    <div class="grid">
+      <div class="fcard">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#AFC0FF" stroke-width="1.8" stroke-linecap="round"><path d="M3 10h18M7 15h10M9 20h6"/><circle cx="12" cy="10" r="8"/></svg></div>
+        <b>社区广场</b>
+        <p>游戏动态、攻略分享、同人创作，与云星玩家一起畅聊</p>
+      </div>
+      <div class="fcard">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#AFC0FF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="14" rx="3"/><path d="M8 21h8M12 18v3M9 8l6 6M15 8l-6 6"/></svg></div>
+        <b>实用工具</b>
+        <p>内置常用游戏工具，查数据、算数值，随时随地</p>
+      </div>
+      <div class="fcard">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#AFC0FF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.6 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.2 6.2 20.6l1.4-6.8L2.5 9.1l6.9-.8z"/></svg></div>
+        <b>星钻体系</b>
+        <p>互动得星钻，专属货币体系，签到福利不停</p>
+      </div>
+      <div class="fcard">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#AFC0FF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.5 8.5 0 0 1-8.5 8.5 8.4 8.4 0 0 1-3.6-.8L3 21l1.8-5.9a8.5 8.5 0 1 1 16.2-3.6z"/></svg></div>
+        <b>即时消息</b>
+        <p>消息提醒、好友互动，不错过每一条重要动态</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <h2>更新日志</h2>
+    <div class="sub">持续迭代，越来越好</div>
+    <div class="notes">
+      <div class="note">
+        <span class="vtag">v1.1.0</span>
+        <ul>
+          <li>新增注册与登录：进入前需手机号注册 / 登录，自动记住账号</li>
+          <li>全新设置页：账号信息、本地缓存管理、退出登录</li>
+          <li>「我的」页动态显示昵称与脱敏手机号，支持导出注册数据</li>
+          <li>优化首页布局，移除最新资讯模块</li>
+        </ul>
+      </div>
+      <div class="note">
+        <span class="vtag old">v1.0.0</span>
+        <ul>
+          <li>云星社首发：首页 / 广场 / 工具 / 消息 / 我的 五页布局</li>
+          <li>深空蓝紫视觉主题，内置自动更新机制</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="fline"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.6 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.2 6.2 20.6l1.4-6.8L2.5 9.1l6.9-.8z"/></svg>云星社 · 墨隐工作室旗下</div>
+  <div>本页面仅提供 Android 版本下载 · 网页与 App 内容版权归云星社所有</div>
+</footer>
+
+<script>
+// 星空随机点
+(function () {
+  var box = document.getElementById('stars');
+  for (var i = 0; i < 70; i++) {
+    var s = document.createElement('i');
+    s.style.left = Math.random() * 100 + '%';
+    s.style.top = Math.random() * 100 + '%';
+    s.style.animationDelay = Math.random() * 4 + 's';
+    s.style.animationDuration = (3 + Math.random() * 4) + 's';
+    if (Math.random() > 0.6) { s.style.width = s.style.height = '3px'; }
+    box.appendChild(s);
+  }
+})();
+
+function startDownload() {
+  // 主：jsDelivr CDN（国内较快）；失败自动切换 GitHub 直链
+  var urls = [
+    'https://cdn.jsdelivr.net/gh/xiaoxiubuzhidao/yunxingshe.github.io@main/apk/yunxingshe_v1.1.0.apk',
+    'https://raw.githubusercontent.com/xiaoxiubuzhidao/yunxingshe.github.io/main/apk/yunxingshe_v1.1.0.apk'
+  ];
+  var idx = 0;
+  function tryNext() {
+    if (idx >= urls.length) { alert('下载失败，请检查网络后重试'); return; }
+    var a = document.createElement('a');
+    a.href = urls[idx++];
+    a.download = '云星社_v1.1.0.apk';
+    a.rel = 'noopener';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function () { if (!window.__dlStarted) { tryNext(); } }, 4000);
+  }
+  window.__dlStarted = true;
+  tryNext();
+}
+</script>
+</body>
+</html>
