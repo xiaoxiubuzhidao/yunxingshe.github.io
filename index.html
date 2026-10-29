@@ -282,10 +282,9 @@ body{
   <div class="menu">
     <div class="mrow" onclick="toast('功能开发中，敬请期待')"><div class="ic cyan">🖌</div><b>个人资料编辑</b><span class="arr">›</span></div>
     <div class="mrow" onclick="checkUpdate()"><div class="ic blue">🔄</div><b>检查更新</b><span class="arr">›</span></div>
-    <div class="mrow" onclick="toast('云星社 v1.1.0')"><div class="ic gold">ℹ</div><b>关于云星社</b><span class="arr">›</span></div>
+    <div class="mrow" onclick="toast('云星社 v1.2.0')"><div class="ic gold">ℹ</div><b>关于云星社</b><span class="arr">›</span></div>
     <div class="mrow" onclick="toast('意见已收到，感谢反馈')"><div class="ic red">✉</div><b>意见反馈</b><span class="arr">›</span></div>
     <div class="mrow" onclick="showSettings()"><div class="ic gray">⚙</div><b>设置</b><span class="arr">›</span></div>
-    <div class="mrow" onclick="exportUsers()"><div class="ic purple">📤</div><b>导出注册数据</b><span class="arr">›</span></div>
     <div class="mrow" onclick="logout()"><div class="ic cyan">⏻</div><b>退出登录</b><span class="arr">›</span></div>
   </div>
 </main>
@@ -365,20 +364,47 @@ function checkUpdate(){
 }
 
 
-/* ============ 云星社账号系统（本地版） ============ */
+/* ============ 云星社账号系统（Supabase 云端） ============ */
 
-const USERS_KEY = 'yxs_users';
+const SUPABASE_URL = 'https://hqohhkfoonsczqrkrrxa.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_MoKTU1kxS2K0dd8CU9jO3w_ltqNerKu';
+const CONFIGURED = SUPABASE_URL.indexOf('__SUPABASE') !== 0;
 const SESSION_KEY = 'yxs_user';
-
-function loadUsers() {
-  try { return JSON.parse(localStorage.getItem(USERS_KEY) || '{}'); } catch (e) { return {}; }
-}
-function saveUsers(u) {
-  try { localStorage.setItem(USERS_KEY, JSON.stringify(u)); } catch (e) {}
-}
 
 let currentUser = null;
 try { currentUser = JSON.parse(localStorage.getItem(SESSION_KEY) || 'null'); } catch (e) { currentUser = null; }
+
+function sbHeaders(opts) {
+  var h = {
+    'apikey': SUPABASE_KEY,
+    'Authorization': 'Bearer ' + SUPABASE_KEY,
+    'Content-Type': 'application/json',
+    'Prefer': 'return=representation'
+  };
+  return Object.assign(h, opts || {});
+}
+
+async function sbGet(path) {
+  const resp = await fetch(SUPABASE_URL + '/rest/v1/' + path, { headers: sbHeaders() });
+  if (!resp.ok) throw new Error('HTTP ' + resp.status);
+  return resp.json();
+}
+
+async function sbPost(path, body) {
+  const resp = await fetch(SUPABASE_URL + '/rest/v1/' + path, {
+    method: 'POST', headers: sbHeaders(), body: JSON.stringify(body)
+  });
+  if (!resp.ok) throw new Error('HTTP ' + resp.status);
+  return resp.json();
+}
+
+async function sbPatch(path, body) {
+  const resp = await fetch(SUPABASE_URL + '/rest/v1/' + path, {
+    method: 'PATCH', headers: sbHeaders(), body: JSON.stringify(body)
+  });
+  if (!resp.ok) throw new Error('HTTP ' + resp.status);
+  return resp.json();
+}
 
 async function sha256(text) {
   const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
@@ -407,28 +433,39 @@ document.getElementById('authBtn').addEventListener('click', async function () {
   var pwd = document.getElementById('authPwd').value;
   if (!/^1\d{10}$/.test(phone)) { authErr('请输入正确的 11 位手机号'); return; }
   if (pwd.length < 6) { authErr('密码至少 6 位'); return; }
-  var users = loadUsers();
-  if (mode === 'reg') {
-    if (users[phone]) { authErr('该手机号已注册，请直接登录'); return; }
-    var h = await sha256(pwd);
-    var now = new Date().toISOString();
-    users[phone] = { phone: phone, password_hash: h, nickname: '云星玩家' + phone.slice(-4), created_at: now, last_login: now };
-    saveUsers(users);
-    loginOk(users[phone]);
-    toast('注册成功，欢迎加入云星社');
-  } else {
-    if (!users[phone]) { authErr('手机号未注册，请先注册'); return; }
-    var h2 = await sha256(pwd);
-    if (users[phone].password_hash !== h2) { authErr('密码错误'); return; }
-    users[phone].last_login = new Date().toISOString();
-    saveUsers(users);
-    loginOk(users[phone]);
-    toast('登录成功，欢迎回来');
+  if (!CONFIGURED) { authErr('服务器未配置，请联系管理员'); return; }
+  try {
+    if (mode === 'reg') {
+      var exist = await sbGet('users?select=phone&phone=eq.' + encodeURIComponent(phone));
+      if (exist && exist.length > 0) { authErr('该手机号已注册，请直接登录'); return; }
+      var h = await sha256(pwd);
+      var now = new Date().toISOString();
+      await sbPost('users', {
+        phone: phone,
+        password_hash: h,
+        nickname: '云星玩家' + phone.slice(-4),
+        created_at: now,
+        last_login: now
+      });
+      loginOk({ phone: phone, nickname: '云星玩家' + phone.slice(-4) });
+      toast('注册成功，欢迎加入云星社');
+    } else {
+      var list = await sbGet('users?select=*&phone=eq.' + encodeURIComponent(phone));
+      if (!list || list.length === 0) { authErr('手机号未注册，请先注册'); return; }
+      var u = list[0];
+      var h2 = await sha256(pwd);
+      if (u.password_hash !== h2) { authErr('密码错误'); return; }
+      sbPatch('users?id=eq.' + u.id, { last_login: new Date().toISOString() }).catch(function () {});
+      loginOk({ phone: u.phone, nickname: u.nickname || '云星玩家' + u.phone.slice(-4) });
+      toast('登录成功，欢迎回来');
+    }
+  } catch (e) {
+    authErr('网络异常，请稍后重试');
   }
 });
 
 function loginOk(u) {
-  currentUser = { id: u.phone, phone: u.phone, nickname: u.nickname || '云星玩家' + u.phone.slice(-4) };
+  currentUser = { phone: u.phone, nickname: u.nickname };
   try { localStorage.setItem(SESSION_KEY, JSON.stringify(currentUser)); } catch (e) {}
   document.getElementById('authScreen').classList.add('hide');
   refreshMe();
@@ -455,7 +492,7 @@ function showSettings() {
   var s = '云星社设置\n\n';
   s += '账号：' + (currentUser ? currentUser.phone : '未登录') + '\n';
   s += '昵称：' + (currentUser ? currentUser.nickname : '-') + '\n';
-  s += '版本：v1.1.0\n\n';
+  s += '版本：v1.2.0\n\n';
   s += '点击确定：清除本地缓存并刷新（登录信息也会清除）';
   var r = confirm(s);
   if (r) {
@@ -463,17 +500,6 @@ function showSettings() {
     toast('缓存已清除');
     setTimeout(function () { location.reload(); }, 600);
   }
-}
-
-/* 导出本机注册数据（粘贴到账号管理后台查看统计） */
-function exportUsers() {
-  var users = loadUsers();
-  var arr = Object.keys(users).map(function (k) {
-    var u = users[k];
-    return { phone: u.phone, nickname: u.nickname, created_at: u.created_at, last_login: u.last_login };
-  });
-  if (arr.length === 0) { toast('暂无注册数据'); return; }
-  prompt('复制以下注册数据，粘贴到电脑上的「云星社账号管理后台」查看统计：', JSON.stringify(arr));
 }
 
 /* ============ 启动登录检查 ============ */
