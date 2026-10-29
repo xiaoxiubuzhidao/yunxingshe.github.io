@@ -98,7 +98,7 @@ footer .fline svg{width:16px;height:16px}
         <button class="dl-btn" onclick="startDownload()">立即下载</button>
       </div>
       <div class="dl-sub">
-        <a href="https://raw.githubusercontent.com/xiaoxiubuzhidao/yunxingshe.github.io/main/apk/yunxingshe_v1.1.0.apk">备用直链下载</a>
+        <a href="https://xiaoxiubuzhidao.github.io/yunxingshe.github.io/apk/yunxingshe_v1.1.0.apk">备用直链下载</a>
         <a href="https://github.com/xiaoxiubuzhidao/yunxingshe.github.io" target="_blank" rel="noopener">GitHub 仓库</a>
       </div>
       <div class="dl-note">下载安装后，后续版本在 App 内自动更新，无需重新下载</div>
@@ -177,8 +177,9 @@ footer .fline svg{width:16px;height:16px}
 })();
 
 function startDownload() {
-  // 主：jsDelivr CDN（国内较快）；失败自动切换 GitHub 直链
+  // 主：GitHub Pages 直链（已验证）；失败依次切换 jsDelivr CDN / raw
   var urls = [
+    'https://xiaoxiubuzhidao.github.io/yunxingshe.github.io/apk/yunxingshe_v1.1.0.apk',
     'https://cdn.jsdelivr.net/gh/xiaoxiubuzhidao/yunxingshe.github.io@main/apk/yunxingshe_v1.1.0.apk',
     'https://raw.githubusercontent.com/xiaoxiubuzhidao/yunxingshe.github.io/main/apk/yunxingshe_v1.1.0.apk'
   ];
