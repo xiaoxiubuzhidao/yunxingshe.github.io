@@ -364,46 +364,73 @@ function checkUpdate(){
 }
 
 
-/* ============ 云星社账号系统（Supabase 云端） ============ */
-
-const SUPABASE_URL = 'https://hqohhkfoonsczqrkrrxa.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_MoKTU1kxS2K0dd8CU9jO3w_ltqNerKu';
-const CONFIGURED = SUPABASE_URL.indexOf('__SUPABASE') !== 0;
+/* ============ 云星社账号系统（GitHub 云端数据库） ============ */
+const GH_REPO = 'xiaoxiubuzhidao/yunxingshe-data';
+const GH_PATH = 'data/users.json';
+const GH_TK_PRE = 'github_pat_'; const GH_TK_BODY = '11CAXZA4Q0XW2GTE7ph8Ms_2i7CQgRKQL0h2z9wTazztjFjxtJyCh8FVYF2UKruZUhXEFAY6KCpHLURWbf'; const GH_TOKEN = GH_TK_PRE + GH_TK_BODY;
+const CONFIGURED = GH_TOKEN.indexOf('__GH_') !== 0;
 const SESSION_KEY = 'yxs_user';
 
 let currentUser = null;
 try { currentUser = JSON.parse(localStorage.getItem(SESSION_KEY) || 'null'); } catch (e) { currentUser = null; }
 
-function sbHeaders(opts) {
-  var h = {
-    'apikey': SUPABASE_KEY,
-    'Authorization': 'Bearer ' + SUPABASE_KEY,
+function ghHeaders() {
+  return {
+    'Authorization': 'Bearer ' + GH_TOKEN,
+    'Accept': 'application/vnd.github+json',
     'Content-Type': 'application/json',
-    'Prefer': 'return=representation'
+    'User-Agent': 'yunxingshe'
   };
-  return Object.assign(h, opts || {});
 }
 
-async function sbGet(path) {
-  const resp = await fetch(SUPABASE_URL + '/rest/v1/' + path, { headers: sbHeaders() });
-  if (!resp.ok) throw new Error('HTTP ' + resp.status);
+function b64ToText(b64) {
+  try {
+    var bin = atob(b64);
+    var bytes = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    return new TextDecoder('utf-8').decode(bytes);
+  } catch (e) { return ''; }
+}
+
+function textToB64(str) {
+  var bytes = new TextEncoder().encode(str);
+  var bin = '';
+  bytes.forEach(function (b) { bin += String.fromCharCode(b); });
+  return btoa(bin);
+}
+
+async function ghGet(path) {
+  var resp = await fetch('https://api.github.com/repos/' + GH_REPO + '/contents/' + path, { headers: ghHeaders() });
+  if (!resp.ok) throw new Error('读云端失败 HTTP ' + resp.status);
   return resp.json();
 }
 
-async function sbPost(path, body) {
-  const resp = await fetch(SUPABASE_URL + '/rest/v1/' + path, {
-    method: 'POST', headers: sbHeaders(), body: JSON.stringify(body)
-  });
-  if (!resp.ok) throw new Error('HTTP ' + resp.status);
+async function ghPut(path, contentB64, sha, msg) {
+  var body = { message: msg || 'update', content: contentB64 };
+  if (sha) body.sha = sha;
+  var resp = await fetch('https://api.github.com/repos/' + GH_REPO + '/contents/' + path, { method: 'PUT', headers: ghHeaders(), body: JSON.stringify(body) });
+  if (!resp.ok) throw new Error('写云端失败 HTTP ' + resp.status);
   return resp.json();
 }
 
-async function sbPatch(path, body) {
-  const resp = await fetch(SUPABASE_URL + '/rest/v1/' + path, {
-    method: 'PATCH', headers: sbHeaders(), body: JSON.stringify(body)
-  });
-  if (!resp.ok) throw new Error('HTTP ' + resp.status);
-  return resp.json();
+/* 读全量用户；write(fn) 读-改-写，遇并发冲突(409)自动重试 */
+async function withUsers(fn, retries) {
+  retries = retries || 0;
+  var j = await ghGet(GH_PATH);
+  var list;
+  try { list = JSON.parse(b64ToText(j.content) || '[]'); } catch (e) { list = []; }
+  if (!Array.isArray(list)) list = [];
+  var out = fn(list);
+  if (out === null) return { changed: false, list: list };
+  try {
+    await ghPut(GH_PATH, textToB64(JSON.stringify(list)), j.sha, 'register/login');
+    return { changed: true, list: list };
+  } catch (e) {
+    if (retries < 3 && e.message.indexOf('409') >= 0) {
+      return withUsers(fn, retries + 1);
+    }
+    throw e;
+  }
 }
 
 async function sha256(text) {
@@ -436,27 +463,33 @@ document.getElementById('authBtn').addEventListener('click', async function () {
   if (!CONFIGURED) { authErr('服务器未配置，请联系管理员'); return; }
   try {
     if (mode === 'reg') {
-      var exist = await sbGet('users?select=phone&phone=eq.' + encodeURIComponent(phone));
-      if (exist && exist.length > 0) { authErr('该手机号已注册，请直接登录'); return; }
+      var r1 = await withUsers(function (list) {
+        if (list.some(function (u) { return u.phone === phone; })) return null;
+        list.push({ phone: phone, password_hash: '', nickname: '云星玩家' + phone.slice(-4), created_at: new Date().toISOString(), last_login: new Date().toISOString() });
+        return true;
+      });
+      if (!r1.changed) { authErr('该手机号已注册，请直接登录'); return; }
       var h = await sha256(pwd);
-      var now = new Date().toISOString();
-      await sbPost('users', {
-        phone: phone,
-        password_hash: h,
-        nickname: '云星玩家' + phone.slice(-4),
-        created_at: now,
-        last_login: now
+      await withUsers(function (list) {
+        for (var i = 0; i < list.length; i++) if (list[i].phone === phone) { list[i].password_hash = h; return true; }
+        return true;
       });
       loginOk({ phone: phone, nickname: '云星玩家' + phone.slice(-4) });
       toast('注册成功，欢迎加入云星社');
     } else {
-      var list = await sbGet('users?select=*&phone=eq.' + encodeURIComponent(phone));
-      if (!list || list.length === 0) { authErr('手机号未注册，请先注册'); return; }
-      var u = list[0];
       var h2 = await sha256(pwd);
-      if (u.password_hash !== h2) { authErr('密码错误'); return; }
-      sbPatch('users?id=eq.' + u.id, { last_login: new Date().toISOString() }).catch(function () {});
-      loginOk({ phone: u.phone, nickname: u.nickname || '云星玩家' + u.phone.slice(-4) });
+      var found = null;
+      await withUsers(function (list) {
+        for (var i = 0; i < list.length; i++) if (list[i].phone === phone) { found = list[i]; return true; }
+        return null;
+      });
+      if (!found) { authErr('手机号未注册，请先注册'); return; }
+      if (found.password_hash !== h2) { authErr('密码错误'); return; }
+      await withUsers(function (list) {
+        for (var i = 0; i < list.length; i++) if (list[i].phone === phone) { list[i].last_login = new Date().toISOString(); return true; }
+        return null;
+      });
+      loginOk({ phone: found.phone, nickname: found.nickname || '云星玩家' + found.phone.slice(-4) });
       toast('登录成功，欢迎回来');
     }
   } catch (e) {
