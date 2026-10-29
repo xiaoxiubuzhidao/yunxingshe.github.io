@@ -74,8 +74,10 @@ th{color:#8A90A6;font-weight:600;font-size:12px;background:#FAFBFE}
 /* ============ 云星社管理后台 · GitHub 云端数据库直连 ============ */
 const GH_REPO = 'xiaoxiubuzhidao/yunxingshe-data';
 const GH_PATH = 'data/users.json';
-const GH_TK_PRE = 'github_pat_'; const GH_TK_BODY = '11CAXZA4Q0XW2GTE7ph8Ms_2i7CQgRKQL0h2z9wTazztjFjxtJyCh8FVYF2UKruZUhXEFAY6KCpHLURWbf'; const GH_TOKEN = GH_TK_PRE + GH_TK_BODY;
-const CONFIGURED = GH_TOKEN.indexOf('__GH_') !== 0;
+const GH_TK_PRE = 'github_pat_';
+const GH_TK_BODY = '11CAXZA4Q0XW2GTE7ph8Ms_2i7CQgRKQL0h2z9wTazztjFjxtJyCh8FVYF2UKruZUhXEFAY6KCpHLURWbf';
+const GH_TOKEN = GH_TK_PRE + GH_TK_BODY;
+const CONFIGURED = true;
 
 let allUsers = [];
 let curPage = 1;
@@ -99,11 +101,27 @@ function b64ToText(b64) {
   } catch (e) { return ''; }
 }
 
+function setStat(id, v) {
+  var el = document.getElementById(id);
+  if (el) el.textContent = v;
+}
+
+function setStatus(txt, ok) {
+  var el = document.getElementById('statusText');
+  if (el) el.textContent = txt;
+  var dot = document.getElementById('statusDot');
+  if (dot) dot.style.background = ok ? '#22c55e' : '#f59e0b';
+}
+
+function toast(msg) {
+  var el = document.getElementById('toast');
+  if (el) { el.textContent = msg; el.classList.add('on'); }
+}
+
 async function loadCloud() {
-  var t = document.getElementById('totalStat');
-  t.textContent = '连接中…';
+  setStatus('正在连接云端…', false);
+  setStat('cTotal', '-');
   try {
-    if (!CONFIGURED) throw new Error('未配置 GH_TOKEN');
     var resp = await fetch('https://api.github.com/repos/' + GH_REPO + '/contents/' + GH_PATH, { headers: ghHeaders() });
     if (!resp.ok) throw new Error('HTTP ' + resp.status);
     var j = await resp.json();
@@ -112,13 +130,17 @@ async function loadCloud() {
     if (!Array.isArray(list)) list = [];
     allUsers = list;
     render();
+    setStatus('云端数据已刷新 · 共 ' + allUsers.length + ' 人', true);
     toast('云端数据已刷新 · 共 ' + allUsers.length + ' 人');
   } catch (e) {
     allUsers = [];
-    t.textContent = '0';
-    document.getElementById('todayStat').textContent = '0';
-    document.getElementById('yesterdayStat').textContent = '0';
-    document.getElementById('userList').innerHTML = '<tr><td colspan="4" style="color:#f59e0b;padding:24px">云端连接失败：' + e.message + '（请检查 GitHub 配置与网络）</td></tr>';
+    setStat('cTotal', '0');
+    setStat('cToday', '0');
+    setStat('cYesterday', '0');
+    setStat('c7d', '0');
+    var tb = document.getElementById('tbody');
+    if (tb) tb.innerHTML = '<tr><td colspan="5" style="color:#f59e0b;padding:24px">云端连接失败：' + e.message + '（请检查网络与配置）</td></tr>';
+    setStatus('云端连接失败', false);
     if (typeof trendChart !== 'undefined') trendChart.clear();
     toast('云端连接失败');
   }
@@ -132,59 +154,53 @@ function fmtTime(t) {
   return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
 }
 
-function toast(msg) {
-  var el = document.getElementById('toast');
-  el.textContent = msg;
-  el.classList.add('on');
-  clearTimeout(toast._t);
-  toast._t = setTimeout(function () { el.classList.remove('on'); }, 2200);
-}
-
 function render() {
-  var total = document.getElementById('totalStat');
-  var today = document.getElementById('todayStat');
-  var yesterday = document.getElementById('yesterdayStat');
   var now = new Date();
   function startOfDay(daysAgo) {
     var d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - daysAgo);
     return d.getTime();
   }
   var t0 = startOfDay(0), t1 = startOfDay(1), t2 = startOfDay(2);
-  total.textContent = allUsers.length;
-  today.textContent = allUsers.filter(function (u) { return new Date(u.created_at).getTime() >= t0; }).length;
-  yesterday.textContent = allUsers.filter(function (u) { var t = new Date(u.created_at).getTime(); return t >= t1 && t < t0; }).length;
+  setStat('cTotal', allUsers.length);
+  setStat('cToday', allUsers.filter(function (u) { return new Date(u.created_at).getTime() >= t0; }).length);
+  setStat('cYesterday', allUsers.filter(function (u) { var t = new Date(u.created_at).getTime(); return t >= t1 && t < t0; }).length);
+  setStat('c7d', allUsers.filter(function (u) { return new Date(u.created_at).getTime() >= startOfDay(6); }).length);
 
   var days = [];
   for (var i = 6; i >= 0; i--) {
     var s = startOfDay(i), e = startOfDay(i - 1);
     days.push({ label: (new Date(s)).getMonth() + 1 + '/' + (new Date(s)).getDate(), n: allUsers.filter(function (u) { var t = new Date(u.created_at).getTime(); return t >= s && t < e; }).length });
   }
-  trendChart.setOption({
-    grid: { left: 36, right: 12, top: 24, bottom: 24 },
-    xAxis: { type: 'category', data: days.map(function (x) { return x.label; }), axisLine: { lineStyle: { color: '#64748b' } }, axisLabel: { color: '#94a3b8' } },
-    yAxis: { type: 'value', minInterval: 1, splitLine: { lineStyle: { color: '#334155' } }, axisLabel: { color: '#94a3b8' } },
-    series: [{
-      type: 'line', smooth: true, symbolSize: 6,
-      data: days.map(function (x) { return x.n; }),
-      lineStyle: { color: '#8b5cf6', width: 3 },
-      itemStyle: { color: '#a78bfa' },
-      areaStyle: { color: { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: 'rgba(139,92,246,0.45)' }, { offset: 1, color: 'rgba(139,92,246,0.02)' }] } }
-    }]
-  });
+  if (typeof trendChart !== 'undefined') {
+    trendChart.setOption({
+      grid: { left: 36, right: 12, top: 24, bottom: 24 },
+      xAxis: { type: 'category', data: days.map(function (x) { return x.label; }), axisLine: { lineStyle: { color: '#64748b' } }, axisLabel: { color: '#94a3b8' } },
+      yAxis: { type: 'value', minInterval: 1, splitLine: { lineStyle: { color: '#334155' } }, axisLabel: { color: '#94a3b8' } },
+      series: [{
+        type: 'line', smooth: true, symbolSize: 6,
+        data: days.map(function (x) { return x.n; }),
+        lineStyle: { color: '#8b5cf6', width: 3 },
+        itemStyle: { color: '#a78bfa' },
+        areaStyle: { color: { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: 'rgba(139,92,246,0.45)' }, { offset: 1, color: 'rgba(139,92,246,0.02)' }] } }
+      }]
+    });
+  }
   renderList();
 }
 
 function renderList() {
-  var tb = document.getElementById('userList');
+  var tb = document.getElementById('tbody');
+  if (!tb) return;
   var totalPage = Math.max(1, Math.ceil(allUsers.length / PAGE_SIZE));
   if (curPage > totalPage) curPage = totalPage;
   var start = (curPage - 1) * PAGE_SIZE;
   var rows = allUsers.slice(start, start + PAGE_SIZE);
   if (!rows.length) {
-    tb.innerHTML = '<tr><td colspan="4" style="color:#64748b;padding:24px">暂无注册数据</td></tr>';
+    tb.innerHTML = '<tr><td colspan="5" style="color:#64748b;padding:24px">暂无注册数据</td></tr>';
   } else {
-    tb.innerHTML = rows.map(function (u) {
+    tb.innerHTML = rows.map(function (u, idx) {
       return '<tr>' +
+        '<td>' + (start + idx + 1) + '</td>' +
         '<td>' + (u.phone || '-') + '</td>' +
         '<td>' + (u.nickname || '-') + '</td>' +
         '<td>' + fmtTime(u.created_at) + '</td>' +
@@ -192,9 +208,12 @@ function renderList() {
         '</tr>';
     }).join('');
   }
-  document.getElementById('pageInfo').textContent = '第 ' + curPage + ' / ' + totalPage + ' 页 · 每页 ' + PAGE_SIZE + ' 条';
-  document.getElementById('prevBtn').disabled = curPage <= 1;
-  document.getElementById('nextBtn').disabled = curPage >= totalPage;
+  var pi = document.getElementById('pageInfo');
+  if (pi) pi.textContent = '第 ' + curPage + ' / ' + totalPage + ' 页 · 每页 ' + PAGE_SIZE + ' 条';
+  var pb = document.getElementById('prevBtn');
+  var nb = document.getElementById('nextBtn');
+  if (pb) pb.disabled = curPage <= 1;
+  if (nb) nb.disabled = curPage >= totalPage;
 }
 
 function page(d) {
@@ -202,31 +221,27 @@ function page(d) {
   renderList();
 }
 
-function demoData() {
+function loadDemo() {
   var n = 12;
   var now = Date.now();
   var demo = [];
   for (var i = 0; i < n; i++) {
-    var d = new Date(now - i * 86400000 * (i % 3 + 1) * 0.5);
+    var dt = new Date(now - i * 86400000 * (i % 3 + 1) * 0.5);
     demo.push({
       phone: '138' + String(10000000 + Math.floor(Math.random() * 89999999)).slice(0, 8),
       nickname: '演示玩家' + (i + 1),
-      created_at: d.toISOString(),
-      last_login: d.toISOString()
+      created_at: dt.toISOString(),
+      last_login: dt.toISOString()
     });
   }
   allUsers = demo;
   render();
+  setStatus('已载入演示数据（12 人）', true);
   toast('已载入演示数据（12 人）');
 }
 
 var trendChart = echarts.init(document.getElementById('trendChart'));
 window.addEventListener('resize', function () { trendChart.resize(); });
-
-document.getElementById('refreshBtn').addEventListener('click', loadCloud);
-document.getElementById('demoBtn').addEventListener('click', demoData);
-document.getElementById('prevBtn').addEventListener('click', function () { page(-1); });
-document.getElementById('nextBtn').addEventListener('click', function () { page(1); });
 loadCloud();
 </script>
 </body>
