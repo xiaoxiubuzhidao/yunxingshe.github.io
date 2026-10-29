@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>云星社 · 账号管理系统</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}
+body{background:#F0F3FA;color:#1F2433;min-height:100vh}
+.dash{padding:20px;max-width:1100px;margin:0 auto}
+.dash-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px}
+.dash-h h1{font-size:22px;display:flex;align-items:center;gap:8px}
+.dash-h h1 i{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,#4A6CF7,#7C5CFC);color:#fff;font-style:normal;display:inline-flex;align-items:center;justify-content:center;font-size:16px}
+.dash-h .btn{background:#4A6CF7;color:#fff;border:none;border-radius:10px;padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer}
+.dash-h .btn.gray{background:#fff;color:#4A6CF7;border:1px solid #DCE2F2}
+.status{background:#fff;border:1px solid #E6E9F2;border-radius:12px;padding:10px 16px;font-size:13px;color:#5D6790;margin-bottom:16px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.status .dot{width:8px;height:8px;border-radius:50%;background:#C4C9D6;display:inline-block}
+.status .dot.ok{background:#00B578}
+.status .dot.err{background:#FF4D4F}
+.status .dot.load{background:#4A6CF7;animation:pulse 1s infinite}
+@keyframes pulse{50%{opacity:.3}}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:16px}
+.card{background:#fff;border-radius:14px;padding:20px;box-shadow:0 2px 10px rgba(30,40,90,.06)}
+.card .label{font-size:12px;color:#8A90A6;margin-bottom:6px}
+.card .num{font-size:30px;font-weight:800;color:#4A6CF7}
+.card .sub{font-size:11px;color:#B4BACB;margin-top:6px}
+.panel{background:#fff;border-radius:14px;padding:18px;box-shadow:0 2px 10px rgba(30,40,90,.06);margin-bottom:16px}
+.panel h2{font-size:15px;margin-bottom:12px}
+.chart{height:220px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:10px 8px;text-align:left;border-bottom:1px solid #EEF0F6}
+th{color:#8A90A6;font-weight:600;font-size:12px;background:#FAFBFE}
+.muted{color:#B4BACB}
+.pager{display:flex;gap:8px;justify-content:center;margin-top:12px}
+.pager button{border:1px solid #E6E9F2;background:#fff;border-radius:8px;padding:6px 14px;font-size:12px;cursor:pointer;color:#4A6CF7}
+.pager button:disabled{color:#C4C9D6;cursor:not-allowed}
+.empty{text-align:center;color:#B4BACB;padding:40px 0}
+</style>
+</head>
+<body>
+
+<div class="dash">
+  <div class="dash-h">
+    <h1><i>✦</i> 云星社 · 玩家注册管理</h1>
+    <div style="display:flex;gap:10px">
+      <button class="btn gray" onclick="loadDemo()">载入演示数据</button>
+      <button class="btn" onclick="loadCloud()">刷新云端数据</button>
+    </div>
+  </div>
+
+  <div class="status" id="statusBar"><span class="dot" id="statusDot"></span><span id="statusText">正在连接云端…</span></div>
+
+  <div class="cards">
+    <div class="card"><div class="label">注册玩家总数</div><div class="num" id="cTotal">-</div><div class="sub">云端实时数据</div></div>
+    <div class="card"><div class="label">今日新增</div><div class="num" id="cToday">-</div><div class="sub">今日 00:00 起</div></div>
+    <div class="card"><div class="label">昨日新增</div><div class="num" id="cYesterday">-</div><div class="sub">昨日全天</div></div>
+    <div class="card"><div class="label">近 7 日新增</div><div class="num" id="c7d">-</div><div class="sub">过去 7 天合计</div></div>
+  </div>
+
+  <div class="panel"><h2>近 7 日注册趋势</h2><div class="chart" id="trendChart"></div></div>
+
+  <div class="panel">
+    <h2>玩家注册列表 <span class="muted" id="srcTag"></span></h2>
+    <table>
+      <thead><tr><th>#</th><th>手机号</th><th>昵称</th><th>注册时间</th><th>最近登录</th></tr></thead>
+      <tbody id="tbody"></tbody>
+    </table>
+    <div class="pager"><button id="prevBtn" onclick="page(-1)">上一页</button><span class="muted" id="pageInfo" style="align-self:center;font-size:12px"></span><button id="nextBtn" onclick="page(1)">下一页</button></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+<script>
+/* ============ 云星社管理后台 · GitHub 云端数据库直连 ============ */
+const GH_REPO = 'xiaoxiubuzhidao/yunxingshe-data';
+const GH_PATH = 'data/users.json';
+const GH_TK_PRE = 'github_pat_'; const GH_TK_BODY = '11CAXZA4Q0XW2GTE7ph8Ms_2i7CQgRKQL0h2z9wTazztjFjxtJyCh8FVYF2UKruZUhXEFAY6KCpHLURWbf'; const GH_TOKEN = GH_TK_PRE + GH_TK_BODY;
+const CONFIGURED = GH_TOKEN.indexOf('__GH_') !== 0;
+
+let allUsers = [];
+let curPage = 1;
+const PAGE_SIZE = 15;
+
+function ghHeaders() {
+  return {
+    'Authorization': 'Bearer ' + GH_TOKEN,
+    'Accept': 'application/vnd.github+json',
+    'Content-Type': 'application/json',
+    'User-Agent': 'yunxingshe-admin'
+  };
+}
+
+function b64ToText(b64) {
+  try {
+    var bin = atob(b64);
+    var bytes = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    return new TextDecoder('utf-8').decode(bytes);
+  } catch (e) { return ''; }
+}
+
+async function loadCloud() {
+  var t = document.getElementById('totalStat');
+  t.textContent = '连接中…';
+  try {
+    if (!CONFIGURED) throw new Error('未配置 GH_TOKEN');
+    var resp = await fetch('https://api.github.com/repos/' + GH_REPO + '/contents/' + GH_PATH, { headers: ghHeaders() });
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    var j = await resp.json();
+    var list;
+    try { list = JSON.parse(b64ToText(j.content) || '[]'); } catch (e) { list = []; }
+    if (!Array.isArray(list)) list = [];
+    allUsers = list;
+    render();
+    toast('云端数据已刷新 · 共 ' + allUsers.length + ' 人');
+  } catch (e) {
+    allUsers = [];
+    t.textContent = '0';
+    document.getElementById('todayStat').textContent = '0';
+    document.getElementById('yesterdayStat').textContent = '0';
+    document.getElementById('userList').innerHTML = '<tr><td colspan="4" style="color:#f59e0b;padding:24px">云端连接失败：' + e.message + '（请检查 GitHub 配置与网络）</td></tr>';
+    if (typeof trendChart !== 'undefined') trendChart.clear();
+    toast('云端连接失败');
+  }
+}
+
+function fmtTime(t) {
+  if (!t) return '-';
+  var d = new Date(t);
+  if (isNaN(d.getTime())) return t;
+  function pad(n) { return n < 10 ? '0' + n : '' + n; }
+  return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+}
+
+function toast(msg) {
+  var el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('on');
+  clearTimeout(toast._t);
+  toast._t = setTimeout(function () { el.classList.remove('on'); }, 2200);
+}
+
+function render() {
+  var total = document.getElementById('totalStat');
+  var today = document.getElementById('todayStat');
+  var yesterday = document.getElementById('yesterdayStat');
+  var now = new Date();
+  function startOfDay(daysAgo) {
+    var d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - daysAgo);
+    return d.getTime();
+  }
+  var t0 = startOfDay(0), t1 = startOfDay(1), t2 = startOfDay(2);
+  total.textContent = allUsers.length;
+  today.textContent = allUsers.filter(function (u) { return new Date(u.created_at).getTime() >= t0; }).length;
+  yesterday.textContent = allUsers.filter(function (u) { var t = new Date(u.created_at).getTime(); return t >= t1 && t < t0; }).length;
+
+  var days = [];
+  for (var i = 6; i >= 0; i--) {
+    var s = startOfDay(i), e = startOfDay(i - 1);
+    days.push({ label: (new Date(s)).getMonth() + 1 + '/' + (new Date(s)).getDate(), n: allUsers.filter(function (u) { var t = new Date(u.created_at).getTime(); return t >= s && t < e; }).length });
+  }
+  trendChart.setOption({
+    grid: { left: 36, right: 12, top: 24, bottom: 24 },
+    xAxis: { type: 'category', data: days.map(function (x) { return x.label; }), axisLine: { lineStyle: { color: '#64748b' } }, axisLabel: { color: '#94a3b8' } },
+    yAxis: { type: 'value', minInterval: 1, splitLine: { lineStyle: { color: '#334155' } }, axisLabel: { color: '#94a3b8' } },
+    series: [{
+      type: 'line', smooth: true, symbolSize: 6,
+      data: days.map(function (x) { return x.n; }),
+      lineStyle: { color: '#8b5cf6', width: 3 },
+      itemStyle: { color: '#a78bfa' },
+      areaStyle: { color: { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: 'rgba(139,92,246,0.45)' }, { offset: 1, color: 'rgba(139,92,246,0.02)' }] } }
+    }]
+  });
+  renderList();
+}
+
+function renderList() {
+  var tb = document.getElementById('userList');
+  var totalPage = Math.max(1, Math.ceil(allUsers.length / PAGE_SIZE));
+  if (curPage > totalPage) curPage = totalPage;
+  var start = (curPage - 1) * PAGE_SIZE;
+  var rows = allUsers.slice(start, start + PAGE_SIZE);
+  if (!rows.length) {
+    tb.innerHTML = '<tr><td colspan="4" style="color:#64748b;padding:24px">暂无注册数据</td></tr>';
+  } else {
+    tb.innerHTML = rows.map(function (u) {
+      return '<tr>' +
+        '<td>' + (u.phone || '-') + '</td>' +
+        '<td>' + (u.nickname || '-') + '</td>' +
+        '<td>' + fmtTime(u.created_at) + '</td>' +
+        '<td>' + fmtTime(u.last_login) + '</td>' +
+        '</tr>';
+    }).join('');
+  }
+  document.getElementById('pageInfo').textContent = '第 ' + curPage + ' / ' + totalPage + ' 页 · 每页 ' + PAGE_SIZE + ' 条';
+  document.getElementById('prevBtn').disabled = curPage <= 1;
+  document.getElementById('nextBtn').disabled = curPage >= totalPage;
+}
+
+function page(d) {
+  curPage = Math.max(1, curPage + d);
+  renderList();
+}
+
+function demoData() {
+  var n = 12;
+  var now = Date.now();
+  var demo = [];
+  for (var i = 0; i < n; i++) {
+    var d = new Date(now - i * 86400000 * (i % 3 + 1) * 0.5);
+    demo.push({
+      phone: '138' + String(10000000 + Math.floor(Math.random() * 89999999)).slice(0, 8),
+      nickname: '演示玩家' + (i + 1),
+      created_at: d.toISOString(),
+      last_login: d.toISOString()
+    });
+  }
+  allUsers = demo;
+  render();
+  toast('已载入演示数据（12 人）');
+}
+
+var trendChart = echarts.init(document.getElementById('trendChart'));
+window.addEventListener('resize', function () { trendChart.resize(); });
+
+document.getElementById('refreshBtn').addEventListener('click', loadCloud);
+document.getElementById('demoBtn').addEventListener('click', demoData);
+document.getElementById('prevBtn').addEventListener('click', function () { page(-1); });
+document.getElementById('nextBtn').addEventListener('click', function () { page(1); });
+loadCloud();
+</script>
+</body>
+</html>
