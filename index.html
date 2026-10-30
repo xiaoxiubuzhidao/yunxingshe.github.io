@@ -588,8 +588,20 @@ document.getElementById('annClose').addEventListener('click', function () {
 
 /* ============ 封禁检查（后台封禁后玩家端同步显示） ============ */
 
+let _banWatch = null;
+
+function _stopBanWatch() {
+  if (_banWatch) { clearInterval(_banWatch); _banWatch = null; }
+}
+
+let _banWatch = null;
+
+function _stopBanWatch() {
+  if (_banWatch) { clearInterval(_banWatch); _banWatch = null; }
+}
+
 async function checkBan() {
-  if (!currentUser) return;
+  if (!currentUser) return false;
   try {
     const j = await ghGet(GH_PATH);
     let list;
@@ -606,12 +618,16 @@ async function checkBan() {
         function pad2(n) { return n < 10 ? '0' + n : '' + n; }
         document.getElementById('banUntil').textContent = dt.getFullYear() + '-' + pad2(dt.getMonth() + 1) + '-' + pad2(dt.getDate()) + ' ' + pad2(dt.getHours()) + ':' + pad2(dt.getMinutes());
         document.getElementById('banOverlay').classList.remove('hide');
+        if (!_banWatch) _banWatch = setInterval(checkBan, 30000);
         return true;
       }
     }
   } catch (e) {}
+  document.getElementById('banOverlay').classList.add('hide');
+  _stopBanWatch();
   return false;
 }
+
 document.getElementById('banLogout').addEventListener('click', function () {
   document.getElementById('banOverlay').classList.add('hide');
   logout();
