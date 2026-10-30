@@ -79,7 +79,7 @@ footer .fline svg{width:16px;height:16px}
 <div class="wrap">
   <div class="top">
     <div class="logo"><span class="star"><svg viewBox="0 0 24 24"><path d="M12 2l2.6 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.2 6.2 20.6l1.4-6.8L2.5 9.1l6.9-.8z" fill="#fff"/></svg></span>云星社</div>
-    <span class="ver">v1.3.1 · 安卓版</span>
+    <span class="ver">v1.3.2 · 安卓版</span>
   </div>
 
   <div class="hero">
@@ -90,11 +90,11 @@ footer .fline svg{width:16px;height:16px}
     <div class="dl">
       <div class="dl-main">
         <div class="apk-ic"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3"/><path d="M7 8l5-5 5 5"/><path d="M4 16v4a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-4"/></svg></div>
-        <div class="info"><b>云星社 Android 版</b><span>v1.3.1 · 3.0 MB · 支持 Android 8.0+</span></div>
+        <div class="info"><b>云星社 Android 版</b><span>v1.3.2 · 3.0 MB · 支持 Android 8.0+</span></div>
         <button class="dl-btn" onclick="startDownload()">立即下载</button>
       </div>
       <div class="dl-sub">
-        <a href="https://xiaoxiubuzhidao.github.io/yunxingshe.github.io/apk/yunxingshe_v1.3.1.apk">备用直链下载</a>
+        <a href="https://xiaoxiubuzhidao.github.io/yunxingshe.github.io/apk/yunxingshe_v1.3.2.apk">备用直链下载</a>
         <a href="https://github.com/xiaoxiubuzhidao/yunxingshe.github.io" target="_blank" rel="noopener">GitHub 仓库</a>
       </div>
       <div class="dl-note">下载安装后，后续版本在 App 内自动更新，无需重新下载</div>
@@ -133,7 +133,7 @@ footer .fline svg{width:16px;height:16px}
     <div class="sub">持续迭代，越来越好</div>
     <div class="notes">
       <div class="note">
-        <span class="vtag">v1.3.1</span>
+        <span class="vtag">v1.3.2</span>
         <ul>
           <li>新增注册与登录：进入前需手机号注册 / 登录，自动记住账号</li>
           <li>全新设置页：账号信息、本地缓存管理、退出登录</li>
@@ -175,16 +175,16 @@ footer .fline svg{width:16px;height:16px}
 function startDownload() {
   // 主：GitHub Pages 直链（已验证）；失败依次切换 jsDelivr CDN / raw
   var urls = [
-    'https://xiaoxiubuzhidao.github.io/yunxingshe.github.io/apk/yunxingshe_v1.3.1.apk',
-    'https://cdn.jsdelivr.net/gh/xiaoxiubuzhidao/yunxingshe.github.io@main/apk/yunxingshe_v1.3.1.apk',
-    'https://raw.githubusercontent.com/xiaoxiubuzhidao/yunxingshe.github.io/main/apk/yunxingshe_v1.3.1.apk'
+    'https://xiaoxiubuzhidao.github.io/yunxingshe.github.io/apk/yunxingshe_v1.3.2.apk',
+    'https://cdn.jsdelivr.net/gh/xiaoxiubuzhidao/yunxingshe.github.io@main/apk/yunxingshe_v1.3.2.apk',
+    'https://raw.githubusercontent.com/xiaoxiubuzhidao/yunxingshe.github.io/main/apk/yunxingshe_v1.3.2.apk'
   ];
   var idx = 0;
   function tryNext() {
     if (idx >= urls.length) { alert('下载失败，请检查网络后重试'); return; }
     var a = document.createElement('a');
     a.href = urls[idx++];
-    a.download = '云星社_v1.3.1.apk';
+    a.download = '云星社_v1.3.2.apk';
     a.rel = 'noopener';
     document.body.appendChild(a);
     a.click();
