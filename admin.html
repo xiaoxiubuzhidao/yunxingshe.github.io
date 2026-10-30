@@ -45,7 +45,7 @@ th{color:#8A90A6;font-weight:600;font-size:12px;background:#FAFBFE}
     <div style="display:flex;gap:10px">
       <button class="btn gray" onclick="loadDemo()">载入演示数据</button>
       <button class="btn" onclick="loadCloud()">刷新云端数据</button>
-<button class="btn" style="background:#16a34a" onclick="publishUpdate()">发布更新</button>
+<button class="btn" style="background:#16a34a" onclick="publishAnnouncement()">发布公告</button>
     </div>
   </div>
 
@@ -177,20 +177,20 @@ async function clearBan(phone) {
   } catch (e) { alert('操作失败：' + e.message); }
 }
 
-async function publishUpdate() {
-  var ver = prompt('发布新版本：\n输入版本号（如 1.3.0）。\n在线玩家将收到更新弹窗，离线玩家下次上线自动提示。', '');
-  if (ver === null || ver === '') return;
-  if (!/^\d+\.\d+\.\d+$/.test(ver.trim())) { alert('版本号格式错误，示例：1.3.0'); return; }
-  ver = ver.trim();
+async function publishAnnouncement() {
+  var text = prompt('发布公告：\n输入公告内容（换行用回车）。\n玩家下次打开 App 会弹出显示，并标注发布时间。', '');
+  if (text === null || text.trim() === '') return;
+  text = text.trim();
   try {
-    var url = 'https://api.github.com/repos/xiaoxiubuzhidao/yunxingshe.github.io/contents/app_version.json';
+    var url = 'https://api.github.com/repos/xiaoxiubuzhidao/yunxingshe.github.io/contents/announcement.json';
     var gr = await fetch(url, { headers: ghHeaders() });
     var sha = null;
     if (gr.ok) { var gj = await gr.json(); sha = gj.sha; }
-    var body = { message: 'publish v' + ver, content: btoa(unescape(encodeURIComponent('{"version":"' + ver + '"}'))), sha: sha };
+    var payload = { id: String(Date.now()), text: text, published_at: new Date().toISOString() };
+    var body = { message: 'announcement', content: btoa(unescape(encodeURIComponent(JSON.stringify(payload)))), sha: sha };
     var wr = await fetch(url, { method: 'PUT', headers: ghHeaders(), body: JSON.stringify(body) });
     if (!wr.ok) throw new Error('HTTP ' + wr.status);
-    toast('已发布 v' + ver + '，玩家将收到更新提示');
+    toast('公告已发布，玩家下次打开 App 将弹出显示');
   } catch (e) { alert('发布失败：' + e.message); }
 }
 
