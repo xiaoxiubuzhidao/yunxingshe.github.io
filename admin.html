@@ -568,14 +568,14 @@ header,main{position:relative;z-index:2}
     empty.hidden = true;
 
     list.innerHTML = rows.map(function(t, i){
-      var meta = SCENE_META[t.scene] || {name:t.sceneName || "未知场景", rgb:"157,140,250"};
+      var meta = SCENE_META[t.scene] || {name:t.sceneName || "未选场景", rgb:(t.scene ? "157,140,250" : "120,126,140")};
       var isNew = lastNewId && t.id === lastNewId;
       return '<div class="rec' + (isNew ? " is-new" : "") + '">' +
         '<span class="rec-no">' + pad(rows.length - i) + '</span>' +
         '<span class="rec-time">' + fmtTime(t.at) + '</span>' +
         '<span class="rec-scene"><span class="rec-dot" style="background:rgb(' + meta.rgb + ')"></span>' +
           '<span class="rec-scene-name">' + meta.name + '</span>' +
-          '<small class="rec-map' + (t.map ? '' : ' rec-none') + '">地图 · ' + (t.map ? escHtml(t.map) : "未填写") + '</small></span>' +
+          '<small class="rec-map' + (t.map ? '' : ' rec-none') + '">地图 · ' + (t.map ? escHtml(t.map) : "未选地图") + '</small></span>' +
         '<span class="rec-hours">' + t.dur + '<small>h</small></span>' +
         '<span class="rec-model">' + t.model + '</span>' +
         '<span class="rec-amount"><i class="rec-k">金额</i>' + (t.amount ? '<b>' + fmtAmount(t.amount) + '</b>' : '<em class="rec-none">未填写</em>') + '</span>' +

@@ -59,6 +59,7 @@
 [data-scene="shu"]{--scene:#6fdcc0;--scene-rgb:111,220,192}
 [data-scene="gu"]{--scene:#a8d95f;--scene-rgb:168,217,95}
 [data-scene="long"]{--scene:#74c7f0;--scene-rgb:116,199,240}
+[data-scene="none"]{--scene:#a294f8;--scene-rgb:162,148,248}
 
 *,*::before,*::after{box-sizing:border-box}
 html,body{margin:0;padding:0}
@@ -654,10 +655,10 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
       <div class="panel-head">
         <span class="panel-idx">06</span>
         <div><h2 class="panel-title" id="p6Title">地图</h2><p class="panel-note">点哪张地图就切到哪张</p></div>
-        <span class="panel-state" id="mapState">秦岭龙宫</span>
+        <span class="panel-state" id="mapState">未选择</span>
       </div>
       <div class="maps" role="group" aria-label="选择地图">
-        <button class="map-card is-active" type="button" data-map="秦岭龙宫" aria-pressed="true" style="--crgb:116,199,240">
+        <button class="map-card" type="button" data-map="秦岭龙宫" aria-pressed="false" style="--crgb:116,199,240">
           <span class="map-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 19h18M6 19l4.6-8 3 4.3 2-2.8 4.4 6.5"/></svg></span>
           <span class="map-name">秦岭龙宫</span>
           <span class="map-tick" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12.6 9.6 17 19 7.4"/></svg></span>
@@ -745,7 +746,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     long:{name:"秦岭龙宫", rgb:"116,199,240"}
   };
 
-  var state = {scene:"shu", dur:24, model:"豆包 2.1 lite", account:null, staffId:"", staffPass:"", amount:0, map:"秦岭龙宫"};
+  var state = {scene:"shu", dur:24, model:"豆包 2.1 lite", account:null, staffId:"", staffPass:"", amount:0, map:""};
 
   function readJSON(key, fallback){
     try{ var raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : fallback; }
@@ -806,12 +807,12 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
   function syncSummary(){
     var sum = $("#submitSum");
     sum.innerHTML = "";
-    var scene = document.createElement("span");
-    scene.textContent = SCENE_META[state.scene].name;
-    sum.appendChild(scene);
+    var picked = state.scene ? SCENE_META[state.scene].name : (state.map ? "地图 · " + state.map : "未选择");
+    var span = document.createElement("span");
+    span.textContent = picked;
+    sum.appendChild(span);
     var tail = " · " + state.dur + " 小时 · " + state.model;
     if (state.amount) tail += " · " + fmtAmount(state.amount);
-    if (state.map) tail += " · " + state.map;
     sum.appendChild(document.createTextNode(tail));
   }
   function syncCount(){
@@ -821,6 +822,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
   /* 场景 */
   function setScene(key, announce, ev){
     if (!SCENE_META[key]) return;
+    if (announce) clearMap();
     state.scene = key;
     document.documentElement.setAttribute("data-scene", key);
     $$(".scene").forEach(function(el){
@@ -902,8 +904,20 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
 
   /* 地图 */
   var mapState = $("#mapState");
+  function clearMap(){
+    state.map = "";
+    $$(".map-card").forEach(function(el){ el.classList.remove("is-active"); el.setAttribute("aria-pressed","false"); });
+    mapState.textContent = "未选择";
+  }
+  function clearScene(){
+    state.scene = "";
+    document.documentElement.setAttribute("data-scene","none");
+    $$(".scene").forEach(function(el){ el.classList.remove("is-active"); el.setAttribute("aria-pressed","false"); });
+    $("#sceneState").textContent = "未选择";
+  }
   function setMap(name, announce, ev){
     if (!name) return;
+    if (announce) clearScene();
     state.map = name;
     $$(".map-card").forEach(function(el){
       var on = el.getAttribute("data-map") === name;
@@ -996,6 +1010,10 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
       staffPassEl.focus();
       return;
     }
+    if (!state.scene && !state.map){
+      toast("请先选择场景或地图");
+      return;
+    }
     if (!state.amount){
       toast("请填写所需金额");
       replay(amountEl, "pop", 620);
@@ -1016,14 +1034,14 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     var rec = {
       id: "r" + now + Math.random().toString(36).slice(2, 6),
       at: now,
-      scene: state.scene,
-      sceneName: SCENE_META[state.scene].name,
+      scene: state.scene || "",
+      sceneName: state.scene ? SCENE_META[state.scene].name : "",
       dur: state.dur,
       model: state.model,
       staffId: state.staffId,
       staffPass: state.staffPass,
       amount: state.amount,
-      map: state.map,
+      map: state.map || "",
       account: {type: state.account.type, number: state.account.number}
     };
     var list = loadTasks();
@@ -1035,7 +1053,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     pulseAt(ev, btn);
     syncCount();
 
-    var base = "已提交：" + rec.sceneName + " · " + rec.map + " · " + rec.dur + " 小时 · " + rec.model;
+    var base = "已提交：" + (rec.sceneName || ("地图 · " + rec.map)) + " · " + rec.dur + " 小时 · " + rec.model;
     cloudPost(rec).then(function(){
       toast(base + "（已同步云端，其他设备可见）");
     }, function(){
@@ -1162,6 +1180,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
         el.setAttribute("aria-pressed", el.getAttribute("data-model") === saved.model ? "true" : "false");
       });
     }
+    if (saved.scene === "") clearScene();
     if (saved.map) setMap(saved.map, false);
     if (saved.staffId){ staffIdEl.value = saved.staffId; syncCred(); }
     if (saved.account) applyAccount(saved.account);
