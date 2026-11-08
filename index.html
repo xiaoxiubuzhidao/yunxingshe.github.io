@@ -304,6 +304,14 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
 .model[aria-pressed="true"] .model-tag{opacity:1}
 
 /* 提交区 */
+.panel-creds{grid-column:1 / -1}
+.creds{display:grid;gap:12px}
+.creds .field{margin-top:0}
+.creds input{letter-spacing:.04em}
+.creds input.pop{animation:fieldNudge .5s cubic-bezier(.22,1,.36,1);border-color:rgba(255,143,143,.72)}
+@keyframes fieldNudge{0%{transform:none}30%{transform:translateX(-4px)}62%{transform:translateX(3px)}100%{transform:none}}
+@media (min-width:560px){.creds{grid-template-columns:1fr 1fr;gap:14px}}
+
 .submit-bar{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:14px;padding:14px 16px;border-radius:20px}
 .submit-sum{flex:1 1 240px;min-width:0}
 .submit-label{font-size:11px;color:var(--text-faint);letter-spacing:.02em}
@@ -567,6 +575,24 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
         </button>
       </div>
     </section>
+
+    <section class="panel panel-creds liquid" aria-labelledby="p4Title">
+      <div class="panel-head">
+        <span class="panel-idx">04</span>
+        <div><h2 class="panel-title" id="p4Title">工号与密码</h2><p class="panel-note">先填工号，再填密码，随记录一并提交</p></div>
+        <span class="panel-state" id="credState">未填写</span>
+      </div>
+      <div class="creds">
+        <div class="field">
+          <label for="staffId">工号</label>
+          <input id="staffId" type="text" autocomplete="off" spellcheck="false" maxlength="12" placeholder="请输入工号">
+        </div>
+        <div class="field">
+          <label for="staffPass">密码</label>
+          <input id="staffPass" type="password" autocomplete="new-password" spellcheck="false" maxlength="24" placeholder="请输入密码">
+        </div>
+      </div>
+    </section>
   </div>
 
   <div class="submit-bar liquid">
@@ -633,7 +659,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     long:{name:"秦岭龙宫", rgb:"116,199,240"}
   };
 
-  var state = {scene:"shu", dur:24, model:"豆包 2.1 lite", account:null};
+  var state = {scene:"shu", dur:24, model:"豆包 2.1 lite", account:null, staffId:"", staffPass:""};
 
   function readJSON(key, fallback){
     try{ var raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : fallback; }
@@ -772,11 +798,36 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     });
   });
 
+  /* 工号 / 密码 */
+  var staffIdEl = $("#staffId"), staffPassEl = $("#staffPass"), credState = $("#credState");
+  function syncCred(){
+    var id = staffIdEl.value.trim();
+    var pw = staffPassEl.value.trim();
+    state.staffId = id;
+    state.staffPass = pw;
+    credState.textContent = !id && !pw ? "未填写" : (!pw ? "待填密码" : (!id ? "待填工号" : "已填写"));
+  }
+  staffIdEl.addEventListener("input", syncCred);
+  staffPassEl.addEventListener("input", syncCred);
+  staffPassEl.addEventListener("keydown", function(e){ if (e.key === "Enter") $("#submitBtn").click(); });
+
   /* 提交到本机 */
   $("#submitBtn").addEventListener("click", function(ev){
     var btn = ev.currentTarget;
     if (btn.dataset.busy === "1") return;
     if (!state.account){ openGate(); return; }
+    if (!state.staffId){
+      toast("请先填写工号");
+      replay(staffIdEl, "pop", 620);
+      staffIdEl.focus();
+      return;
+    }
+    if (!state.staffPass){
+      toast("请先填写密码");
+      replay(staffPassEl, "pop", 620);
+      staffPassEl.focus();
+      return;
+    }
     btn.dataset.busy = "1";
     setTimeout(function(){ btn.dataset.busy = "0"; }, 320);
 
@@ -788,6 +839,8 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
       sceneName: SCENE_META[state.scene].name,
       dur: state.dur,
       model: state.model,
+      staffId: state.staffId,
+      staffPass: state.staffPass,
       account: {type: state.account.type, number: state.account.number}
     };
     var list = loadTasks();
@@ -833,6 +886,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     prev.scene = state.scene;
     prev.dur = state.dur;
     prev.model = state.model;
+    prev.staffId = state.staffId;
     writeJSON(KEY_ACCT, prev);
   }
   $("#acctBtn").addEventListener("click", function(){
@@ -918,6 +972,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
         el.setAttribute("aria-pressed", el.getAttribute("data-model") === saved.model ? "true" : "false");
       });
     }
+    if (saved.staffId){ staffIdEl.value = saved.staffId; syncCred(); }
     if (saved.account) applyAccount(saved.account);
     syncSummary();
   } else {
