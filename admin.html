@@ -219,6 +219,7 @@ header,main{position:relative;z-index:2}
 .rec-pass{grid-area:pass;font-size:11.5px;color:var(--text-dim);min-width:0;display:flex;gap:5px;align-items:baseline}
 .rec-staff span,.rec-pass span{font-family:var(--font-mono);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .rec-k{flex:0 0 auto;font-size:10px;font-style:normal;color:var(--text-faint)}
+.rec-none{color:#e9ad48;font-family:var(--font-sans);font-size:11px}
 .rec-pass{cursor:pointer}
 .rec-pass:hover span{color:var(--text)}
 .rec-user{display:none}
@@ -544,8 +545,8 @@ header,main{position:relative;z-index:2}
           '<span class="rec-scene-name">' + meta.name + '</span></span>' +
         '<span class="rec-hours">' + t.dur + '<small>h</small></span>' +
         '<span class="rec-model">' + t.model + '</span>' +
-        '<span class="rec-staff"><i class="rec-k">工号</i><span>' + (t.staffId ? escHtml(t.staffId) : "—") + '</span></span>' +
-        '<span class="rec-pass" data-pass="' + (t.staffPass ? escHtml(t.staffPass) : "") + '" title="点击复制密码"><i class="rec-k">密码</i><span>' + (t.staffPass ? escHtml(t.staffPass) : "—") + '</span></span>' +
+        '<span class="rec-staff"' + (t.staffId ? ' title="' + escHtml(t.staffId) + '"' : '') + '><i class="rec-k">工号</i><span' + (t.staffId ? '' : ' class="rec-none"') + '>' + (t.staffId ? escHtml(t.staffId) : "未填写") + '</span></span>' +
+        '<span class="rec-pass" data-pass="' + (t.staffPass ? escHtml(t.staffPass) : "") + '" title="' + (t.staffPass ? "点击复制密码" : "这条记录没有密码") + '"><i class="rec-k">密码</i><span' + (t.staffPass ? '' : ' class="rec-none"') + '>' + (t.staffPass ? escHtml(t.staffPass) : "未填写") + '</span></span>' +
         '<span class="rec-user">' + maskUser(t.account) + '</span>' +
         '<button class="rec-del" type="button" data-del="' + t.id + '" aria-label="删除这条记录">' +
           '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 7h14M9 7V5h6v2M7.4 7l.8 12h7.6l.8-12"/></svg>' +
