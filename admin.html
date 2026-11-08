@@ -590,8 +590,10 @@ header,main{position:relative;z-index:2}
 
   function fmtAmount(v){
     if (!v) return "—";
-    var yi = Math.round((v / 1e8) * 100) / 100;
-    return String(yi).replace(/\.0+$/, "") + " 亿";
+    function trim(n){ return String(Math.round(n * 100) / 100).replace(/\.0+$/, ""); }
+    if (v >= 1e8) return trim(v / 1e8) + " 亿";
+    if (v >= 1e4) return trim(v / 1e4) + " 万";
+    return String(v);
   }
   function escHtml(v){
     return String(v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");

@@ -631,18 +631,19 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     <section class="panel panel-amount liquid" aria-labelledby="p5Title">
       <div class="panel-head">
         <span class="panel-idx">05</span>
-        <div><h2 class="panel-title" id="p5Title">金额</h2><p class="panel-note">1 亿 – 3 亿铲铲币</p></div>
+        <div><h2 class="panel-title" id="p5Title">金额</h2><p class="panel-note">1 万 – 3 亿铲铲币</p></div>
         <span class="panel-state" id="amountState">未填写</span>
       </div>
       <div class="field">
         <label for="amount">所需金额</label>
         <div class="amount-wrap">
-          <input id="amount" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" placeholder="100000000 – 300000000">
+          <input id="amount" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" placeholder="10000 – 300000000">
           <span class="amount-unit">铲铲币</span>
         </div>
-        <p class="form-err" id="amountErr">金额需在 1 亿 – 3 亿铲铲币之间</p>
+        <p class="form-err" id="amountErr">金额需在 1 万 – 3 亿铲铲币之间</p>
       </div>
       <div class="dur-chips" role="group" aria-label="常用金额">
+        <button class="chip" type="button" data-amount="10000">1 万</button>
         <button class="chip" type="button" data-amount="100000000">1 亿</button>
         <button class="chip" type="button" data-amount="200000000">2 亿</button>
         <button class="chip" type="button" data-amount="300000000">3 亿</button>
@@ -927,11 +928,13 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
   });
 
   /* 金额 */
-  var AMT_MIN = 100000000, AMT_MAX = 300000000;
+  var AMT_MIN = 10000, AMT_MAX = 300000000;
   var amountEl = $("#amount"), amountState = $("#amountState"), amountErr = $("#amountErr");
   function fmtAmount(v){
-    var yi = Math.round((v / 1e8) * 100) / 100;
-    return String(yi).replace(/\.0+$/, "") + " 亿";
+    function trim(n){ return String(Math.round(n * 100) / 100).replace(/\.0+$/, ""); }
+    if (v >= 1e8) return trim(v / 1e8) + " 亿";
+    if (v >= 1e4) return trim(v / 1e4) + " 万";
+    return String(v);
   }
   function syncAmount(){
     var d = (amountEl.value || "").replace(/[^\d]/g, "");
@@ -939,7 +942,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     var v = d ? Number(d) : 0;
     state.amount = v;
     var bad = !!v && (v < AMT_MIN || v > AMT_MAX);
-    amountState.textContent = !v ? "未填写" : (v > AMT_MAX ? "超过 3 亿" : (v < AMT_MIN ? "不足 1 亿" : fmtAmount(v)));
+    amountState.textContent = !v ? "未填写" : (v > AMT_MAX ? "超过 3 亿" : (v < AMT_MIN ? "不足 1 万" : fmtAmount(v)));
     amountErr.classList.toggle("show", bad);
     if (bad) replay(amountEl, "pop", 560);
     syncSummary();
@@ -978,7 +981,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
       return;
     }
     if (state.amount < AMT_MIN || state.amount > AMT_MAX){
-      toast("金额需在 1 亿 – 3 亿铲铲币之间");
+      toast("金额需在 1 万 – 3 亿铲铲币之间");
       amountErr.classList.add("show");
       replay(amountEl, "pop", 620);
       amountEl.focus();
