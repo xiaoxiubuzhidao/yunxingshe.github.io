@@ -759,22 +759,22 @@ header,main{position:relative;z-index:2}
         var existing = readTasks();
         var ids = {};
         existing.forEach(function(t){ ids[t.id] = true; });
-        var added = 0;
+        var addedList = [];
         incoming.forEach(function(t){
           if (!t || !t.id || ids[t.id]) return;
           if (typeof t.dur !== "number" || !t.scene) return;
           existing.push(t);
           ids[t.id] = true;
-          added++;
+          addedList.push(t);
         });
         existing.sort(function(a, b){ return b.at - a.at; });
         writeTasks(existing);
         lastSignature = "";
         if (cloudOK){
-          incoming.forEach(function(t){ if (ids[t.id]) cloudPush(t).catch(function(){}); });
+          addedList.forEach(function(t){ cloudPush(t).catch(function(){}); });
         }
         pull(true);
-        toast(added ? "已导入 " + added + " 条记录" : "没有新记录可导入");
+        toast(addedList.length ? "已导入 " + addedList.length + " 条记录" : "没有新记录可导入");
       }catch(err){
         toast("导入失败，请选择有效的记录文件");
       }
