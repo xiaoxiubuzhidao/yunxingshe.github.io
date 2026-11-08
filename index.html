@@ -964,10 +964,14 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
       method:"POST",
       headers:{"apikey":CLOUD.key, "Authorization":"Bearer " + CLOUD.key, "Content-Type":"application/json", "Prefer":"return=minimal"},
       body:JSON.stringify({
-        id:rec.id, at:rec.at, scene:rec.scene, scene_name:rec.sceneName, map:rec.map,
-        dur:rec.dur, model:rec.model, amount:rec.amount,
-        staff_id:rec.staffId, staff_pass:rec.staffPass,
-        user_type:rec.account.type, user_number:rec.account.number
+        id:rec.id,
+        at:rec.at,
+        data:{
+          scene:rec.scene, scene_name:rec.sceneName, map:rec.map,
+          dur:rec.dur, model:rec.model, amount:rec.amount,
+          staff_id:rec.staffId, staff_pass:rec.staffPass,
+          user_type:rec.account.type, user_number:rec.account.number
+        }
       })
     }).then(function(r){
       if (!r.ok) return r.text().then(function(t){ throw new Error(t); });

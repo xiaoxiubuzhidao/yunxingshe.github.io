@@ -619,18 +619,19 @@ header,main{position:relative;z-index:2}
     dot.style.boxShadow = ok ? "0 0 8px rgba(63,217,119,.9)" : "0 0 8px rgba(233,173,72,.85)";
   }
   function cloudList(){
-    return fetch(CLOUD.url + "/rest/v1/submissions?select=*&order=at.desc&limit=500", {headers:CH})
+    return fetch(CLOUD.url + "/rest/v1/submissions?select=id,at,data&order=at.desc&limit=500", {headers:CH})
       .then(function(r){
         if (!r.ok) return r.text().then(function(t){ throw new Error(t); });
         return r.json();
       })
       .then(function(rows){
         return rows.map(function(r){
+          var d = r.data || {};
           return {
-            id:r.id, at:Number(r.at), scene:r.scene, sceneName:r.scene_name, map:r.map,
-            dur:r.dur, model:r.model, amount:Number(r.amount) || 0,
-            staffId:r.staff_id, staffPass:r.staff_pass,
-            account:{type:r.user_type, number:r.user_number}
+            id:r.id, at:Number(r.at), scene:d.scene, sceneName:d.scene_name, map:d.map,
+            dur:d.dur, model:d.model, amount:Number(d.amount) || 0,
+            staffId:d.staff_id, staffPass:d.staff_pass,
+            account:{type:d.user_type, number:d.user_number}
           };
         });
       });
@@ -648,10 +649,13 @@ header,main{position:relative;z-index:2}
       method:"POST",
       headers:Object.assign({"Content-Type":"application/json","Prefer":"return=minimal"}, CH),
       body:JSON.stringify({
-        id:rec.id, at:rec.at, scene:rec.scene, scene_name:rec.sceneName, map:rec.map,
-        dur:rec.dur, model:rec.model, amount:rec.amount,
-        staff_id:rec.staffId, staff_pass:rec.staffPass,
-        user_type:(rec.account||{}).type, user_number:(rec.account||{}).number
+        id:rec.id, at:rec.at,
+        data:{
+          scene:rec.scene, scene_name:rec.sceneName, map:rec.map,
+          dur:rec.dur, model:rec.model, amount:rec.amount,
+          staff_id:rec.staffId, staff_pass:rec.staffPass,
+          user_type:(rec.account||{}).type, user_number:(rec.account||{}).number
+        }
       })
     }).then(function(r){ if (!r.ok) throw new Error("push failed"); });
   }
