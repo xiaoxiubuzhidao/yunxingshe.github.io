@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>小修科技 · 网络诊断</title>
+<style>
+  :root{--bg:#0b0d12;--text:#eef1f7;--dim:#8b93a5;--ok:#3fd977;--bad:#e9ad48;--line:rgba(255,255,255,.12)}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{min-height:100vh;background:var(--bg);color:var(--text);font-family:"PingFang SC","HarmonyOS Sans SC","Microsoft YaHei",sans-serif;padding:20px 16px 40px}
+  h1{font-size:17px;font-weight:700;margin-bottom:6px}
+  p.lead{font-size:12.5px;color:var(--dim);line-height:1.7;margin-bottom:18px}
+  .card{border:1px solid var(--line);border-radius:14px;padding:14px 15px;margin-bottom:12px;background:rgba(255,255,255,.04)}
+  .card b{display:block;font-size:13px;margin-bottom:6px}
+  .card span{display:block;font-size:12.5px;line-height:1.7;color:var(--dim);word-break:break-all}
+  .wait{color:var(--dim)}
+  .ok{color:var(--ok)}
+  .bad{color:var(--bad)}
+  .verdict{margin-top:18px;padding:14px;border-radius:14px;font-size:13.5px;line-height:1.75;border:1px solid var(--line)}
+  .verdict.ok{background:rgba(63,217,119,.12);border-color:rgba(63,217,119,.34);color:#9df0bb}
+  .verdict.bad{background:rgba(233,173,72,.12);border-color:rgba(233,173,72,.34);color:#ffd08a}
+  .ua{margin-top:16px;font-size:11px;color:#6b7385;line-height:1.6;word-break:break-all}
+</style>
+</head>
+<body>
+<h1>网络诊断</h1>
+<p class="lead">这一页只做一件事：从你当前这台设备，试着连一下云端数据库。三行结果，看哪一行失败。</p>
+
+<div class="card"><b>1. 云端数据库（Supabase）</b><span id="r1" class="wait">检测中…</span></div>
+<div class="card"><b>2. 本站页面（GitHub Pages）</b><span id="r2" class="wait">检测中…</span></div>
+<div class="card"><b>3. 中转服务</b><span id="r3" class="wait">检测中…</span></div>
+
+<div class="verdict wait" id="verdict">正在检测…</div>
+<div class="ua" id="ua"></div>
+
+<script>
+(function(){
+  var KEY = "sb_publishable_MoKTU1kxS2K0dd8CU9jO3w_ltqNerKu";
+  var URL1 = "https://hqohhkfoonsczqrkrrxa.supabase.co/rest/v1/submissions?select=id&limit=1";
+  var URL2 = "./index.html";
+  var URL3 = "https://api.allorigins.win/raw?url=" + encodeURIComponent(URL1);
+
+  function probe(label, url, headers, out){
+    var done = false;
+    var t0 = Date.now();
+    function finish(ok, msg){
+      if (done) return; done = true;
+      var el = document.getElementById(out);
+      el.className = ok ? "ok" : "bad";
+      el.textContent = (ok ? "成功 · " : "失败 · ") + (Date.now() - t0) + "ms · " + msg;
+    }
+    if (!window.fetch){ finish(false, "浏览器不支持 fetch"); return; }
+    var ctrl = ("AbortController" in window) ? new AbortController() : null;
+    var timer = setTimeout(function(){
+      if (ctrl) ctrl.abort();
+      finish(false, "超过 10 秒没有任何响应");
+    }, 10000);
+    fetch(url, {headers: headers || {}, signal: ctrl ? ctrl.signal : undefined, cache: "no-store"})
+      .then(function(res){
+        clearTimeout(timer);
+        return res.text().then(function(t){
+          finish(true, "HTTP " + res.status + " · " + String(t || "").slice(0, 80));
+        });
+      })
+      .catch(function(err){
+        clearTimeout(timer);
+        finish(false, (err && err.name ? err.name + ": " : "") + (err && err.message ? err.message : "未知错误"));
+      });
+  }
+
+  probe("db", URL1, {"apikey": KEY, "Authorization": "Bearer " + KEY}, "r1");
+  probe("page", URL2, null, "r2");
+  probe("relay", URL3, null, "r3");
+
+  setTimeout(function(){
+    var v = document.getElementById("verdict");
+    var s1 = document.getElementById("r1").className;
+    if (s1 === "ok"){
+      v.className = "verdict ok";
+      v.textContent = "这台设备能连上云端数据库。后台仍显示失败，说明是页面缓存，请用 admin2.html 并清理缓存。";
+    } else {
+      v.className = "verdict bad";
+      v.textContent = "这台设备连不上云端数据库（第 1 行失败）。请把这张截图发给我，并顺手试一下系统自带浏览器（Chrome / Safari）打开本页，对比结果。";
+    }
+  }, 11500);
+
+  document.getElementById("ua").textContent = "设备信息：" + navigator.userAgent;
+})();
+</script>
+</body>
+</html>
