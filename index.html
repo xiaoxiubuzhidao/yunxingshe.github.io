@@ -497,7 +497,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
   <div class="page-head">
     <div>
       <h1>选择并提交</h1>
-      <p>选好场景、时长与模型，提交后写入本机数据库，后台页会自动刷新</p>
+      <p>选好场景、时长与模型，提交记录会保存在这台浏览器里</p>
     </div>
     <span class="head-live"><span class="live-dot"></span>已登录 · 可提交</span>
   </div>
@@ -585,13 +585,13 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
   <div class="local-note">
     <span>本机记录</span><strong id="localCount">0</strong><span>条</span>
     <i class="sep"></i>
-    <span>后台页每 2 秒自动刷新，也可在后台手动刷新</span>
+    <span>记录只存在本机浏览器，可随时导出备份</span>
     <button class="mini-link" id="exportJsonBtn" type="button">导出记录 JSON</button>
   </div>
 
   <footer class="foot">
     <span>小修科技 · 前台提交页，数据写入浏览器本机数据库</span>
-    <span>后台页：小修科技-后台管理.html</span>
+    <span>数据保存在浏览器 localStorage</span>
   </footer>
 </main>
 
@@ -772,7 +772,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     });
   });
 
-  /* 提交 */
+  /* 提交到本机 */
   $("#submitBtn").addEventListener("click", function(ev){
     var btn = ev.currentTarget;
     if (btn.dataset.busy === "1") return;
@@ -801,7 +801,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     toast("已提交：" + rec.sceneName + " · " + rec.dur + " 小时 · " + rec.model);
   });
 
-  /* 导出记录（JSON，可在后台页导入） */
+  /* 导出记录（JSON 备份） */
   $("#exportJsonBtn").addEventListener("click", function(){
     var list = loadTasks();
     if (!list.length){ toast("还没有记录可导出"); return; }
