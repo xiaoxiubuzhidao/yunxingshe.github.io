@@ -312,6 +312,11 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
 @keyframes fieldNudge{0%{transform:none}30%{transform:translateX(-4px)}62%{transform:translateX(3px)}100%{transform:none}}
 @media (min-width:560px){.creds{grid-template-columns:1fr 1fr;gap:14px}}
 
+.panel-amount{grid-column:1 / -1}
+.amount-wrap{position:relative}
+.amount-wrap input{padding-right:78px}
+.amount-unit{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:11.5px;color:var(--text-faint);pointer-events:none}
+
 .submit-bar{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:14px;padding:14px 16px;border-radius:20px}
 .submit-sum{flex:1 1 240px;min-width:0}
 .submit-label{font-size:11px;color:var(--text-faint);letter-spacing:.02em}
@@ -593,6 +598,27 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
         </div>
       </div>
     </section>
+
+    <section class="panel panel-amount liquid" aria-labelledby="p5Title">
+      <div class="panel-head">
+        <span class="panel-idx">05</span>
+        <div><h2 class="panel-title" id="p5Title">金额</h2><p class="panel-note">1 亿 – 3 亿铲铲币</p></div>
+        <span class="panel-state" id="amountState">未填写</span>
+      </div>
+      <div class="field">
+        <label for="amount">所需金额</label>
+        <div class="amount-wrap">
+          <input id="amount" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" placeholder="100000000 – 300000000">
+          <span class="amount-unit">铲铲币</span>
+        </div>
+        <p class="form-err" id="amountErr">金额需在 1 亿 – 3 亿铲铲币之间</p>
+      </div>
+      <div class="dur-chips" role="group" aria-label="常用金额">
+        <button class="chip" type="button" data-amount="100000000">1 亿</button>
+        <button class="chip" type="button" data-amount="200000000">2 亿</button>
+        <button class="chip" type="button" data-amount="300000000">3 亿</button>
+      </div>
+    </section>
   </div>
 
   <div class="submit-bar liquid">
@@ -659,7 +685,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     long:{name:"秦岭龙宫", rgb:"116,199,240"}
   };
 
-  var state = {scene:"shu", dur:24, model:"豆包 2.1 lite", account:null, staffId:"", staffPass:""};
+  var state = {scene:"shu", dur:24, model:"豆包 2.1 lite", account:null, staffId:"", staffPass:"", amount:0};
 
   function readJSON(key, fallback){
     try{ var raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : fallback; }
@@ -723,7 +749,9 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     var scene = document.createElement("span");
     scene.textContent = SCENE_META[state.scene].name;
     sum.appendChild(scene);
-    sum.appendChild(document.createTextNode(" · " + state.dur + " 小时 · " + state.model));
+    var tail = " · " + state.dur + " 小时 · " + state.model;
+    if (state.amount) tail += " · " + fmtAmount(state.amount);
+    sum.appendChild(document.createTextNode(tail));
   }
   function syncCount(){
     $("#localCount").textContent = String(loadTasks().length);
@@ -811,6 +839,34 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
   staffPassEl.addEventListener("input", syncCred);
   staffPassEl.addEventListener("keydown", function(e){ if (e.key === "Enter") $("#submitBtn").click(); });
 
+  /* 金额 */
+  var AMT_MIN = 100000000, AMT_MAX = 300000000;
+  var amountEl = $("#amount"), amountState = $("#amountState"), amountErr = $("#amountErr");
+  function fmtAmount(v){
+    var yi = Math.round((v / 1e8) * 100) / 100;
+    return String(yi).replace(/\.0+$/, "") + " 亿";
+  }
+  function syncAmount(){
+    var d = (amountEl.value || "").replace(/[^\d]/g, "");
+    amountEl.value = d ? d.replace(/\B(?=(\d{3})+(?!\d))/g, ",") : "";
+    var v = d ? Number(d) : 0;
+    state.amount = v;
+    var bad = !!v && (v < AMT_MIN || v > AMT_MAX);
+    amountState.textContent = !v ? "未填写" : (v > AMT_MAX ? "超过 3 亿" : (v < AMT_MIN ? "不足 1 亿" : fmtAmount(v)));
+    amountErr.classList.toggle("show", bad);
+    if (bad) replay(amountEl, "pop", 560);
+    syncSummary();
+  }
+  amountEl.addEventListener("input", syncAmount);
+  $$("[data-amount]").forEach(function(btn){
+    btn.addEventListener("click", function(ev){
+      amountEl.value = btn.getAttribute("data-amount");
+      syncAmount();
+      pulseAt(ev, btn);
+      replay(btn, "pop", 460);
+    });
+  });
+
   /* 提交到本机 */
   $("#submitBtn").addEventListener("click", function(ev){
     var btn = ev.currentTarget;
@@ -828,6 +884,19 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
       staffPassEl.focus();
       return;
     }
+    if (!state.amount){
+      toast("请填写所需金额");
+      replay(amountEl, "pop", 620);
+      amountEl.focus();
+      return;
+    }
+    if (state.amount < AMT_MIN || state.amount > AMT_MAX){
+      toast("金额需在 1 亿 – 3 亿铲铲币之间");
+      amountErr.classList.add("show");
+      replay(amountEl, "pop", 620);
+      amountEl.focus();
+      return;
+    }
     btn.dataset.busy = "1";
     setTimeout(function(){ btn.dataset.busy = "0"; }, 320);
 
@@ -841,6 +910,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
       model: state.model,
       staffId: state.staffId,
       staffPass: state.staffPass,
+      amount: state.amount,
       account: {type: state.account.type, number: state.account.number}
     };
     var list = loadTasks();
