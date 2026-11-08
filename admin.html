@@ -209,9 +209,10 @@ header,main{position:relative;z-index:2}
 @keyframes recIn{0%{opacity:0;transform:translateY(-10px) scale(.985)}100%{opacity:1;transform:none}}
 .rec-no{grid-area:no;font-family:var(--font-mono);font-size:11px;color:var(--text-faint);font-variant-numeric:tabular-nums}
 .rec-time{grid-area:time;justify-self:end;font-family:var(--font-mono);font-size:11px;color:var(--text-dim);font-variant-numeric:tabular-nums;white-space:nowrap}
-.rec-scene{grid-area:scene;display:flex;align-items:center;gap:7px;min-width:0}
-.rec-dot{flex:0 0 auto;width:7px;height:7px;border-radius:50%}
-.rec-scene-name{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rec-scene{grid-area:scene;display:grid;grid-template-columns:auto 1fr;align-items:center;gap:2px 7px;min-width:0}
+.rec-dot{grid-row:1;grid-column:1;width:7px;height:7px;border-radius:50%}
+.rec-scene-name{grid-row:1;grid-column:2;font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rec-map{grid-row:2;grid-column:2;font-size:10px;color:var(--text-faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .rec-hours{grid-area:hours;justify-self:end;font-family:var(--font-mono);font-size:12.5px;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
 .rec-hours small{font-size:10.5px;font-weight:500;color:var(--text-faint);margin-left:1px}
 .rec-model{grid-area:model;font-size:12px;color:var(--text-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -497,7 +498,7 @@ header,main{position:relative;z-index:2}
       if (filter.scene !== "all" && t.scene !== filter.scene) return false;
       if (!q) return true;
       var meta = SCENE_META[t.scene];
-      var hay = ((meta ? meta.name : t.sceneName || "") + " " + t.model + " " + (t.staffId || "") + " " + maskUser(t.account) + " " + t.dur + "h").toLowerCase();
+      var hay = ((meta ? meta.name : t.sceneName || "") + " " + t.model + " " + (t.map || "") + " " + (t.staffId || "") + " " + maskUser(t.account) + " " + t.dur + "h").toLowerCase();
       return hay.indexOf(q) > -1;
     });
   }
@@ -545,7 +546,8 @@ header,main{position:relative;z-index:2}
         '<span class="rec-no">' + pad(rows.length - i) + '</span>' +
         '<span class="rec-time">' + fmtTime(t.at) + '</span>' +
         '<span class="rec-scene"><span class="rec-dot" style="background:rgb(' + meta.rgb + ')"></span>' +
-          '<span class="rec-scene-name">' + meta.name + '</span></span>' +
+          '<span class="rec-scene-name">' + meta.name + '</span>' +
+          '<small class="rec-map' + (t.map ? '' : ' rec-none') + '">地图 · ' + (t.map ? escHtml(t.map) : "未填写") + '</small></span>' +
         '<span class="rec-hours">' + t.dur + '<small>h</small></span>' +
         '<span class="rec-model">' + t.model + '</span>' +
         '<span class="rec-amount"><i class="rec-k">金额</i>' + (t.amount ? '<b>' + fmtAmount(t.amount) + '</b>' : '<em class="rec-none">未填写</em>') + '</span>' +
@@ -648,12 +650,12 @@ header,main{position:relative;z-index:2}
 
   /* ---------- 导出 CSV ---------- */
   function csvOf(list){
-    var head = "提交时间,场景,时长(小时),模型,金额(铲铲币),工号,密码,提交人\n";
+    var head = "提交时间,场景,地图,时长(小时),模型,金额(铲铲币),工号,密码,提交人\n";
     var body = list.map(function(t){
       var d = new Date(t.at);
       var stamp = d.getFullYear() + "-" + pad(d.getMonth()+1) + "-" + pad(d.getDate()) + " " + pad(d.getHours()) + ":" + pad(d.getMinutes());
       var meta = SCENE_META[t.scene];
-      return [stamp, meta ? meta.name : (t.sceneName || "未知"), t.dur + "h", t.model, t.amount || "", t.staffId || "", t.staffPass || "", maskUser(t.account)].join(",");
+      return [stamp, meta ? meta.name : (t.sceneName || "未知"), t.map || "", t.dur + "h", t.model, t.amount || "", t.staffId || "", t.staffPass || "", maskUser(t.account)].join(",");
     }).join("\n");
     return "\ufeff" + head + body;
   }

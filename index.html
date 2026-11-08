@@ -312,6 +312,35 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
 @keyframes fieldNudge{0%{transform:none}30%{transform:translateX(-4px)}62%{transform:translateX(3px)}100%{transform:none}}
 @media (min-width:560px){.creds{grid-template-columns:1fr 1fr;gap:14px}}
 
+.panel-maps{grid-column:1 / -1}
+.maps{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}
+@media (min-width:560px){.maps{grid-template-columns:repeat(4,1fr)}}
+.map-card{
+  position:relative;overflow:hidden;display:flex;align-items:center;gap:9px;min-height:56px;padding:11px 12px;border-radius:14px;text-align:left;
+  background:linear-gradient(155deg,rgba(255,255,255,.07),rgba(255,255,255,.022));
+  border:1px solid rgba(255,255,255,.09);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.10);
+  transition:transform .18s ease,border-color .3s,background .3s,box-shadow .3s;
+}
+.map-card::before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(120% 110% at 12% -10%,rgba(var(--crgb),.30),transparent 66%);opacity:0;transition:opacity .35s}
+.map-card:hover{transform:translateY(-2px);border-color:rgba(255,255,255,.20)}
+.map-card:hover::before{opacity:.55}
+.map-card.is-active{
+  border-color:rgba(var(--crgb),.56);
+  background:linear-gradient(155deg,rgba(var(--crgb),.16),rgba(255,255,255,.03));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 14px 26px -22px rgba(var(--crgb),.8);
+}
+.map-card.is-active::before{opacity:.72}
+.map-mark{position:relative;z-index:2;flex:0 0 auto;width:22px;height:22px;border-radius:7px;display:grid;place-items:center;background:rgba(var(--crgb),.20);border:1px solid rgba(var(--crgb),.42)}
+.map-mark svg{width:12px;height:12px;stroke:rgb(var(--crgb));stroke-width:1.9;fill:none}
+.map-name{position:relative;z-index:2;flex:1 1 auto;min-width:0;font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.map-tick{position:relative;z-index:2;flex:0 0 auto;width:16px;height:16px;border-radius:50%;display:grid;place-items:center;background:rgba(var(--crgb),.9);opacity:0;transform:scale(.4);transition:opacity .25s,transform .28s cubic-bezier(.34,1.56,.64,1)}
+.map-tick svg{width:9px;height:9px;stroke:#0a1016;stroke-width:3;fill:none}
+.map-card.is-active .map-tick{opacity:1;transform:scale(1)}
+.map-card.pop{animation:modelPop .5s cubic-bezier(.22,1,.36,1)}
+[data-theme="light"] .map-card{background:rgba(255,255,255,.6);border-color:rgba(255,255,255,.95)}
+[data-theme="light"] .map-card.is-active{background:linear-gradient(155deg,rgba(var(--crgb),.18),#fff)}
+
 .panel-amount{grid-column:1 / -1}
 .amount-wrap{position:relative}
 .amount-wrap input{padding-right:78px}
@@ -619,6 +648,36 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
         <button class="chip" type="button" data-amount="300000000">3 亿</button>
       </div>
     </section>
+
+    <section class="panel panel-maps liquid" aria-labelledby="p6Title">
+      <div class="panel-head">
+        <span class="panel-idx">06</span>
+        <div><h2 class="panel-title" id="p6Title">地图</h2><p class="panel-note">点哪张地图就切到哪张</p></div>
+        <span class="panel-state" id="mapState">秦岭龙宫</span>
+      </div>
+      <div class="maps" role="group" aria-label="选择地图">
+        <button class="map-card is-active" type="button" data-map="秦岭龙宫" aria-pressed="true" style="--crgb:116,199,240">
+          <span class="map-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 19h18M6 19l4.6-8 3 4.3 2-2.8 4.4 6.5"/></svg></span>
+          <span class="map-name">秦岭龙宫</span>
+          <span class="map-tick" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12.6 9.6 17 19 7.4"/></svg></span>
+        </button>
+        <button class="map-card" type="button" data-map="云南虫谷" aria-pressed="false" style="--crgb:168,217,95">
+          <span class="map-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 19h18M7 19l3.2-7.4 2.8 5.2 3-4.4 4 6.6"/></svg></span>
+          <span class="map-name">云南虫谷</span>
+          <span class="map-tick" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12.6 9.6 17 19 7.4"/></svg></span>
+        </button>
+        <button class="map-card" type="button" data-map="精绝古城" aria-pressed="false" style="--crgb:233,173,72">
+          <span class="map-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 18h16M6 18V9l6-3 6 3v9"/></svg></span>
+          <span class="map-name">精绝古城</span>
+          <span class="map-tick" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12.6 9.6 17 19 7.4"/></svg></span>
+        </button>
+        <button class="map-card" type="button" data-map="昆仑秘境" aria-pressed="false" style="--crgb:162,148,248">
+          <span class="map-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 18h18M8 18l4-9 4 9M12 9l1.6 2.6"/></svg></span>
+          <span class="map-name">昆仑秘境</span>
+          <span class="map-tick" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12.6 9.6 17 19 7.4"/></svg></span>
+        </button>
+      </div>
+    </section>
   </div>
 
   <div class="submit-bar liquid">
@@ -685,7 +744,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     long:{name:"秦岭龙宫", rgb:"116,199,240"}
   };
 
-  var state = {scene:"shu", dur:24, model:"豆包 2.1 lite", account:null, staffId:"", staffPass:"", amount:0};
+  var state = {scene:"shu", dur:24, model:"豆包 2.1 lite", account:null, staffId:"", staffPass:"", amount:0, map:"秦岭龙宫"};
 
   function readJSON(key, fallback){
     try{ var raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : fallback; }
@@ -751,6 +810,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     sum.appendChild(scene);
     var tail = " · " + state.dur + " 小时 · " + state.model;
     if (state.amount) tail += " · " + fmtAmount(state.amount);
+    if (state.map) tail += " · " + state.map;
     sum.appendChild(document.createTextNode(tail));
   }
   function syncCount(){
@@ -839,6 +899,33 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
   staffPassEl.addEventListener("input", syncCred);
   staffPassEl.addEventListener("keydown", function(e){ if (e.key === "Enter") $("#submitBtn").click(); });
 
+  /* 地图 */
+  var mapState = $("#mapState");
+  function setMap(name, announce, ev){
+    if (!name) return;
+    state.map = name;
+    $$(".map-card").forEach(function(el){
+      var on = el.getAttribute("data-map") === name;
+      el.classList.toggle("is-active", on);
+      el.setAttribute("aria-pressed", on ? "true" : "false");
+    });
+    mapState.textContent = name;
+    syncSummary();
+    if (announce){
+      var card = $('.map-card[data-map="' + name + '"]');
+      pulseAt(ev, card);
+      replay(card, "pop", 720);
+      toast("已切换地图：" + name);
+    }
+  }
+  $$(".map-card").forEach(function(el){
+    el.addEventListener("click", function(ev){
+      var name = el.getAttribute("data-map");
+      if (name === state.map){ replay(el, "pop", 500); toast("当前已是 " + name); return; }
+      setMap(name, true, ev);
+    });
+  });
+
   /* 金额 */
   var AMT_MIN = 100000000, AMT_MAX = 300000000;
   var amountEl = $("#amount"), amountState = $("#amountState"), amountErr = $("#amountErr");
@@ -911,6 +998,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
       staffId: state.staffId,
       staffPass: state.staffPass,
       amount: state.amount,
+      map: state.map,
       account: {type: state.account.type, number: state.account.number}
     };
     var list = loadTasks();
@@ -957,6 +1045,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     prev.dur = state.dur;
     prev.model = state.model;
     prev.staffId = state.staffId;
+    prev.map = state.map;
     writeJSON(KEY_ACCT, prev);
   }
   $("#acctBtn").addEventListener("click", function(){
@@ -1042,6 +1131,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
         el.setAttribute("aria-pressed", el.getAttribute("data-model") === saved.model ? "true" : "false");
       });
     }
+    if (saved.map) setMap(saved.map, false);
     if (saved.staffId){ staffIdEl.value = saved.staffId; syncCred(); }
     if (saved.account) applyAccount(saved.account);
     syncSummary();
