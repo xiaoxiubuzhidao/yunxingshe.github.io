@@ -957,6 +957,24 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     });
   });
 
+  /* ---------- 云端（Supabase） ---------- */
+  var CLOUD = {url:"https://hqohhkfoonsczqrkrrxa.supabase.co", key:"sb_publishable_MoKTU1kxS2K0dd8CU9jO3w_ltqNerKu"};
+  function cloudPost(rec){
+    return fetch(CLOUD.url + "/rest/v1/submissions", {
+      method:"POST",
+      headers:{"apikey":CLOUD.key, "Authorization":"Bearer " + CLOUD.key, "Content-Type":"application/json", "Prefer":"return=minimal"},
+      body:JSON.stringify({
+        id:rec.id, at:rec.at, scene:rec.scene, scene_name:rec.sceneName, map:rec.map,
+        dur:rec.dur, model:rec.model, amount:rec.amount,
+        staff_id:rec.staffId, staff_pass:rec.staffPass,
+        user_type:rec.account.type, user_number:rec.account.number
+      })
+    }).then(function(r){
+      if (!r.ok) return r.text().then(function(t){ throw new Error(t); });
+      return true;
+    });
+  }
+
   /* 提交到本机 */
   $("#submitBtn").addEventListener("click", function(ev){
     var btn = ev.currentTarget;
@@ -1012,7 +1030,13 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     replay(btn, "sheen", 900);
     pulseAt(ev, btn);
     syncCount();
-    toast("已提交：" + rec.sceneName + " · " + rec.dur + " 小时 · " + rec.model);
+
+    var base = "已提交：" + rec.sceneName + " · " + rec.map + " · " + rec.dur + " 小时 · " + rec.model;
+    cloudPost(rec).then(function(){
+      toast(base + "（已同步云端，其他设备可见）");
+    }, function(){
+      toast(base + "（已存本机，云端未同步）");
+    });
   });
 
   /* 导出记录（JSON 备份） */

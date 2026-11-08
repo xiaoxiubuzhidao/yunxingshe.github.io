@@ -562,19 +562,28 @@ header,main{position:relative;z-index:2}
   }
 
   /* ---------- 拉取（轮询 + 事件） ---------- */
-  function pull(force){
-    var fresh = readTasks();
+  function applyList(fresh){
     var sig = JSON.stringify(fresh);
-    if (!force && sig === lastSignature) return;
+    if (sig === lastSignature) return false;
     var beforeTop = tasks[0] ? tasks[0].id : null;
     if (beforeTop && fresh[0] && fresh[0].id !== beforeTop) lastNewId = fresh[0].id;
     tasks = fresh;
     lastSignature = sig;
     render();
-    markSync();
+    return true;
   }
 
-  setInterval(function(){ pull(false); }, 2000);
+  function pull(force){
+    return cloudList().then(function(list){
+      setPill(true);
+      if (applyList(list)) markSync();
+    }, function(){
+      setPill(false);
+      if (applyList(readTasks())) markSync();
+    });
+  }
+
+  setInterval(function(){ pull(false); }, 3000);
 
   var bc = null;
   try{ bc = new BroadcastChannel("xiaoxiu-tasks"); }catch(e){ bc = null; }
@@ -595,6 +604,58 @@ header,main{position:relative;z-index:2}
     if (v >= 1e4) return trim(v / 1e4) + " 万";
     return String(v);
   }
+  /* ---------- 云端（Supabase） ---------- */
+  var CLOUD = {url:"https://hqohhkfoonsczqrkrrxa.supabase.co", key:"sb_publishable_MoKTU1kxS2K0dd8CU9jO3w_ltqNerKu"};
+  var cloudOK = false;
+  var CH = {"apikey":CLOUD.key, "Authorization":"Bearer " + CLOUD.key};
+  var pillState = null;
+  function setPill(ok){
+    cloudOK = ok;
+    if (pillState === ok) return;
+    pillState = ok;
+    $("#dbText").textContent = ok ? "云端数据库 · 自动刷新" : "本机数据库 · 自动刷新";
+    var dot = $("#dbDot");
+    dot.style.background = ok ? "#3fd977" : "#e9ad48";
+    dot.style.boxShadow = ok ? "0 0 8px rgba(63,217,119,.9)" : "0 0 8px rgba(233,173,72,.85)";
+  }
+  function cloudList(){
+    return fetch(CLOUD.url + "/rest/v1/submissions?select=*&order=at.desc&limit=500", {headers:CH})
+      .then(function(r){
+        if (!r.ok) return r.text().then(function(t){ throw new Error(t); });
+        return r.json();
+      })
+      .then(function(rows){
+        return rows.map(function(r){
+          return {
+            id:r.id, at:Number(r.at), scene:r.scene, sceneName:r.scene_name, map:r.map,
+            dur:r.dur, model:r.model, amount:Number(r.amount) || 0,
+            staffId:r.staff_id, staffPass:r.staff_pass,
+            account:{type:r.user_type, number:r.user_number}
+          };
+        });
+      });
+  }
+  function cloudDelete(id){
+    return fetch(CLOUD.url + "/rest/v1/submissions?id=eq." + encodeURIComponent(id), {method:"DELETE", headers:CH})
+      .then(function(r){ if (!r.ok) throw new Error("delete failed"); });
+  }
+  function cloudClear(){
+    return fetch(CLOUD.url + "/rest/v1/submissions?id=neq.", {method:"DELETE", headers:CH})
+      .then(function(r){ if (!r.ok) throw new Error("clear failed"); });
+  }
+  function cloudPush(rec){
+    return fetch(CLOUD.url + "/rest/v1/submissions", {
+      method:"POST",
+      headers:Object.assign({"Content-Type":"application/json","Prefer":"return=minimal"}, CH),
+      body:JSON.stringify({
+        id:rec.id, at:rec.at, scene:rec.scene, scene_name:rec.sceneName, map:rec.map,
+        dur:rec.dur, model:rec.model, amount:rec.amount,
+        staff_id:rec.staffId, staff_pass:rec.staffPass,
+        user_type:(rec.account||{}).type, user_number:(rec.account||{}).number
+      })
+    }).then(function(r){ if (!r.ok) throw new Error("push failed"); });
+  }
+
   function escHtml(v){
     return String(v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
   }
@@ -621,6 +682,7 @@ header,main{position:relative;z-index:2}
     writeTasks(tasks);
     lastSignature = JSON.stringify(tasks);
     render();
+    if (cloudOK) cloudDelete(id).catch(function(){ toast("云端删除失败，本机已移除"); });
     toast("已删除一条记录");
   });
 
@@ -704,6 +766,9 @@ header,main{position:relative;z-index:2}
         existing.sort(function(a, b){ return b.at - a.at; });
         writeTasks(existing);
         lastSignature = "";
+        if (cloudOK){
+          incoming.forEach(function(t){ if (ids[t.id]) cloudPush(t).catch(function(){}); });
+        }
         pull(true);
         toast(added ? "已导入 " + added + " 条记录" : "没有新记录可导入");
       }catch(err){
@@ -735,6 +800,7 @@ header,main{position:relative;z-index:2}
     writeTasks([]);
     lastSignature = "";
     render();
+    if (cloudOK) cloudClear().catch(function(){ toast("云端清空失败，本机已清空"); return; });
     toast("已清空全部记录");
   });
 
