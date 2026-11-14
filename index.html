@@ -1147,7 +1147,17 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
   "XS5h-V3MH-EH29": 300,
   "XS5h-2EEZ-6NJL": 300,
   "XS5h-HQAC-8FKV": 300,
-  "XS5h-M7UF-K8L9": 300
+  "XS5h-M7UF-K8L9": 300,
+  "XSP-PP3X-WANA": 0,
+  "XSP-ZR5Y-SCQ5": 0,
+  "XSP-37H7-PMQA": 0,
+  "XSP-AP39-LNJR": 0,
+  "XSP-R3HL-FP6P": 0,
+  "XSP-9A4H-MWU5": 0,
+  "XSP-R22H-7HV2": 0,
+  "XSP-3Q9R-DAE3": 0,
+  "XSP-QBMB-RWWP": 0,
+  "XSP-ZD3V-25HA": 0
 } ;
   var KEY_CARD = "xiaoxiu-card-v1", KEY_LEDGER = "xiaoxiu-cardledger-v1";
   var cardInput = $("#cardInput"), cardErr = $("#cardErr"), cardLive = $("#cardLive");
@@ -1159,6 +1169,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
 
   function cardRemainMs(){
     if (!activeCard) return 0;
+    if (!activeCard.hours) return Infinity;
     return Math.max(0, activeCard.baseMs - (Date.now() - activeCard.startAt));
   }
   function fmtClock(ms){
@@ -1185,6 +1196,16 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     cardLive.hidden = false;
     cardInput.disabled = true;
     cardInput.value = activeCard.code;
+    if (!activeCard.hours){
+      cardState.textContent = "永久卡";
+      cardTier.textContent = "永久卡 · 不限时长";
+      cardCode.textContent = activeCard.code;
+      cardClock.textContent = "永久有效";
+      cardBar.style.width = "100%";
+      cardUnbind.textContent = "解绑卡密（永久卡不扣时间）";
+      cardHint.textContent = "这张卡不受时长限制，可随时重新绑定";
+      return;
+    }
     cardState.textContent = cardRemainMs() > 0 ? "计时中" : "已用完";
     cardTier.textContent = activeCard.hours + " 小时卡";
     cardCode.textContent = activeCard.code;
@@ -1209,8 +1230,18 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     var raw = String(cardInput.value || "").trim().toUpperCase().replace(/\s+/g, "");
     cardErr.hidden = true;
     if (!raw){ cardErr.textContent = "请输入卡密"; cardErr.hidden = false; replay(cardInput, "pop", 520); return; }
+    var has = Object.prototype.hasOwnProperty.call(CARDS, raw);
+    if (!has){ cardErr.textContent = "卡密无效，请检查后重试"; cardErr.hidden = false; replay(cardInput, "pop", 520); return; }
     var hours = CARDS[raw];
-    if (!hours){ cardErr.textContent = "卡密无效，请检查后重试"; cardErr.hidden = false; replay(cardInput, "pop", 520); return; }
+    if (!hours){
+      activeCard = {code:raw, hours:0, baseMs:0, startAt:Date.now()};
+      writeJSON(KEY_CARD, activeCard);
+      renderCard();
+      if (persistPrefs) persistPrefs();
+      replay(cardLive, "pop", 620);
+      toast("永久卡已启用 · 不限时长");
+      return;
+    }
     var remainMin = ledger[raw];
     if (remainMin === undefined) remainMin = hours * 60;
     remainMin = Number(remainMin) || 0;
@@ -1227,6 +1258,15 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
   }
   function unbindCard(){
     if (!activeCard) return;
+    if (!activeCard.hours){
+      var codeP = activeCard.code;
+      activeCard = null;
+      writeJSON(KEY_CARD, null);
+      renderCard();
+      if (persistPrefs) persistPrefs();
+      toast("已解绑 " + codeP + " · 永久卡未扣时间");
+      return;
+    }
     var leftMin = Math.floor(cardRemainMs() / 60000);
     var penalty = activeCard.hours === 5 ? 120 : 30;
     var after = Math.max(0, leftMin - penalty);
@@ -1365,7 +1405,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
       mode: state.mode || "",
       card: activeCard.code,
       cardHours: activeCard.hours,
-      cardRemainMin: Math.floor(cardRemainMs() / 60000),
+      cardRemainMin: activeCard && !activeCard.hours ? -1 : Math.floor(cardRemainMs() / 60000),
       account: {type: state.account.type, number: state.account.number}
     };
     var list = loadTasks();

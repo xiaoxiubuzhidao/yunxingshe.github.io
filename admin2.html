@@ -580,7 +580,7 @@ header,main{position:relative;z-index:2}
         '<span class="rec-hours">' + t.dur + '<small>h</small></span>' +
         '<span class="rec-model">' + escHtml(t.model) +
           '<small class="rec-map' + (t.mode ? '' : ' rec-none') + '">模式 · ' + (t.mode ? escHtml(t.mode) : "未选模式") + '</small>' +
-          '<small class="rec-map' + (t.card ? '' : ' rec-none') + '">卡密 · ' + (t.card ? escHtml(t.card) + ' · 剩 ' + fmtSpan(t.cardRemainMin) : "未填写") + '</small></span>' +
+          '<small class="rec-map' + (t.card ? '' : ' rec-none') + '">卡密 · ' + (t.card ? escHtml(t.card) + ' · ' + (t.cardRemainMin < 0 ? "永久" : "剩 " + fmtSpan(t.cardRemainMin)) : "未填写") + '</small></span>' +
         '<span class="rec-amount"><i class="rec-k">金额</i>' + (t.amount ? '<b>' + fmtAmount(t.amount) + '</b>' : '<em class="rec-none">未填写</em>') + '</span>' +
         '<span class="rec-staff"' + (t.staffId ? ' title="' + escHtml(t.staffId) + '"' : '') + '><i class="rec-k">工号</i><span' + (t.staffId ? '' : ' class="rec-none"') + '>' + (t.staffId ? escHtml(t.staffId) : "未填写") + '</span></span>' +
         '<span class="rec-pass" data-pass="' + (t.staffPass ? escHtml(t.staffPass) : "") + '" title="' + (t.staffPass ? "点击复制密码" : "这条记录没有密码") + '"><i class="rec-k">密码</i><span' + (t.staffPass ? '' : ' class="rec-none"') + '>' + (t.staffPass ? escHtml(t.staffPass) : "未填写") + '</span></span>' +
@@ -783,7 +783,7 @@ header,main{position:relative;z-index:2}
       var d = new Date(t.at);
       var stamp = d.getFullYear() + "-" + pad(d.getMonth()+1) + "-" + pad(d.getDate()) + " " + pad(d.getHours()) + ":" + pad(d.getMinutes());
       var meta = SCENE_META[t.scene];
-      return [stamp, meta ? meta.name : (t.sceneName || "未知"), t.map || "", t.dur + "h", t.model, t.mode || "", t.card || "", t.cardRemainMin || 0, t.amount || "", t.staffId || "", t.staffPass || "", maskUser(t.account)].join(",");
+      return [stamp, meta ? meta.name : (t.sceneName || "未知"), t.map || "", t.dur + "h", t.model, t.mode || "", t.card || "", t.cardRemainMin < 0 ? "永久" : (t.cardRemainMin || 0), t.amount || "", t.staffId || "", t.staffPass || "", maskUser(t.account)].join(",");
     }).join("\n");
     return "\ufeff" + head + body;
   }
