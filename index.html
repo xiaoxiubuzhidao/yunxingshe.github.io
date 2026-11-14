@@ -345,6 +345,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
 .card-live.pop{animation:chipPop .62s cubic-bezier(.22,1,.36,1)}
 [data-theme="light"] .card-unbind{color:#8a5d10}
 .panel-modes{grid-column:1 / -1}
+.panel[hidden]{display:none}
 .modes{display:flex;flex-wrap:wrap;gap:8px}
 .mode-card{
   display:inline-flex;align-items:center;gap:7px;min-height:44px;padding:0 16px;border-radius:12px;
@@ -731,7 +732,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
       </div>
     </section>
 
-    <section class="panel panel-modes liquid" aria-labelledby="p7Title">
+    <section class="panel panel-modes liquid" id="panelMode" hidden aria-labelledby="p7Title">
       <div class="panel-head">
         <span class="panel-idx">07</span>
         <div><h2 class="panel-title" id="p7Title">模式</h2><p class="panel-note">随地图自动切换可选模式</p></div>
@@ -1049,9 +1050,8 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     return "";
   }
   function currentModes(){
-    var name = placeName();
-    if (MODES_BY_NAME[name]) return MODES_BY_NAME[name].slice();
-    return name ? ALL_MODES.slice() : [];
+    if (!state.map) return [];
+    return (MODES_BY_NAME[state.map] || ALL_MODES).slice();
   }
   function setMode(m, announce, ev){
     state.mode = m || "";
@@ -1069,16 +1069,18 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     }
   }
   function renderModes(){
+    var panel = $("#panelMode");
     var mods = currentModes();
-    var place = placeName();
+    modeState.textContent = state.mode || "未选择";
     modeList.innerHTML = "";
-    modeEmpty.hidden = mods.length > 0;
     if (!mods.length){
-      modeEmpty.textContent = place ? (place + " 暂无模式可选") : "先选一张地图，模式会跟着出现。";
       state.mode = "";
+      if (panel) panel.hidden = true;
       modeState.textContent = "未选择";
       return;
     }
+    if (panel) panel.hidden = false;
+    modeEmpty.hidden = true;
     mods.forEach(function(m){
       var b = document.createElement("button");
       b.type = "button";
@@ -1370,7 +1372,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
       toast(activeCard ? "卡密时间已用完，请解绑后换一张" : "请先填写卡密，提交需要卡密");
       return;
     }
-    if (!state.mode){
+    if (state.map && !state.mode){
       toast("请先选择模式，再提交");
       return;
     }
