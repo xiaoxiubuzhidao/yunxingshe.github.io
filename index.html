@@ -313,6 +313,37 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
 @keyframes fieldNudge{0%{transform:none}30%{transform:translateX(-4px)}62%{transform:translateX(3px)}100%{transform:none}}
 @media (min-width:560px){.creds{grid-template-columns:1fr 1fr;gap:14px}}
 
+.panel-card{grid-column:1 / -1}
+.card-row{display:flex;flex-wrap:wrap;gap:8px}
+.card-row input{
+  flex:1 1 220px;min-width:0;height:46px;padding:0 14px;border-radius:12px;font-size:16px;
+  font-family:inherit;letter-spacing:.06em;color:var(--text);background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.12);outline:none;
+}
+.card-row input:focus{border-color:rgba(var(--scene-rgb),.62);box-shadow:0 0 0 3px rgba(var(--scene-rgb),.16)}
+.card-row input:disabled{opacity:.72;letter-spacing:.02em}
+.card-btn{
+  height:46px;padding:0 18px;border-radius:12px;font-size:13px;font-family:inherit;color:#fff;
+  background:linear-gradient(135deg,rgba(var(--scene-rgb),.9),rgba(var(--scene-rgb),.62));
+  border:1px solid rgba(255,255,255,.18);cursor:pointer;white-space:nowrap;
+}
+.card-btn:active{transform:translateY(1px)}
+.card-live{margin-top:12px;padding:13px 14px;border-radius:13px;background:rgba(255,255,255,.045);border:1px solid rgba(var(--scene-rgb),.28)}
+.card-live-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.card-tier{font-size:12px;font-weight:700;color:rgb(var(--scene-rgb))}
+.card-code{font-size:11px;color:var(--text-faint);font-family:ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.04em}
+.card-clock{margin-top:6px;font-size:26px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:.02em;color:var(--text)}
+.card-bar{height:3px;border-radius:99px;background:rgba(255,255,255,.1);margin:9px 0 10px;overflow:hidden}
+.card-bar i{display:block;height:100%;border-radius:99px;background:rgb(var(--scene-rgb));transition:width .9s linear}
+.card-foot{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;font-size:11.5px;color:var(--text-faint)}
+.card-unbind{
+  height:34px;padding:0 12px;border-radius:9px;font-size:12px;font-family:inherit;color:#ffd08a;
+  background:rgba(233,173,72,.12);border:1px solid rgba(233,173,72,.34);cursor:pointer;
+}
+.card-unbind:hover{background:rgba(233,173,72,.2)}
+.card-row input.pop{animation:fieldNudge .5s cubic-bezier(.22,1,.36,1);border-color:rgba(255,143,143,.72)}
+.card-live.pop{animation:chipPop .62s cubic-bezier(.22,1,.36,1)}
+[data-theme="light"] .card-unbind{color:#8a5d10}
 .panel-modes{grid-column:1 / -1}
 .modes{display:flex;flex-wrap:wrap;gap:8px}
 .mode-card{
@@ -709,6 +740,28 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
       <div class="modes" id="modeList" role="group" aria-label="选择模式"></div>
       <p class="panel-note" id="modeEmpty" hidden>先选一张地图，模式会跟着出现。</p>
     </section>
+
+    <section class="panel panel-card liquid" aria-labelledby="p8Title">
+      <div class="panel-head">
+        <span class="panel-idx">08</span>
+        <div><h2 class="panel-title" id="p8Title">卡密</h2><p class="panel-note">提交前必须填写，填写后立即开始计时</p></div>
+        <span class="panel-state" id="cardState">未填写</span>
+      </div>
+      <div class="card-row">
+        <input id="cardInput" type="text" placeholder="XS5h-XXXX-XXXX" autocomplete="off" spellcheck="false" aria-label="卡密">
+        <button class="card-btn" id="cardBindBtn" type="button">验证并启用</button>
+      </div>
+      <p class="form-err" id="cardErr">卡密无效或已用完</p>
+      <div class="card-live" id="cardLive" hidden>
+        <div class="card-live-top"><span class="card-tier" id="cardTier">5 小时卡</span><span class="card-code" id="cardCode"></span></div>
+        <div class="card-clock" id="cardClock">05:00:00</div>
+        <div class="card-bar"><i id="cardBar" style="width:100%"></i></div>
+        <div class="card-foot">
+          <span id="cardHint">剩余时间实时递减</span>
+          <button class="card-unbind" id="cardUnbind" type="button">解绑卡密（扣 30 分钟）</button>
+        </div>
+      </div>
+    </section>
   </div>
 
   <div class="submit-bar liquid">
@@ -863,6 +916,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     $("#sceneState").textContent = SCENE_META[key].name;
     state.mode = "";
     renderModes();
+  renderCard();
     syncSummary();
     if (announce){
       var card = $('.scene[data-key="' + key + '"]');
@@ -1042,6 +1096,162 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     else modeState.textContent = "未选择";
   }
 
+  /* 卡密 */
+  var CARDS = {
+  "XS1h-VB8L-YM6N": 60,
+  "XS1h-GCRM-KF9L": 60,
+  "XS1h-XXJZ-7ZMC": 60,
+  "XS1h-5AZV-WY2W": 60,
+  "XS1h-FPGC-4G66": 60,
+  "XS1h-YHRH-HVSY": 60,
+  "XS1h-ABSJ-VUKK": 60,
+  "XS1h-WKLX-ZH7Z": 60,
+  "XS1h-UH2H-D46M": 60,
+  "XS1h-KPNS-4B5H": 60,
+  "XS2h-TN3B-GEPR": 120,
+  "XS2h-BSJ5-6Z5G": 120,
+  "XS2h-L39B-XRHB": 120,
+  "XS2h-H9ZQ-Y9AR": 120,
+  "XS2h-4SA9-XG6S": 120,
+  "XS2h-NDRR-TFTY": 120,
+  "XS2h-VLMF-YLUE": 120,
+  "XS2h-9P8D-748K": 120,
+  "XS2h-LX6X-DDXQ": 120,
+  "XS2h-KZ7V-VGCR": 120,
+  "XS3h-7E6X-EURL": 180,
+  "XS3h-F3YC-FRLY": 180,
+  "XS3h-CQPW-DJPK": 180,
+  "XS3h-67GP-UPGG": 180,
+  "XS3h-T23K-ZY9N": 180,
+  "XS3h-WGJR-64K4": 180,
+  "XS3h-HUFV-H698": 180,
+  "XS3h-ZRPY-BMAG": 180,
+  "XS3h-57DY-LZYK": 180,
+  "XS3h-KYC8-SECJ": 180,
+  "XS4h-F9DR-L4LH": 240,
+  "XS4h-4JVL-6HBV": 240,
+  "XS4h-M9FM-T6ZX": 240,
+  "XS4h-584N-JBH9": 240,
+  "XS4h-6GQ3-QKPS": 240,
+  "XS4h-6JG7-YUBQ": 240,
+  "XS4h-ERMG-8LCC": 240,
+  "XS4h-SWF7-XC4T": 240,
+  "XS4h-6J8C-39Q9": 240,
+  "XS4h-CLQU-ZRXC": 240,
+  "XS5h-9CJT-ATYH": 300,
+  "XS5h-Y2D7-C6BP": 300,
+  "XS5h-DL3Y-YF7P": 300,
+  "XS5h-LJQ6-627S": 300,
+  "XS5h-9DCM-M6K5": 300,
+  "XS5h-VP8J-YA5Z": 300,
+  "XS5h-V3MH-EH29": 300,
+  "XS5h-2EEZ-6NJL": 300,
+  "XS5h-HQAC-8FKV": 300,
+  "XS5h-M7UF-K8L9": 300
+} ;
+  var KEY_CARD = "xiaoxiu-card-v1", KEY_LEDGER = "xiaoxiu-cardledger-v1";
+  var cardInput = $("#cardInput"), cardErr = $("#cardErr"), cardLive = $("#cardLive");
+  var cardClock = $("#cardClock"), cardTier = $("#cardTier"), cardCode = $("#cardCode");
+  var cardBar = $("#cardBar"), cardUnbind = $("#cardUnbind"), cardState = $("#cardState");
+  var cardBindBtn = $("#cardBindBtn"), cardHint = $("#cardHint");
+  var activeCard = readJSON(KEY_CARD, null);
+  var ledger = readJSON(KEY_LEDGER, {}) || {};
+
+  function cardRemainMs(){
+    if (!activeCard) return 0;
+    return Math.max(0, activeCard.baseMs - (Date.now() - activeCard.startAt));
+  }
+  function fmtClock(ms){
+    var t = Math.floor(Math.max(0, ms) / 1000);
+    var h = Math.floor(t / 3600), m = Math.floor((t % 3600) / 60), sec = t % 60;
+    function pad2(n){ return (n < 10 ? "0" : "") + n; }
+    return pad2(h) + ":" + pad2(m) + ":" + pad2(sec);
+  }
+  function fmtSpan(ms){
+    var mins = Math.max(0, Math.round(ms / 60000));
+    var h = Math.floor(mins / 60), r = mins % 60;
+    if (!h) return r + " 分钟";
+    return h + " 小时" + (r ? " " + r + " 分钟" : "");
+  }
+  function renderCard(){
+    if (!activeCard){
+      cardLive.hidden = true;
+      cardState.textContent = "未填写";
+      cardInput.disabled = false;
+      cardInput.value = "";
+      cardErr.hidden = true;
+      return;
+    }
+    cardLive.hidden = false;
+    cardInput.disabled = true;
+    cardInput.value = activeCard.code;
+    cardState.textContent = cardRemainMs() > 0 ? "计时中" : "已用完";
+    cardTier.textContent = activeCard.hours + " 小时卡";
+    cardCode.textContent = activeCard.code;
+    var left = cardRemainMs(), total = activeCard.hours * 3600000;
+    cardClock.textContent = fmtClock(left);
+    cardBar.style.width = Math.max(0, Math.min(1, left / total)) * 100 + "%";
+    var penalty = activeCard.hours === 5 ? "2 小时" : "30 分钟";
+    cardUnbind.textContent = "解绑卡密（扣 " + penalty + "）";
+    cardHint.textContent = left > 0 ? ("剩余 " + fmtSpan(left)) : "时间已用完，请解绑后换一张";
+  }
+  function cardSync(code, hours, remainMin, bound){
+    try{
+      if (typeof CLOUD === "undefined" || !CLOUD || !CLOUD.url) return;
+      fetch(CLOUD.url + "/rest/v1/cards", {
+        method:"POST",
+        headers:{"apikey":CLOUD.key, "Authorization":"Bearer " + CLOUD.key, "Content-Type":"application/json", "Prefer":"resolution=merge-duplicates,return=minimal"},
+        body:JSON.stringify({id:code, hours:hours, remain_min:remainMin, bound_to:bound || "", updated_at:Date.now()})
+      }).catch(function(){});
+    }catch(e){}
+  }
+  function bindCard(){
+    var raw = String(cardInput.value || "").trim().toUpperCase().replace(/\s+/g, "");
+    cardErr.hidden = true;
+    if (!raw){ cardErr.textContent = "请输入卡密"; cardErr.hidden = false; replay(cardInput, "pop", 520); return; }
+    var hours = CARDS[raw];
+    if (!hours){ cardErr.textContent = "卡密无效，请检查后重试"; cardErr.hidden = false; replay(cardInput, "pop", 520); return; }
+    var remainMin = ledger[raw];
+    if (remainMin === undefined) remainMin = hours * 60;
+    remainMin = Number(remainMin) || 0;
+    if (remainMin <= 0){ cardErr.textContent = "这个卡密的时间已经用完"; cardErr.hidden = false; replay(cardInput, "pop", 520); return; }
+    activeCard = {code:raw, hours:hours, baseMs:remainMin * 60000, startAt:Date.now()};
+    writeJSON(KEY_CARD, activeCard);
+    ledger[raw] = remainMin;
+    writeJSON(KEY_LEDGER, ledger);
+    cardSync(raw, hours, remainMin, state.staffId || "");
+    renderCard();
+    if (persistPrefs) persistPrefs();
+    replay(cardLive, "pop", 620);
+    toast("卡密已启用 · " + hours + " 小时 · 立即开始计时");
+  }
+  function unbindCard(){
+    if (!activeCard) return;
+    var leftMin = Math.floor(cardRemainMs() / 60000);
+    var penalty = activeCard.hours === 5 ? 120 : 30;
+    var after = Math.max(0, leftMin - penalty);
+    var code = activeCard.code, hours = activeCard.hours;
+    ledger[code] = after;
+    writeJSON(KEY_LEDGER, ledger);
+    cardSync(code, hours, after, "");
+    activeCard = null;
+    writeJSON(KEY_CARD, null);
+    renderCard();
+    if (persistPrefs) persistPrefs();
+    replay(cardInput, "pop", 520);
+    toast("已解绑 · 扣除 " + (penalty === 120 ? "2 小时" : "30 分钟") + " · 该卡剩余 " + (after ? fmtSpan(after * 60000) : "0 分钟"));
+  }
+  cardBindBtn.addEventListener("click", bindCard);
+  cardInput.addEventListener("keydown", function(e){
+    if (e.key === "Enter"){ e.preventDefault(); bindCard(); }
+  });
+  cardUnbind.addEventListener("click", unbindCard);
+  setInterval(function(){
+    if (activeCard){
+      renderCard();
+    }
+  }, 1000);
+
   /* 金额 */
   var AMT_MIN = 10000, AMT_MAX = 300000000;
   var amountEl = $("#amount"), amountState = $("#amountState"), amountErr = $("#amountErr");
@@ -1083,6 +1293,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
         at:rec.at,
         data:{
           scene:rec.scene, scene_name:rec.sceneName, map:rec.map, mode:rec.mode,
+          card:rec.card, card_hours:rec.cardHours, card_remain:rec.cardRemainMin,
           dur:rec.dur, model:rec.model, amount:rec.amount,
           staff_id:rec.staffId, staff_pass:rec.staffPass,
           user_type:rec.account.type, user_number:rec.account.number
@@ -1113,6 +1324,10 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     }
     if (!state.scene && !state.map){
       toast("请先选择场景或地图");
+      return;
+    }
+    if (!activeCard || cardRemainMs() <= 0){
+      toast(activeCard ? "卡密时间已用完，请解绑后换一张" : "请先填写卡密，提交需要卡密");
       return;
     }
     if (!state.mode){
@@ -1148,6 +1363,9 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
       amount: state.amount,
       map: state.map || "",
       mode: state.mode || "",
+      card: activeCard.code,
+      cardHours: activeCard.hours,
+      cardRemainMin: Math.floor(cardRemainMs() / 60000),
       account: {type: state.account.type, number: state.account.number}
     };
     var list = loadTasks();
@@ -1298,6 +1516,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     syncSummary();
   }
   renderModes();
+  renderCard();
   syncCount();
   if (!state.account) openGate();
 })();

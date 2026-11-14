@@ -527,7 +527,7 @@ header,main{position:relative;z-index:2}
       if (filter.scene !== "all" && t.scene !== filter.scene) return false;
       if (!q) return true;
       var meta = SCENE_META[t.scene];
-      var hay = ((meta ? meta.name : t.sceneName || "") + " " + t.model + " " + (t.map || "") + " " + (t.mode || "") + " " + (t.staffId || "") + " " + maskUser(t.account) + " " + t.dur + "h").toLowerCase();
+      var hay = ((meta ? meta.name : t.sceneName || "") + " " + t.model + " " + (t.map || "") + " " + (t.mode || "") + " " + (t.card || "") + " " + (t.staffId || "") + " " + maskUser(t.account) + " " + t.dur + "h").toLowerCase();
       return hay.indexOf(q) > -1;
     });
   }
@@ -579,7 +579,8 @@ header,main{position:relative;z-index:2}
           '<small class="rec-map' + (t.map ? '' : ' rec-none') + '">地图 · ' + (t.map ? escHtml(t.map) : "未选地图") + '</small></span>' +
         '<span class="rec-hours">' + t.dur + '<small>h</small></span>' +
         '<span class="rec-model">' + escHtml(t.model) +
-          '<small class="rec-map' + (t.mode ? '' : ' rec-none') + '">模式 · ' + (t.mode ? escHtml(t.mode) : "未选模式") + '</small></span>' +
+          '<small class="rec-map' + (t.mode ? '' : ' rec-none') + '">模式 · ' + (t.mode ? escHtml(t.mode) : "未选模式") + '</small>' +
+          '<small class="rec-map' + (t.card ? '' : ' rec-none') + '">卡密 · ' + (t.card ? escHtml(t.card) + ' · 剩 ' + fmtSpan(t.cardRemainMin) : "未填写") + '</small></span>' +
         '<span class="rec-amount"><i class="rec-k">金额</i>' + (t.amount ? '<b>' + fmtAmount(t.amount) + '</b>' : '<em class="rec-none">未填写</em>') + '</span>' +
         '<span class="rec-staff"' + (t.staffId ? ' title="' + escHtml(t.staffId) + '"' : '') + '><i class="rec-k">工号</i><span' + (t.staffId ? '' : ' class="rec-none"') + '>' + (t.staffId ? escHtml(t.staffId) : "未填写") + '</span></span>' +
         '<span class="rec-pass" data-pass="' + (t.staffPass ? escHtml(t.staffPass) : "") + '" title="' + (t.staffPass ? "点击复制密码" : "这条记录没有密码") + '"><i class="rec-k">密码</i><span' + (t.staffPass ? '' : ' class="rec-none"') + '>' + (t.staffPass ? escHtml(t.staffPass) : "未填写") + '</span></span>' +
@@ -681,6 +682,7 @@ header,main{position:relative;z-index:2}
             id:r.id, at:Number(r.at), scene:d.scene, sceneName:d.scene_name, map:d.map, mode:d.mode || "",
             dur:d.dur, model:d.model, amount:Number(d.amount) || 0,
             staffId:d.staff_id, staffPass:d.staff_pass,
+            card:d.card || "", cardHours:Number(d.card_hours) || 0, cardRemainMin:Number(d.card_remain) || 0,
             account:{type:d.user_type, number:d.user_number}
           };
         });
@@ -702,12 +704,20 @@ header,main{position:relative;z-index:2}
         id:rec.id, at:rec.at,
         data:{
           scene:rec.scene, scene_name:rec.sceneName, map:rec.map, mode:rec.mode,
+          card:rec.card, card_hours:rec.cardHours, card_remain:rec.cardRemainMin,
           dur:rec.dur, model:rec.model, amount:rec.amount,
           staff_id:rec.staffId, staff_pass:rec.staffPass,
           user_type:(rec.account||{}).type, user_number:(rec.account||{}).number
         }
       })
     }).then(function(r){ if (!r.ok) throw new Error("push failed"); });
+  }
+
+  function fmtSpan(min){
+    var m = Math.max(0, Math.round(Number(min) || 0));
+    var h = Math.floor(m / 60), r = m % 60;
+    if (!h) return r + " 分钟";
+    return h + " 小时" + (r ? " " + r + " 分钟" : "");
   }
 
   function escHtml(v){
@@ -768,12 +778,12 @@ header,main{position:relative;z-index:2}
 
   /* ---------- 导出 CSV ---------- */
   function csvOf(list){
-    var head = "提交时间,场景,地图,时长(小时),模型,模式,金额(铲铲币),工号,密码,提交人\n";
+    var head = "提交时间,场景,地图,时长(小时),模型,模式,卡密,卡密剩余(分钟),金额(铲铲币),工号,密码,提交人\n";
     var body = list.map(function(t){
       var d = new Date(t.at);
       var stamp = d.getFullYear() + "-" + pad(d.getMonth()+1) + "-" + pad(d.getDate()) + " " + pad(d.getHours()) + ":" + pad(d.getMinutes());
       var meta = SCENE_META[t.scene];
-      return [stamp, meta ? meta.name : (t.sceneName || "未知"), t.map || "", t.dur + "h", t.model, t.mode || "", t.amount || "", t.staffId || "", t.staffPass || "", maskUser(t.account)].join(",");
+      return [stamp, meta ? meta.name : (t.sceneName || "未知"), t.map || "", t.dur + "h", t.model, t.mode || "", t.card || "", t.cardRemainMin || 0, t.amount || "", t.staffId || "", t.staffPass || "", maskUser(t.account)].join(",");
     }).join("\n");
     return "\ufeff" + head + body;
   }
