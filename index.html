@@ -313,6 +313,25 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
 @keyframes fieldNudge{0%{transform:none}30%{transform:translateX(-4px)}62%{transform:translateX(3px)}100%{transform:none}}
 @media (min-width:560px){.creds{grid-template-columns:1fr 1fr;gap:14px}}
 
+.panel-modes{grid-column:1 / -1}
+.modes{display:flex;flex-wrap:wrap;gap:8px}
+.mode-card{
+  display:inline-flex;align-items:center;gap:7px;min-height:44px;padding:0 16px;border-radius:12px;
+  font-size:12.5px;font-family:inherit;color:var(--text-dim);cursor:pointer;
+  background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.10);
+  transition:background .2s,border-color .2s,color .2s;
+}
+.mode-card[data-mode="普通"]{--m:111,220,192}
+.mode-card[data-mode="困难"]{--m:233,173,72}
+.mode-card[data-mode="极限"]{--m:236,140,92}
+.mode-card[data-mode="噩梦"]{--m:162,148,248}
+.mode-card[data-mode="炼狱"]{--m:236,92,92}
+.mode-card .mode-dot{width:6px;height:6px;border-radius:50%;background:rgb(var(--m,150,160,180));opacity:.5;flex:none;transition:opacity .2s,box-shadow .2s}
+.mode-card:hover{color:var(--text);border-color:rgba(var(--m,255,255,255),.34)}
+.mode-card.is-active{color:#fff;background:rgba(var(--m),.18);border-color:rgba(var(--m),.55);box-shadow:inset 0 0 0 1px rgba(var(--m),.22)}
+.mode-card.is-active .mode-dot{opacity:1;box-shadow:0 0 10px rgba(var(--m),.75)}
+@media (prefers-reduced-motion:reduce){.mode-card{transition:none}}
+
 .panel-maps{grid-column:1 / -1}
 .maps{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}
 @media (min-width:560px){.maps{grid-template-columns:repeat(4,1fr)}}
@@ -680,6 +699,16 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
         </button>
       </div>
     </section>
+
+    <section class="panel panel-modes liquid" aria-labelledby="p7Title">
+      <div class="panel-head">
+        <span class="panel-idx">07</span>
+        <div><h2 class="panel-title" id="p7Title">模式</h2><p class="panel-note">随地图自动切换可选模式</p></div>
+        <span class="panel-state" id="modeState">未选择</span>
+      </div>
+      <div class="modes" id="modeList" role="group" aria-label="选择模式"></div>
+      <p class="panel-note" id="modeEmpty" hidden>先选一张地图，模式会跟着出现。</p>
+    </section>
   </div>
 
   <div class="submit-bar liquid">
@@ -746,7 +775,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     long:{name:"秦岭龙宫", rgb:"116,199,240"}
   };
 
-  var state = {scene:"shu", dur:24, model:"豆包 2.1 lite", account:null, staffId:"", staffPass:"", amount:0, map:""};
+  var state = {scene:"shu", dur:24, model:"豆包 2.1 lite", account:null, staffId:"", staffPass:"", amount:0, map:"", mode:""};
 
   function readJSON(key, fallback){
     try{ var raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : fallback; }
@@ -813,6 +842,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     sum.appendChild(span);
     var tail = " · " + state.dur + " 小时 · " + state.model;
     if (state.amount) tail += " · " + fmtAmount(state.amount);
+    if (state.mode) tail += " · " + state.mode;
     sum.appendChild(document.createTextNode(tail));
   }
   function syncCount(){
@@ -831,6 +861,8 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
       el.setAttribute("aria-pressed", on ? "true" : "false");
     });
     $("#sceneState").textContent = SCENE_META[key].name;
+    state.mode = "";
+    renderModes();
     syncSummary();
     if (announce){
       var card = $('.scene[data-key="' + key + '"]');
@@ -908,12 +940,16 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     state.map = "";
     $$(".map-card").forEach(function(el){ el.classList.remove("is-active"); el.setAttribute("aria-pressed","false"); });
     mapState.textContent = "未选择";
+    state.mode = "";
+    renderModes();
   }
   function clearScene(){
     state.scene = "";
     document.documentElement.setAttribute("data-scene","none");
     $$(".scene").forEach(function(el){ el.classList.remove("is-active"); el.setAttribute("aria-pressed","false"); });
     $("#sceneState").textContent = "未选择";
+    state.mode = "";
+    renderModes();
   }
   function setMap(name, announce, ev){
     if (!name) return;
@@ -925,6 +961,8 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
       el.setAttribute("aria-pressed", on ? "true" : "false");
     });
     mapState.textContent = name;
+    state.mode = "";
+    renderModes();
     syncSummary();
     if (announce){
       var card = $('.map-card[data-map="' + name + '"]');
@@ -940,6 +978,67 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
       setMap(name, true, ev);
     });
   });
+
+  /* 模式（随地图变化） */
+  var MODES_BY_NAME = {
+    "云南虫谷": ["普通", "极限", "炼狱"],
+    "精绝古城": ["普通", "困难", "极限"],
+    "昆仑秘境": ["困难", "极限", "噩梦"],
+    "秦岭龙宫": ["极限", "噩梦", "炼狱"]
+  };
+  var modeList = $("#modeList"), modeState = $("#modeState"), modeEmpty = $("#modeEmpty");
+
+  function placeName(){
+    if (state.map) return state.map;
+    if (state.scene) return SCENE_META[state.scene].name;
+    return "";
+  }
+  function currentModes(){
+    var name = placeName();
+    return (name && MODES_BY_NAME[name]) ? MODES_BY_NAME[name].slice() : [];
+  }
+  function setMode(m, announce, ev){
+    state.mode = m || "";
+    $$("#modeList .mode-card").forEach(function(el){
+      var on = el.getAttribute("data-mode") === state.mode;
+      el.classList.toggle("is-active", on);
+      el.setAttribute("aria-pressed", on ? "true" : "false");
+    });
+    modeState.textContent = state.mode || "未选择";
+    syncSummary();
+    if (announce && state.mode){
+      var el = $('#modeList .mode-card[data-mode="' + state.mode + '"]');
+      if (el){ pulseAt(ev, el); replay(el, "pop", 620); }
+      toast("已切换模式：" + state.mode);
+    }
+  }
+  function renderModes(){
+    var mods = currentModes();
+    var place = placeName();
+    modeList.innerHTML = "";
+    modeEmpty.hidden = mods.length > 0;
+    if (!mods.length){
+      modeEmpty.textContent = place ? (place + " 暂无模式可选") : "先选一张地图，模式会跟着出现。";
+      state.mode = "";
+      modeState.textContent = "未选择";
+      return;
+    }
+    mods.forEach(function(m){
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "mode-card";
+      b.setAttribute("data-mode", m);
+      b.setAttribute("aria-pressed", "false");
+      b.innerHTML = '<span class="mode-dot" aria-hidden="true"></span><span>' + m + '</span>';
+      b.addEventListener("click", function(ev){
+        if (state.mode === m){ replay(b, "pop", 460); toast("当前已是 " + m + " 模式"); return; }
+        setMode(m, true, ev);
+      });
+      modeList.appendChild(b);
+    });
+    if (state.mode) setMode(state.mode, false);
+    else modeState.textContent = "未选择";
+  }
 
   /* 金额 */
   var AMT_MIN = 10000, AMT_MAX = 300000000;
@@ -1014,6 +1113,10 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
       toast("请先选择场景或地图");
       return;
     }
+    if (currentModes().length && !state.mode){
+      toast("请先选择模式");
+      return;
+    }
     if (!state.amount){
       toast("请填写所需金额");
       replay(amountEl, "pop", 620);
@@ -1042,6 +1145,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
       staffPass: state.staffPass,
       amount: state.amount,
       map: state.map || "",
+      mode: state.mode || "",
       account: {type: state.account.type, number: state.account.number}
     };
     var list = loadTasks();
@@ -1053,7 +1157,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     pulseAt(ev, btn);
     syncCount();
 
-    var base = "已提交：" + (rec.sceneName || ("地图 · " + rec.map)) + " · " + rec.dur + " 小时 · " + rec.model;
+    var base = "已提交：" + (rec.sceneName || ("地图 · " + rec.map)) + " · " + rec.dur + " 小时 · " + rec.model + (rec.mode ? " · " + rec.mode : "");
     cloudPost(rec).then(function(){
       toast(base + "（已同步云端，其他设备可见）");
     }, function(){
@@ -1095,6 +1199,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     prev.model = state.model;
     prev.staffId = state.staffId;
     prev.map = state.map;
+    prev.mode = state.mode;
     writeJSON(KEY_ACCT, prev);
   }
   $("#acctBtn").addEventListener("click", function(){
@@ -1182,6 +1287,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     }
     if (saved.scene === "") clearScene();
     if (saved.map) setMap(saved.map, false);
+    if (saved.mode) setMode(saved.mode, false);
     if (saved.staffId){ staffIdEl.value = saved.staffId; syncCred(); }
     if (saved.account) applyAccount(saved.account);
     syncSummary();
@@ -1189,6 +1295,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     setDur(24, false);
     syncSummary();
   }
+  renderModes();
   syncCount();
   if (!state.account) openGate();
 })();
