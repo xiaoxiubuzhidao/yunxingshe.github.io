@@ -980,6 +980,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
   });
 
   /* 模式（随地图变化） */
+  var ALL_MODES = ["普通", "困难", "极限", "噩梦", "炼狱"];
   var MODES_BY_NAME = {
     "云南虫谷": ["普通", "极限", "炼狱"],
     "精绝古城": ["普通", "困难", "极限"],
@@ -995,7 +996,8 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
   }
   function currentModes(){
     var name = placeName();
-    return (name && MODES_BY_NAME[name]) ? MODES_BY_NAME[name].slice() : [];
+    if (MODES_BY_NAME[name]) return MODES_BY_NAME[name].slice();
+    return name ? ALL_MODES.slice() : [];
   }
   function setMode(m, announce, ev){
     state.mode = m || "";
@@ -1080,7 +1082,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
         id:rec.id,
         at:rec.at,
         data:{
-          scene:rec.scene, scene_name:rec.sceneName, map:rec.map,
+          scene:rec.scene, scene_name:rec.sceneName, map:rec.map, mode:rec.mode,
           dur:rec.dur, model:rec.model, amount:rec.amount,
           staff_id:rec.staffId, staff_pass:rec.staffPass,
           user_type:rec.account.type, user_number:rec.account.number
@@ -1113,8 +1115,8 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
       toast("请先选择场景或地图");
       return;
     }
-    if (currentModes().length && !state.mode){
-      toast("请先选择模式");
+    if (!state.mode){
+      toast("请先选择模式，再提交");
       return;
     }
     if (!state.amount){

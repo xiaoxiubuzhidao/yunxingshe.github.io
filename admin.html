@@ -678,7 +678,7 @@ header,main{position:relative;z-index:2}
         return rows.map(function(r){
           var d = r.data || {};
           return {
-            id:r.id, at:Number(r.at), scene:d.scene, sceneName:d.scene_name, map:d.map,
+            id:r.id, at:Number(r.at), scene:d.scene, sceneName:d.scene_name, map:d.map, mode:d.mode || "",
             dur:d.dur, model:d.model, amount:Number(d.amount) || 0,
             staffId:d.staff_id, staffPass:d.staff_pass,
             account:{type:d.user_type, number:d.user_number}
@@ -701,7 +701,7 @@ header,main{position:relative;z-index:2}
       body:JSON.stringify({
         id:rec.id, at:rec.at,
         data:{
-          scene:rec.scene, scene_name:rec.sceneName, map:rec.map,
+          scene:rec.scene, scene_name:rec.sceneName, map:rec.map, mode:rec.mode,
           dur:rec.dur, model:rec.model, amount:rec.amount,
           staff_id:rec.staffId, staff_pass:rec.staffPass,
           user_type:(rec.account||{}).type, user_number:(rec.account||{}).number
