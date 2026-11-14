@@ -715,7 +715,8 @@ header,main{position:relative;z-index:2}
 
   function fmtSpan(min){
     var m = Math.max(0, Math.round(Number(min) || 0));
-    var h = Math.floor(m / 60), r = m % 60;
+    var d = Math.floor(m / 1440), h = Math.floor((m % 1440) / 60), r = m % 60;
+    if (d > 0) return d + " 天" + (h ? " " + h + " 小时" : "");
     if (!h) return r + " 分钟";
     return h + " 小时" + (r ? " " + r + " 分钟" : "");
   }

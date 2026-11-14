@@ -332,7 +332,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
 .card-live-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .card-tier{font-size:12px;font-weight:700;color:rgb(var(--scene-rgb))}
 .card-code{font-size:11px;color:var(--text-faint);font-family:ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.04em}
-.card-clock{margin-top:6px;font-size:26px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:.02em;color:var(--text)}
+.card-clock{margin-top:6px;font-size:clamp(17px,5.4vw,26px);font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:.02em;color:var(--text)}
 .card-bar{height:3px;border-radius:99px;background:rgba(255,255,255,.1);margin:9px 0 10px;overflow:hidden}
 .card-bar i{display:block;height:100%;border-radius:99px;background:rgb(var(--scene-rgb));transition:width .9s linear}
 .card-foot{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;font-size:11.5px;color:var(--text-faint)}
@@ -1160,7 +1160,67 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
   "XSP-3Q9R-DAE3": 0,
   "XSP-QBMB-RWWP": 0,
   "XSP-ZD3V-25HA": 0,
-  "XST-5SEC-9K2P": 5
+  "XST-5SEC-9K2P": 5,
+  "XSD-KBQN-PXVP": 86400,
+  "XSD-Y7DA-YUU8": 86400,
+  "XSD-H38M-JVJR": 86400,
+  "XSD-LNGJ-EEFH": 86400,
+  "XSD-JMHU-LVXE": 86400,
+  "XSD-ELYY-KS92": 86400,
+  "XSD-HL3V-9PXA": 86400,
+  "XSD-2ZN5-Y56A": 86400,
+  "XSD-QUSM-MHSM": 86400,
+  "XSD-UFXD-NW9Y": 86400,
+  "XSD-UD4Z-LP99": 86400,
+  "XSD-F8NK-QE8W": 86400,
+  "XSD-666T-CRW3": 86400,
+  "XSD-NHKA-BKV7": 86400,
+  "XSD-XB42-R426": 86400,
+  "XSD-295D-NFHC": 86400,
+  "XSD-WMSL-SPXB": 86400,
+  "XSD-BS34-G9FL": 86400,
+  "XSD-9VLN-WSDZ": 86400,
+  "XSD-HMSU-TWPP": 86400,
+  "XSD-FH3D-CJG5": 86400,
+  "XSD-Q4QN-9TVS": 86400,
+  "XSD-XVZS-SX7W": 86400,
+  "XSD-9VRW-8TU6": 86400,
+  "XSD-XC26-WBHM": 86400,
+  "XSD-TXA5-9PGF": 86400,
+  "XSD-Q59J-GA3F": 86400,
+  "XSD-ZSX9-RTHA": 86400,
+  "XSD-TSJP-LBTD": 86400,
+  "XSD-JP6N-U69G": 86400,
+  "XSM-ZTKY-BF6A": 2592000,
+  "XSM-L6X5-DRSU": 2592000,
+  "XSM-9HPS-PRR7": 2592000,
+  "XSM-39RF-TE98": 2592000,
+  "XSM-SCAP-5295": 2592000,
+  "XSM-D67D-59GM": 2592000,
+  "XSM-X644-3GED": 2592000,
+  "XSM-MZM2-UPZS": 2592000,
+  "XSM-3FGK-E8LH": 2592000,
+  "XSM-DM68-JDSS": 2592000,
+  "XSM-VFLG-7XYB": 2592000,
+  "XSM-HDJG-SEMT": 2592000,
+  "XSM-5VRG-ABD9": 2592000,
+  "XSM-WJGW-P5EU": 2592000,
+  "XSM-KWJ2-8VDK": 2592000,
+  "XSM-6YBF-2GX5": 2592000,
+  "XSM-EY4F-NZC4": 2592000,
+  "XSM-LCPZ-3W65": 2592000,
+  "XSM-7WT4-RUBX": 2592000,
+  "XSM-Z6G7-RZU9": 2592000,
+  "XSM-2KPN-4BQQ": 2592000,
+  "XSM-ACPM-ASYX": 2592000,
+  "XSM-A73W-7T46": 2592000,
+  "XSM-SJHJ-VRSF": 2592000,
+  "XSM-E2VT-MQSD": 2592000,
+  "XSM-JXSU-Q57C": 2592000,
+  "XSM-PB5F-5JZH": 2592000,
+  "XSM-KDVF-G8CQ": 2592000,
+  "XSM-YZE7-JJ3X": 2592000,
+  "XSM-3PYR-6BET": 2592000
 } ;
   var KEY_CARD = "xiaoxiu-card-v1", KEY_LEDGER = "xiaoxiu-cardledger-v1", KEY_BURN = "xiaoxiu-cardburn-v1";
   var cardInput = $("#cardInput"), cardErr = $("#cardErr"), cardLive = $("#cardLive");
@@ -1178,8 +1238,9 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
   }
   function fmtClock(ms){
     var t = Math.floor(Math.max(0, ms) / 1000);
-    var h = Math.floor(t / 3600), m = Math.floor((t % 3600) / 60), sec = t % 60;
     function pad2(n){ return (n < 10 ? "0" : "") + n; }
+    var d = Math.floor(t / 86400), h = Math.floor((t % 86400) / 3600), m = Math.floor((t % 3600) / 60), sec = t % 60;
+    if (d > 0) return d + " 天 " + pad2(h) + ":" + pad2(m) + ":" + pad2(sec);
     return pad2(h) + ":" + pad2(m) + ":" + pad2(sec);
   }
   function fmtSpan(ms){
@@ -1191,6 +1252,8 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
   function cardLabel(secs){
     if (!secs) return "永久卡 · 不限时长";
     if (secs < 60) return "测试卡 · " + secs + " 秒";
+    if (secs >= 2592000) return "月卡 · 30 天";
+    if (secs >= 86400) return "天卡 · " + Math.round(secs / 86400) + " 天";
     return (secs / 3600) + " 小时卡";
   }
   function cardSync(code, hours, remainMin, bound){
