@@ -896,6 +896,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
 
   var KEY_ACCT  = "xiaoxiu-console-v1";
   var KEY_TASKS = "xiaoxiu-tasks-v1";
+  var KEY_ACCT_SAVE = "xiaoxiu-account-v1";
   var SCENE_META = {
     shu:{name:"古蜀遗迹", rgb:"111,220,192"},
     gu:{name:"云南虫谷", rgb:"168,217,95"},
@@ -904,12 +905,22 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
 
   var state = {scene:"shu", dur:24, model:"豆包 2.1 lite", account:null, staffId:"", staffPass:"", amount:0, map:"", mode:""};
 
+  function storeGet(key){
+    try{ var v = localStorage.getItem(key); if (v !== null) return v; }catch(e){}
+    try{ return sessionStorage.getItem(key); }catch(e){ return null; }
+  }
+  function storeSet(key, value){
+    var ok = false;
+    try{ localStorage.setItem(key, value); ok = true; }catch(e){}
+    try{ sessionStorage.setItem(key, value); ok = true; }catch(e){}
+    return ok;
+  }
   function readJSON(key, fallback){
-    try{ var raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : fallback; }
+    try{ var raw = storeGet(key); return raw ? JSON.parse(raw) : fallback; }
     catch(e){ return fallback; }
   }
   function writeJSON(key, value){
-    try{ localStorage.setItem(key, JSON.stringify(value)); return true; }
+    try{ return storeSet(key, JSON.stringify(value)); }
     catch(e){ return false; }
   }
   function loadTasks(){
@@ -1623,6 +1634,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
   }
   function applyAccount(acct){
     state.account = acct;
+    writeJSON(KEY_ACCT_SAVE, acct);
     $("#acctText").textContent = (acct.type === "qq" ? "QQ " : "手机 ") + maskNumber(acct.number);
     $("#gate").hidden = true;
     document.body.style.overflow = "";
@@ -1663,6 +1675,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
   }
   function logout(){
     state.account = null;
+    writeJSON(KEY_ACCT_SAVE, null);
     persistPrefs();
     closeProfile();
     $("#acctText").textContent = "未登录";
@@ -1791,28 +1804,37 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
 
   /* 初始化 */
   var saved = readJSON(KEY_ACCT, null);
-  if (saved){
-    if (SCENE_META[saved.scene]) setScene(saved.scene, false);
-    if (saved.dur) setDur(saved.dur, false);
-    if (saved.model){
-      state.model = saved.model;
-      $$(".model").forEach(function(el){
-        el.setAttribute("aria-pressed", el.getAttribute("data-model") === saved.model ? "true" : "false");
-      });
-    }
-    if (saved.scene === "") clearScene();
-    if (saved.map) setMap(saved.map, false);
-    if (saved.mode) setMode(saved.mode, false);
-    if (saved.staffId){ staffIdEl.value = saved.staffId; syncCred(); }
-    if (saved.account) applyAccount(saved.account);
-    syncSummary();
-  } else {
-    setDur(24, false);
-    syncSummary();
+  var savedAcct = (saved && saved.account) || readJSON(KEY_ACCT_SAVE, null);
+
+  /* 先把登录态恢复好，保证刷新后不弹登录框 */
+  if (savedAcct && savedAcct.number){
+    try{ applyAccount(savedAcct); }catch(e){}
   }
-  renderModes();
-  renderCard();
-  syncCount();
+
+  try{
+    if (saved){
+      if (SCENE_META[saved.scene]) setScene(saved.scene, false);
+      if (saved.dur) setDur(saved.dur, false);
+      if (saved.model){
+        state.model = saved.model;
+        $$(".model").forEach(function(el){
+          el.setAttribute("aria-pressed", el.getAttribute("data-model") === saved.model ? "true" : "false");
+        });
+      }
+      if (saved.scene === "") clearScene();
+      if (saved.map) setMap(saved.map, false);
+      if (saved.mode) setMode(saved.mode, false);
+      if (saved.staffId){ staffIdEl.value = saved.staffId; syncCred(); }
+      syncSummary();
+    } else {
+      setDur(24, false);
+      syncSummary();
+    }
+    renderModes();
+    renderCard();
+    syncCount();
+  }catch(e){}
+
   if (!state.account) openGate();
   else setAuthMode("qq");
 })();
