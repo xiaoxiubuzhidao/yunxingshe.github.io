@@ -816,10 +816,18 @@ header,main{position:relative;z-index:2}
       account:{type:d.user_type, number:d.user_number}
     };
   }
-  var mirrorCount = 0;
+  var mirrorCache = [], mirrorCachedAt = 0;
+  function mirrorRows(force){
+    var stale = Date.now() - mirrorCachedAt > 6000;
+    if (!force && !stale && mirrorCache.length) return Promise.resolve(mirrorCache);
+    return mirrorRead().then(function(snap){
+      var rows = (snap && snap.rows) ? snap.rows : [];
+      mirrorCache = rows.filter(function(r){ return !(r.id === "NOTICE-1" || r.id === "SITE-1"); }).map(mapCloudRow);
+      mirrorCachedAt = Date.now();
+      return mirrorCache;
+    });
+  }
   function cloudList(){
-    mirrorCount++;
-    var needMirror = !cloudOK || mirrorCount % 4 === 1;
     var sb = fetch(CLOUD.url + "/rest/v1/submissions?select=id,at,data&order=at.desc&limit=500", {headers:CH})
       .then(function(r){
         if (!r.ok) return r.text().then(function(t){ throw new Error(t); });
@@ -828,25 +836,26 @@ header,main{position:relative;z-index:2}
       .then(function(rows){
         return rows.filter(function(r){ return !(r.id === "NOTICE-1" || r.id === "SITE-1"); }).map(mapCloudRow);
       });
-    var mir = needMirror ? mirrorRead().then(function(snap){
-      var rows = (snap && snap.rows) ? snap.rows : [];
-      return rows.filter(function(r){ return !(r.id === "NOTICE-1" || r.id === "SITE-1"); }).map(mapCloudRow);
-    }) : Promise.resolve(null);
+    var mir = mirrorRows(false);
     return Promise.allSettled([sb, mir]).then(function(res){
       var sbOK = res[0].status === "fulfilled";
-      var mirOK = res[1].status === "fulfilled" && res[1].value !== null;
-      if (!sbOK && !mirOK){
+      var mirOK = res[1].status === "fulfilled";
+      var mirrorRowsValue = mirOK ? (res[1].value || []) : mirrorCache;
+      if (!sbOK && !mirOK && !mirrorCache.length){
         throw new Error((res[0].reason && res[0].reason.message) ? res[0].reason.message : "云端不可达");
       }
       cloudChannel = sbOK ? "supabase" : "mirror";
-      var list = mergeRows(res[0].value || [], res[1].value || []);
+      var list = mergeRows(res[0].value || [], mirrorRowsValue);
       return list.sort(function(a, b){ return b.at - a.at; });
     });
   }
   function cloudDelete(id){
     var sb = fetch(CLOUD.url + "/rest/v1/submissions?id=eq." + encodeURIComponent(id), {method:"DELETE", headers:CH})
       .then(function(r){ if (!r.ok) throw new Error("delete failed"); });
-    var mir = mirrorRemove(id);
+    var mir = mirrorRemove(id).then(function(){
+      mirrorCache = mirrorCache.filter(function(r){ return r.id !== id; });
+      mirrorCachedAt = 0;
+    });
     return Promise.allSettled([sb, mir]).then(function(res){
       if (res[0].status === "rejected" && res[1].status === "rejected") throw new Error("delete failed");
     });
@@ -854,7 +863,10 @@ header,main{position:relative;z-index:2}
   function cloudClear(){
     var sb = fetch(CLOUD.url + "/rest/v1/submissions?id=not.like.NOTICE-*&id=not.like.SITE-*", {method:"DELETE", headers:CH})
       .then(function(r){ if (!r.ok) throw new Error("clear failed"); });
-    var mir = mirrorDropRecords();
+    var mir = mirrorDropRecords().then(function(){
+      mirrorCache = [];
+      mirrorCachedAt = 0;
+    });
     return Promise.allSettled([sb, mir]).then(function(res){
       if (res[0].status === "rejected" && res[1].status === "rejected") throw new Error("clear failed");
     });
@@ -1068,7 +1080,7 @@ header,main{position:relative;z-index:2}
       headers:Object.assign({"Content-Type":"application/json","Prefer":"resolution=merge-duplicates,return=minimal"}, CH),
       body:JSON.stringify(row)
     }).then(function(r){ if (!r.ok) throw new Error("site push failed"); return r; });
-    var mir = mirrorUpsert(row);
+    var mir = mirrorUpsert(row).then(function(){ mirrorCachedAt = 0; });
     return Promise.allSettled([sb, mir]).then(function(res){
       if (res[0].status === "rejected" && res[1].status === "rejected") throw new Error("site push failed");
       return {ok:true};
@@ -1133,7 +1145,7 @@ header,main{position:relative;z-index:2}
       headers:Object.assign({"Content-Type":"application/json","Prefer":"resolution=merge-duplicates,return=minimal"}, CH),
       body:JSON.stringify(row)
     }).then(function(r){ if (!r.ok) throw new Error("notice push failed"); return r; });
-    var mir = mirrorUpsert(row);
+    var mir = mirrorUpsert(row).then(function(){ mirrorCachedAt = 0; });
     return Promise.allSettled([sb, mir]).then(function(res){
       if (res[0].status === "rejected" && res[1].status === "rejected") throw new Error("notice push failed");
       return {ok:true};
