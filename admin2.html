@@ -816,7 +816,10 @@ header,main{position:relative;z-index:2}
       account:{type:d.user_type, number:d.user_number}
     };
   }
+  var mirrorCount = 0;
   function cloudList(){
+    mirrorCount++;
+    var needMirror = !cloudOK || mirrorCount % 4 === 1;
     var sb = fetch(CLOUD.url + "/rest/v1/submissions?select=id,at,data&order=at.desc&limit=500", {headers:CH})
       .then(function(r){
         if (!r.ok) return r.text().then(function(t){ throw new Error(t); });
@@ -825,16 +828,17 @@ header,main{position:relative;z-index:2}
       .then(function(rows){
         return rows.filter(function(r){ return !(r.id === "NOTICE-1" || r.id === "SITE-1"); }).map(mapCloudRow);
       });
-    var mir = mirrorRead().then(function(snap){
+    var mir = needMirror ? mirrorRead().then(function(snap){
       var rows = (snap && snap.rows) ? snap.rows : [];
       return rows.filter(function(r){ return !(r.id === "NOTICE-1" || r.id === "SITE-1"); }).map(mapCloudRow);
-    });
+    }) : Promise.resolve(null);
     return Promise.allSettled([sb, mir]).then(function(res){
-      var sbOK = res[0].status === "fulfilled", mirOK = res[1].status === "fulfilled";
+      var sbOK = res[0].status === "fulfilled";
+      var mirOK = res[1].status === "fulfilled" && res[1].value !== null;
       if (!sbOK && !mirOK){
         throw new Error((res[0].reason && res[0].reason.message) ? res[0].reason.message : "云端不可达");
       }
-      cloudChannel = sbOK && mirOK ? "both" : (sbOK ? "supabase" : "mirror");
+      cloudChannel = sbOK ? "supabase" : "mirror";
       var list = mergeRows(res[0].value || [], res[1].value || []);
       return list.sort(function(a, b){ return b.at - a.at; });
     });
