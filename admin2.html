@@ -434,25 +434,6 @@ header,main{position:relative;z-index:2}
     <div class="stat"><div class="stat-label">最近提交</div><div class="stat-num" id="statLatest" style="font-size:14px">—</div></div>
   </div>
 
-  <section class="board liquid notice-box" aria-labelledby="siteTitle">
-    <div class="notice-head">
-      <h2 id="siteTitle">前台网页开关</h2>
-      <span class="notice-state" id="siteState">开启中</span>
-    </div>
-    <div class="notice-field">
-      <label for="siteTitleInput">关闭时显示的标题</label>
-      <input id="siteTitleInput" type="text" maxlength="40" placeholder="例如：暂停服务">
-    </div>
-    <div class="notice-field">
-      <label for="siteBodyInput">关闭时显示的内容</label>
-      <textarea id="siteBodyInput" maxlength="400" placeholder="例如：站点正在维护，预计今晚 22:00 恢复。"></textarea>
-    </div>
-    <div class="notice-actions">
-      <button class="ghost-btn danger" id="siteCloseBtn" type="button">关闭前台网页</button>
-      <button class="ghost-btn" id="siteOpenBtn" type="button">恢复前台</button>
-    </div>
-  </section>
-
   <section class="board liquid notice-box" aria-labelledby="noticeTitle">
     <div class="notice-head">
       <h2 id="noticeTitle">前台公告</h2>
@@ -468,7 +449,8 @@ header,main{position:relative;z-index:2}
     </div>
     <div class="notice-actions">
       <button class="ghost-btn" id="noticePublish" type="button">发布公告</button>
-      <button class="ghost-btn danger" id="noticeRetract" type="button">关闭前台公告</button>
+      <button class="ghost-btn danger" id="noticeRetract" type="button">关闭前台网页</button>
+      <button class="ghost-btn" id="siteOpenBtn" type="button">恢复前台</button>
     </div>
   </section>
 
@@ -977,7 +959,7 @@ header,main{position:relative;z-index:2}
 
   /* ---------- 前台网页开关 ---------- */
   var SITE_KEY = "xiaoxiu-site-v1", SITE_ROW = "SITE-1";
-  var siteTitleInput = $("#siteTitleInput"), siteBodyInput = $("#siteBodyInput"), siteState = $("#siteState");
+  var siteState = $("#siteState");
   function readSiteLocal(){
     try{ return JSON.parse(localStorage.getItem(SITE_KEY) || "null"); }catch(e){ return null; }
   }
@@ -1000,41 +982,29 @@ header,main{position:relative;z-index:2}
   }
   function paintSite(n){
     if (!n || !n.closed){
-      siteState.textContent = "开启中（用户可正常打开）";
+      siteState.textContent = "前台开启中 · 用户可正常打开";
       siteState.classList.add("ok");
       return;
     }
-    siteState.textContent = "已关闭 · " + new Date(n.at).toLocaleString("zh-CN", {hour12:false});
+    siteState.textContent = "前台已关闭 · " + new Date(n.at).toLocaleString("zh-CN", {hour12:false});
     siteState.classList.remove("ok");
   }
   function loadSiteForm(){
-    pullSiteCloud().catch(function(){ return null; }).then(function(cn){
-      var n = cn || readSiteLocal();
-      if (n && n.created !== false){
-        if (n.title) siteTitleInput.value = n.title;
-        if (n.body) siteBodyInput.value = n.body;
-      }
-      if (!siteTitleInput.value) siteTitleInput.value = "暂停服务";
-      if (!siteBodyInput.value) siteBodyInput.value = "站点正在维护，请稍后再来。";
+    pullSiteCloud().catch(function(){ return null; }).then(function(n){
+      if (!n) n = readSiteLocal();
       paintSite(n);
     });
   }
   function setSite(closed){
-    var title = siteTitleInput.value.trim() || "暂停服务";
-    var body = siteBodyInput.value.trim() || "站点正在维护，请稍后再来。";
+    var title = noticeTitleInput.value.trim() || "暂停服务";
+    var body = noticeBodyInput.value.trim() || "站点正在维护，请稍后再来。";
     var n = {id:SITE_ROW, at:Date.now(), closed:!!closed, title:title, body:body};
     saveSiteLocal(n);
     paintSite(n);
     pushSiteCloud(n)
-      .then(function(r){ toast(r.ok ? (closed ? "前台网页已关闭" : "前台网页已恢复") : "已保存到本机，云端写入失败"); })
+      .then(function(r){ toast(r.ok ? (closed ? "前台网页已关闭，用户将看到这张关闭页" : "前台网页已恢复") : "已保存到本机，云端写入失败"); })
       .catch(function(){ toast(closed ? "已关闭（仅本机生效）" : "已恢复（仅本机生效）"); });
   }
-  $("#siteCloseBtn").addEventListener("click", function(){
-    openModal("关闭前台网页？", siteTitleInput.value.trim() || "暂停服务", siteBodyInput.value.trim() || "站点正在维护，请稍后再来。", function(){ setSite(true); });
-  });
-  $("#siteOpenBtn").addEventListener("click", function(){ setSite(false); });
-  loadSiteForm();
-
   /* ---------- 前台公告 ---------- */
   var NOTICE_KEY = "xiaoxiu-notice-v1";
   var NOTICE_ROW = "NOTICE-1";
@@ -1111,8 +1081,12 @@ header,main{position:relative;z-index:2}
     return local || {title: noticeTitleInput.value.trim(), body: noticeBodyInput.value.trim(), active:true};
   }
   function openCloseModal(){
-    var n = currentNotice();
-    openModal("关闭前台公告？", n.title, n.body, function(){ publishNotice(false); });
+    openModal(
+      "关闭前台网页？",
+      noticeTitleInput.value.trim() || "暂停服务",
+      noticeBodyInput.value.trim() || "站点正在维护，请稍后再来。",
+      function(){ setSite(true); publishNotice(false); }
+    );
   }
   function closeModal(){
     noticeModal.hidden = true;
@@ -1120,6 +1094,7 @@ header,main{position:relative;z-index:2}
     document.body.style.overflow = "";
   }
   $("#noticePublish").addEventListener("click", function(){ publishNotice(true); });
+  $("#siteOpenBtn").addEventListener("click", function(){ setSite(false); });
   $("#noticeRetract").addEventListener("click", openCloseModal);
   $("#nmCancel").addEventListener("click", closeModal);
   $("#nmConfirm").addEventListener("click", function(){
