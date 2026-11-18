@@ -147,6 +147,22 @@ header,main{position:relative;z-index:2}
   background:rgba(0,0,0,.22);color:var(--text);font-family:inherit;font-size:14px;padding:10px 12px;
 }
 .notice-field textarea{min-height:96px;resize:vertical;line-height:1.7}
+.nmodal{position:fixed;inset:0;z-index:70;display:grid;place-items:center;padding:18px}
+.nmodal[hidden]{display:none}
+.nmodal-veil{position:absolute;inset:0;background:rgba(4,6,12,.6);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.nmodal-card{
+  position:relative;z-index:2;width:100%;max-width:400px;padding:20px;border-radius:20px;box-sizing:border-box;
+}
+.nmodal-title{font-size:15px;font-weight:800;line-height:1.5;word-break:break-word}
+.nmodal-label{margin-top:14px;font-size:11px;color:var(--text-faint);letter-spacing:.02em}
+.nmodal-body{
+  margin-top:6px;max-height:180px;overflow:auto;font-size:13px;line-height:1.8;color:var(--text-dim);
+  white-space:pre-wrap;word-break:break-word;
+}
+.nmodal-actions{display:flex;gap:9px;margin-top:18px}
+.nmodal-actions button{flex:1 1 0;height:42px;border-radius:12px;font-size:13px;font-family:inherit;cursor:pointer}
+.nmodal-ghost{color:var(--text);background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.16)}
+.nmodal-danger{color:#ffd9d9;background:rgba(255,107,107,.16);border:1px solid rgba(255,107,107,.36)}
 .notice-actions{display:flex;flex-wrap:wrap;gap:8px}
 .stats{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-bottom:12px}
 .stat{padding:12px 13px;border-radius:14px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.08)}
@@ -388,6 +404,21 @@ header,main{position:relative;z-index:2}
   </div>
 </header>
 
+<div class="nmodal" id="noticeModal" hidden>
+  <div class="nmodal-veil" data-nm-close="1" aria-hidden="true"></div>
+  <div class="nmodal-card liquid" role="dialog" aria-modal="true" aria-labelledby="nmTitle">
+    <div class="nmodal-title" id="nmTitle">关闭前台公告？</div>
+    <p class="nmodal-label">当前公告标题</p>
+    <div class="nmodal-body" id="nmTitleText" style="color:var(--text);font-weight:700">—</div>
+    <p class="nmodal-label">公告内容</p>
+    <div class="nmodal-body" id="nmBodyText">—</div>
+    <div class="nmodal-actions">
+      <button class="nmodal-ghost" id="nmCancel" type="button">取消</button>
+      <button class="nmodal-danger" id="nmConfirm" type="button">确认关闭</button>
+    </div>
+  </div>
+</div>
+
 <main class="shell">
   <div class="page-head">
     <div>
@@ -418,7 +449,7 @@ header,main{position:relative;z-index:2}
     </div>
     <div class="notice-actions">
       <button class="ghost-btn" id="noticePublish" type="button">发布公告</button>
-      <button class="ghost-btn danger" id="noticeRetract" type="button">撤回公告</button>
+      <button class="ghost-btn danger" id="noticeRetract" type="button">关闭前台公告</button>
     </div>
   </section>
 
@@ -982,11 +1013,35 @@ header,main{position:relative;z-index:2}
     saveNoticeLocal(n);
     paintNoticeState(n);
     pushNoticeCloud(n)
-      .then(function(r){ toast(r.ok ? (active ? "公告已发布" : "公告已撤回") : "已保存到本机，云端写入失败"); })
-      .catch(function(){ toast("已保存到本机，云端不可达"); });
+      .then(function(r){ toast(r.ok ? (active ? "公告已发布，前台将自动弹出" : "前台公告已关闭") : "已保存到本机，云端写入失败"); })
+      .catch(function(){ toast(active ? "已保存到本机，云端不可达" : "前台公告已关闭（仅本机）"); });
+  }
+  var noticeModal = $("#noticeModal");
+  function currentNotice(){
+    var local = readNoticeLocal();
+    return local || {title: noticeTitleInput.value.trim(), body: noticeBodyInput.value.trim(), active:true};
+  }
+  function openCloseModal(){
+    var n = currentNotice();
+    $("#nmTitleText").textContent = n.title || "（无标题）";
+    $("#nmBodyText").textContent = n.body || "（无内容）";
+    noticeModal.hidden = false;
+    document.body.style.overflow = "hidden";
+  }
+  function closeModal(){
+    noticeModal.hidden = true;
+    document.body.style.overflow = "";
   }
   $("#noticePublish").addEventListener("click", function(){ publishNotice(true); });
-  $("#noticeRetract").addEventListener("click", function(){ publishNotice(false); });
+  $("#noticeRetract").addEventListener("click", openCloseModal);
+  $("#nmCancel").addEventListener("click", closeModal);
+  $("#nmConfirm").addEventListener("click", function(){
+    closeModal();
+    publishNotice(false);
+  });
+  noticeModal.addEventListener("click", function(e){
+    if (e.target.getAttribute("data-nm-close") === "1") closeModal();
+  });
   loadNoticeForm();
 
   /* ---------- 初始化 ---------- */
