@@ -889,6 +889,9 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
 
 <script>
 (function(){
+  window.addEventListener("error", function(e){
+    try{ localStorage.setItem("xiaoxiu-last-error", (e.message || "") + " @" + (e.filename || "") + ":" + (e.lineno || 0)); }catch(x){}
+  });
   "use strict";
 
   var $  = function(s,r){ return (r||document).querySelector(s); };
@@ -904,6 +907,27 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
   };
 
   var state = {scene:"shu", dur:24, model:"豆包 2.1 lite", account:null, staffId:"", staffPass:"", amount:0, map:"", mode:""};
+
+  /* 尽早恢复登录态：后续任何步骤出错都不会把用户踢回登录页 */
+  (function restoreAccount(){
+    var a = null;
+    try{
+      var prev = readJSON(KEY_ACCT, null);
+      a = (prev && prev.account) || readJSON("xiaoxiu-account-v1", null);
+    }catch(e){}
+    if (!a || !a.number) return;
+    state.account = a;
+    try{
+      $("#acctText").textContent = (a.type === "qq" ? "QQ " : "手机 ") + maskNumber(String(a.number));
+    }catch(e){
+      try{ $("#acctText").textContent = "已登录"; }catch(x){}
+    }
+    try{
+      var g = document.getElementById("gate");
+      if (g) g.hidden = true;
+      document.body.style.overflow = "";
+    }catch(e){}
+  })();
 
   function storeGet(key){
     try{ var v = localStorage.getItem(key); if (v !== null) return v; }catch(e){}
