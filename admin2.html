@@ -436,8 +436,11 @@ header,main{position:relative;z-index:2}
 
   <section class="board liquid notice-box" aria-labelledby="noticeTitle">
     <div class="notice-head">
-      <h2 id="noticeTitle">前台公告</h2>
-      <span class="notice-state" id="noticeState">未发布</span>
+      <h2 id="noticeTitle">前台公告 / 网页</h2>
+      <div style="display:flex;gap:14px;flex-wrap:wrap">
+        <span class="notice-state" id="siteState">前台开启中</span>
+        <span class="notice-state" id="noticeState">未发布</span>
+      </div>
     </div>
     <div class="notice-field">
       <label for="noticeTitleInput">公告标题</label>
@@ -981,11 +984,13 @@ header,main{position:relative;z-index:2}
       });
   }
   function paintSite(n){
+    if (!siteState) return;
     if (!n || !n.closed){
-      siteState.textContent = "前台开启中 · 用户可正常打开";
+      siteState.textContent = "前台开启中";
       siteState.classList.add("ok");
       return;
     }
+    if (!siteState) return;
     siteState.textContent = "前台已关闭 · " + new Date(n.at).toLocaleString("zh-CN", {hour12:false});
     siteState.classList.remove("ok");
   }
