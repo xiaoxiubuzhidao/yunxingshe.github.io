@@ -517,6 +517,7 @@ header,main{position:relative;z-index:2}
   function maskUser(acct){
     if (!acct || !acct.number) return "游客";
     var n = String(acct.number);
+    if (acct.type === "wechat") return "微信 " + n.slice(-4);
     return (acct.type === "qq" ? "QQ " : "手机 ") + n.slice(0, 2) + "****" + n.slice(-2);
   }
 
