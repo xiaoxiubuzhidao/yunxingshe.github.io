@@ -453,6 +453,21 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
 [data-theme="light"] .foot{border-top-color:rgba(21,26,36,.10)}
 
 /* 闸门 */
+.site-closed{
+  position:fixed;inset:0;z-index:200;display:grid;place-items:center;padding:24px;
+  background:rgba(5,6,12,.92);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+}
+.site-closed[hidden]{display:none}
+.site-closed-card{
+  width:100%;max-width:420px;padding:26px 22px 22px;border-radius:24px;text-align:center;box-sizing:border-box;
+}
+.site-closed-mark{
+  width:52px;height:52px;margin:0 auto 16px;border-radius:16px;display:grid;place-items:center;
+  font-size:24px;font-weight:800;color:#ffb4b4;background:rgba(255,107,107,.12);border:1px solid rgba(255,107,107,.3);
+}
+.site-closed-title{font-size:19px;font-weight:800;letter-spacing:-.02em;line-height:1.4;word-break:break-word}
+.site-closed-body{margin-top:10px;font-size:13px;line-height:1.85;color:var(--text-dim);white-space:pre-wrap;word-break:break-word}
+.site-closed-foot{margin-top:18px;font-size:11px;color:var(--text-faint)}
 .notice-card{
   position:fixed;right:16px;bottom:16px;z-index:90;width:min(340px,calc(100vw - 32px));
   padding:14px 15px 12px;border-radius:18px;box-sizing:border-box;
@@ -886,6 +901,16 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
 </div>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<!-- ===== 站点已关闭 ===== -->
+<div class="site-closed" id="siteClosed" hidden>
+  <div class="site-closed-card liquid">
+    <div class="site-closed-mark" aria-hidden="true">!</div>
+    <div class="site-closed-title" id="siteClosedTitle">暂停服务</div>
+    <div class="site-closed-body" id="siteClosedBody">站点正在维护，请稍后再来。</div>
+    <div class="site-closed-foot">小修科技</div>
+  </div>
+</div>
 
 <!-- ===== 公告悬浮窗 ===== -->
 <button class="notice-fab" id="noticeFab" type="button" hidden><span class="notice-dot" aria-hidden="true"></span>查看公告</button>
@@ -1792,7 +1817,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
   });
 
   /* ---------- 公告悬浮窗 ---------- */
-  var NOTICE_KEY = "xiaoxiu-notice-v1", NOTICE_SEEN = "xiaoxiu-notice-seen", NOTICE_ROW = "NOTICE-1";
+  var NOTICE_KEY = "xiaoxiu-notice-v1", NOTICE_SEEN = "xiaoxiu-notice-seen", NOTICE_ROW = "NOTICE-1", SITE_ROW = "SITE-1";
   var noticeCard = $("#noticeCard"), noticeFab = $("#noticeFab");
   var noticeCurrent = null;
   function readNoticeLocal(){
@@ -1812,18 +1837,46 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
       noticeFab.hidden = true; noticeCard.hidden = false;
     }
   }
+  var siteClosed = $("#siteClosed");
+  function readSiteLocal(){
+    try{ return JSON.parse(localStorage.getItem("xiaoxiu-site-v1") || "null"); }catch(e){ return null; }
+  }
+  function renderSite(n){
+    if (!n || !n.closed){
+      siteClosed.hidden = true;
+      document.body.style.overflow = "";
+      return;
+    }
+    $("#siteClosedTitle").textContent = n.title || "暂停服务";
+    $("#siteClosedBody").textContent = n.body || "";
+    siteClosed.hidden = false;
+    if (noticeCard) noticeCard.hidden = true;
+    if (noticeFab) noticeFab.hidden = true;
+  }
   function loadNotice(){
     var local = readNoticeLocal();
-    fetch(CLOUD.url + "/rest/v1/submissions?id=eq." + NOTICE_ROW + "&select=at,data", {
+    var localSite = readSiteLocal();
+    fetch(CLOUD.url + "/rest/v1/submissions?id=in.(" + NOTICE_ROW + "," + SITE_ROW + ")&select=id,at,data", {
       headers:{"apikey":CLOUD.key, "Authorization":"Bearer " + CLOUD.key}
     }).then(function(r){ return r.ok ? r.json() : null; }).then(function(rows){
-      if (!rows || !rows.length) return local;
-      var d = rows[0].data || {};
-      var cn = {id:NOTICE_ROW, at:Number(rows[0].at), title:d.title || "", body:d.body || "", active:!!d.active};
-      if (!local || cn.at >= Number(local.at || 0)) return cn;
-      return local;
-    }).catch(function(){ return local; }).then(function(n){
-      renderNotice(n);
+      var notice = local, site = localSite;
+      if (rows && rows.length){
+        rows.forEach(function(row){
+          var d = row.data || {};
+          if (row.id === NOTICE_ROW){
+            var cn = {id:NOTICE_ROW, at:Number(row.at), title:d.title || "", body:d.body || "", active:!!d.active};
+            if (!notice || cn.at >= Number(notice.at || 0)) notice = cn;
+          } else if (row.id === SITE_ROW){
+            var cs = {id:SITE_ROW, at:Number(row.at), closed:!!d.closed, title:d.title || "", body:d.body || ""};
+            if (!site || cs.at >= Number(site.at || 0)) site = cs;
+          }
+        });
+      }
+      return {notice:notice, site:site};
+    }).catch(function(){ return {notice:local, site:localSite}; }).then(function(res){
+      renderSite(res.site);
+      if (res.site && res.site.closed) return;
+      renderNotice(res.notice);
     });
   }
   if (!noticeCard || !noticeFab) return;

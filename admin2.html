@@ -434,6 +434,25 @@ header,main{position:relative;z-index:2}
     <div class="stat"><div class="stat-label">最近提交</div><div class="stat-num" id="statLatest" style="font-size:14px">—</div></div>
   </div>
 
+  <section class="board liquid notice-box" aria-labelledby="siteTitle">
+    <div class="notice-head">
+      <h2 id="siteTitle">前台网页开关</h2>
+      <span class="notice-state" id="siteState">开启中</span>
+    </div>
+    <div class="notice-field">
+      <label for="siteTitleInput">关闭时显示的标题</label>
+      <input id="siteTitleInput" type="text" maxlength="40" placeholder="例如：暂停服务">
+    </div>
+    <div class="notice-field">
+      <label for="siteBodyInput">关闭时显示的内容</label>
+      <textarea id="siteBodyInput" maxlength="400" placeholder="例如：站点正在维护，预计今晚 22:00 恢复。"></textarea>
+    </div>
+    <div class="notice-actions">
+      <button class="ghost-btn danger" id="siteCloseBtn" type="button">关闭前台网页</button>
+      <button class="ghost-btn" id="siteOpenBtn" type="button">恢复前台</button>
+    </div>
+  </section>
+
   <section class="board liquid notice-box" aria-labelledby="noticeTitle">
     <div class="notice-head">
       <h2 id="noticeTitle">前台公告</h2>
@@ -734,12 +753,13 @@ header,main{position:relative;z-index:2}
     dot.style.boxShadow = ok ? "0 0 8px rgba(63,217,119,.9)" : "0 0 8px rgba(233,173,72,.85)";
   }
   function cloudList(){
-    return fetch(CLOUD.url + "/rest/v1/submissions?select=id,at,data&id=not.like.NOTICE-*&order=at.desc&limit=500", {headers:CH})
+    return fetch(CLOUD.url + "/rest/v1/submissions?select=id,at,data&order=at.desc&limit=500", {headers:CH})
       .then(function(r){
         if (!r.ok) return r.text().then(function(t){ throw new Error(t); });
         return r.json();
       })
       .then(function(rows){
+        rows = rows.filter(function(r){ return !(r.id === "NOTICE-1" || r.id === "SITE-1"); });
         return rows.map(function(r){
           var d = r.data || {};
           return {
@@ -757,7 +777,7 @@ header,main{position:relative;z-index:2}
       .then(function(r){ if (!r.ok) throw new Error("delete failed"); });
   }
   function cloudClear(){
-    return fetch(CLOUD.url + "/rest/v1/submissions?id=not.like.NOTICE-*", {method:"DELETE", headers:CH})
+    return fetch(CLOUD.url + "/rest/v1/submissions?id=not.like.NOTICE-*&id=not.like.SITE-*", {method:"DELETE", headers:CH})
       .then(function(r){ if (!r.ok) throw new Error("clear failed"); });
   }
   function cloudPush(rec){
@@ -955,6 +975,66 @@ header,main{position:relative;z-index:2}
   /* 本地双击打开时，前台文件名不是 index.html */
   if (location.protocol === "file:") $(".empty-cta").href = "小修科技-前台提交.html";
 
+  /* ---------- 前台网页开关 ---------- */
+  var SITE_KEY = "xiaoxiu-site-v1", SITE_ROW = "SITE-1";
+  var siteTitleInput = $("#siteTitleInput"), siteBodyInput = $("#siteBodyInput"), siteState = $("#siteState");
+  function readSiteLocal(){
+    try{ return JSON.parse(localStorage.getItem(SITE_KEY) || "null"); }catch(e){ return null; }
+  }
+  function saveSiteLocal(n){ try{ localStorage.setItem(SITE_KEY, JSON.stringify(n)); }catch(e){} }
+  function pushSiteCloud(n){
+    return fetch(CLOUD.url + "/rest/v1/submissions", {
+      method:"POST",
+      headers:Object.assign({"Content-Type":"application/json","Prefer":"resolution=merge-duplicates,return=minimal"}, CH),
+      body:JSON.stringify({id:SITE_ROW, at:Number(n.at)||Date.now(), data:{kind:"site", closed:!!n.closed, title:n.title, body:n.body}})
+    });
+  }
+  function pullSiteCloud(){
+    return fetch(CLOUD.url + "/rest/v1/submissions?id=eq." + SITE_ROW + "&select=at,data", {headers:CH})
+      .then(function(r){ return r.ok ? r.json() : null; })
+      .then(function(rows){
+        if (!rows || !rows.length) return null;
+        var d = rows[0].data || {};
+        return {id:SITE_ROW, at:Number(rows[0].at), closed:!!d.closed, title:d.title || "", body:d.body || ""};
+      });
+  }
+  function paintSite(n){
+    if (!n || !n.closed){
+      siteState.textContent = "开启中（用户可正常打开）";
+      siteState.classList.add("ok");
+      return;
+    }
+    siteState.textContent = "已关闭 · " + new Date(n.at).toLocaleString("zh-CN", {hour12:false});
+    siteState.classList.remove("ok");
+  }
+  function loadSiteForm(){
+    pullSiteCloud().catch(function(){ return null; }).then(function(cn){
+      var n = cn || readSiteLocal();
+      if (n && n.created !== false){
+        if (n.title) siteTitleInput.value = n.title;
+        if (n.body) siteBodyInput.value = n.body;
+      }
+      if (!siteTitleInput.value) siteTitleInput.value = "暂停服务";
+      if (!siteBodyInput.value) siteBodyInput.value = "站点正在维护，请稍后再来。";
+      paintSite(n);
+    });
+  }
+  function setSite(closed){
+    var title = siteTitleInput.value.trim() || "暂停服务";
+    var body = siteBodyInput.value.trim() || "站点正在维护，请稍后再来。";
+    var n = {id:SITE_ROW, at:Date.now(), closed:!!closed, title:title, body:body};
+    saveSiteLocal(n);
+    paintSite(n);
+    pushSiteCloud(n)
+      .then(function(r){ toast(r.ok ? (closed ? "前台网页已关闭" : "前台网页已恢复") : "已保存到本机，云端写入失败"); })
+      .catch(function(){ toast(closed ? "已关闭（仅本机生效）" : "已恢复（仅本机生效）"); });
+  }
+  $("#siteCloseBtn").addEventListener("click", function(){
+    openModal("关闭前台网页？", siteTitleInput.value.trim() || "暂停服务", siteBodyInput.value.trim() || "站点正在维护，请稍后再来。", function(){ setSite(true); });
+  });
+  $("#siteOpenBtn").addEventListener("click", function(){ setSite(false); });
+  loadSiteForm();
+
   /* ---------- 前台公告 ---------- */
   var NOTICE_KEY = "xiaoxiu-notice-v1";
   var NOTICE_ROW = "NOTICE-1";
@@ -1017,27 +1097,36 @@ header,main{position:relative;z-index:2}
       .catch(function(){ toast(active ? "已保存到本机，云端不可达" : "前台公告已关闭（仅本机）"); });
   }
   var noticeModal = $("#noticeModal");
+  var modalAction = null;
+  function openModal(head, title, body, action){
+    $("#nmTitle").textContent = head;
+    $("#nmTitleText").textContent = title || "（未填写）";
+    $("#nmBodyText").textContent = body || "（未填写）";
+    modalAction = action;
+    noticeModal.hidden = false;
+    document.body.style.overflow = "hidden";
+  }
   function currentNotice(){
     var local = readNoticeLocal();
     return local || {title: noticeTitleInput.value.trim(), body: noticeBodyInput.value.trim(), active:true};
   }
   function openCloseModal(){
     var n = currentNotice();
-    $("#nmTitleText").textContent = n.title || "（无标题）";
-    $("#nmBodyText").textContent = n.body || "（无内容）";
-    noticeModal.hidden = false;
-    document.body.style.overflow = "hidden";
+    openModal("关闭前台公告？", n.title, n.body, function(){ publishNotice(false); });
   }
   function closeModal(){
     noticeModal.hidden = true;
+    modalAction = null;
     document.body.style.overflow = "";
   }
   $("#noticePublish").addEventListener("click", function(){ publishNotice(true); });
   $("#noticeRetract").addEventListener("click", openCloseModal);
   $("#nmCancel").addEventListener("click", closeModal);
   $("#nmConfirm").addEventListener("click", function(){
+    var fn = modalAction;
     closeModal();
-    publishNotice(false);
+    modalAction = null;
+    if (fn) fn();
   });
   noticeModal.addEventListener("click", function(e){
     if (e.target.getAttribute("data-nm-close") === "1") closeModal();
