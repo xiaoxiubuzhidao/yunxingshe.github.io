@@ -486,19 +486,6 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
 .form-err{display:none;margin-top:8px;font-size:12px;color:#ff8f8f}
 [data-theme="light"] .form-err{color:#c02b2b}
 .form-err.show{display:block}
-.wx-box{margin-top:14px;text-align:center}
-.wx-qr{
-  width:174px;height:174px;margin:0 auto;border-radius:14px;padding:9px;box-sizing:border-box;
-  background:rgba(255,255,255,.92);border:1px solid rgba(255,255,255,.3);
-}
-.wx-qr svg{width:100%;height:100%;display:block}
-.wx-tip{margin-top:10px;font-size:12.5px;color:var(--text-dim)}
-.wx-btn{
-  margin-top:12px;width:100%;height:46px;border-radius:13px;font-size:13.5px;font-weight:700;font-family:inherit;cursor:pointer;
-  color:#062b16;background:linear-gradient(135deg,#3fd977,#2fc46a);border:1px solid rgba(63,217,119,.5);
-}
-.wx-btn:hover{filter:brightness(1.05)}
-.wx-note{margin-top:9px;font-size:10.5px;color:var(--text-faint);line-height:1.6}
 .gate-submit{
   width:100%;height:48px;margin-top:16px;border-radius:14px;display:grid;place-items:center;
   font-size:14px;font-weight:700;color:#0c1119;
@@ -829,25 +816,17 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
   <div class="gate-card liquid" role="dialog" aria-modal="true" aria-labelledby="gateTitle">
     <div class="gate-logo" aria-hidden="true">修</div>
     <h2 class="gate-title" id="gateTitle">首次使用，请先注册</h2>
-    <p class="gate-desc">手机号或微信登录，提交记录会带上你的账号。</p>
+    <p class="gate-desc">使用 QQ 号或手机号进入，提交记录会带上你的账号。</p>
     <div class="auth-tabs" role="tablist" aria-label="登录方式">
-      <button class="auth-tab" type="button" role="tab" data-auth="phone" aria-selected="true">手机号登录</button>
-      <button class="auth-tab" type="button" role="tab" data-auth="wechat" aria-selected="false">微信登录</button>
+      <button class="auth-tab" type="button" role="tab" data-auth="qq" aria-selected="true">QQ 登录</button>
+      <button class="auth-tab" type="button" role="tab" data-auth="phone" aria-selected="false">手机号登录</button>
     </div>
-    <div id="authPhoneBox">
-      <div class="field">
-        <label for="authInput" id="authLabel">手机号</label>
-        <input id="authInput" type="text" inputmode="tel" autocomplete="off" spellcheck="false" maxlength="11" placeholder="11 位手机号">
-        <p class="form-err" id="authErr">请填写有效的 11 位手机号</p>
-      </div>
-      <button class="gate-submit" id="authSubmit" type="button">登录并进入</button>
+    <div class="field">
+      <label for="authInput" id="authLabel">QQ 号</label>
+      <input id="authInput" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" maxlength="11" placeholder="5–11 位 QQ 号">
+      <p class="form-err" id="authErr">请填写有效的 QQ 号（5–11 位数字）</p>
     </div>
-    <div class="wx-box" id="authWxBox" hidden>
-      <div class="wx-qr" id="wxQr" aria-label="微信登录二维码"></div>
-      <p class="wx-tip">打开微信扫一扫，在手机上确认登录</p>
-      <button class="wx-btn" id="wxLoginBtn" type="button">我已在微信中确认</button>
-      <p class="wx-note">演示登录：未接入微信开放平台，点击即以微信身份进入</p>
-    </div>
+    <button class="gate-submit" id="authSubmit" type="button">登录并进入</button>
     <p class="gate-note">账号仅保存在本机，不会上传到服务器</p>
   </div>
 </div>
@@ -1613,7 +1592,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
   }
   function applyAccount(acct){
     state.account = acct;
-    $("#acctText").textContent = acct.type === "wechat" ? ("微信 " + String(acct.number).slice(-4)) : ("手机 " + maskNumber(acct.number));
+    $("#acctText").textContent = (acct.type === "qq" ? "QQ " : "手机 ") + maskNumber(acct.number);
     $("#gate").hidden = true;
     document.body.style.overflow = "";
   }
@@ -1631,8 +1610,8 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
   function openProfile(){
     if (!state.account){ openGate(); return; }
     var acct = state.account;
-    var label = acct.type === "wechat" ? ("微信 " + String(acct.number).slice(-4)) : ("手机 " + maskNumber(acct.number));
-    $("#profAvatar").textContent = acct.type === "wechat" ? "微" : "手";
+    var label = (acct.type === "qq" ? "QQ " : "手机 ") + maskNumber(acct.number);
+    $("#profAvatar").textContent = acct.type === "qq" ? "Q" : "手";
     $("#profSub").textContent = label;
     $("#profAccount").textContent = label;
     $("#profStaff").textContent = state.staffId || "未填写";
@@ -1668,33 +1647,11 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
 
   /* 闸门 */
   var gate = $("#gate"), authInput = $("#authInput"), authErr = $("#authErr"), authLabel = $("#authLabel");
-  var authMode = "phone";
+  var authMode = "qq";
   var COPY = {
-    phone:{label:"手机号", ph:"11 位手机号", err:"请填写有效的 11 位手机号"},
-    wechat:{label:"微信", ph:"", err:""}
+    qq:{label:"QQ 号", ph:"5–11 位 QQ 号", err:"请填写有效的 QQ 号（5–11 位数字）"},
+    phone:{label:"手机号", ph:"11 位手机号", err:"请填写有效的 11 位手机号"}
   };
-  var authWxBox = $("#authWxBox"), authPhoneBox = $("#authPhoneBox");
-
-  function drawWxQr(){
-    var el = $("#wxQr"), n = 21, cell = 8, svg = ['<svg viewBox="0 0 ' + (n * cell) + ' ' + (n * cell) + '" shape-rendering="crispEdges">'];
-    var seed = 20261118;
-    function rnd(){ seed = (seed * 9301 + 49297) % 233280; return seed / 233280; }
-    for (var y = 0; y < n; y++){
-      for (var x = 0; x < n; x++){
-        var inFind = (x < 7 && y < 7) || (x > n - 8 && y < 7) || (x < 7 && y > n - 8);
-        if (inFind) continue;
-        if (rnd() > 0.52) svg.push('<rect x="' + (x * cell) + '" y="' + (y * cell) + '" width="' + cell + '" height="' + cell + '" fill="#111a22"/>');
-      }
-    }
-    [[0,0],[n-7,0],[0,n-7]].forEach(function(p){
-      var ox = p[0] * cell, oy = p[1] * cell;
-      svg.push('<rect x="' + ox + '" y="' + oy + '" width="' + (7 * cell) + '" height="' + (7 * cell) + '" fill="#111a22"/>');
-      svg.push('<rect x="' + (ox + cell) + '" y="' + (oy + cell) + '" width="' + (5 * cell) + '" height="' + (5 * cell) + '" fill="#fff"/>');
-      svg.push('<rect x="' + (ox + 2 * cell) + '" y="' + (oy + 2 * cell) + '" width="' + (3 * cell) + '" height="' + (3 * cell) + '" fill="#111a22"/>');
-    });
-    svg.push('</svg>');
-    el.innerHTML = svg.join("");
-  }
   function openGate(){
     gate.hidden = false;
     document.body.style.overflow = "hidden";
@@ -1705,17 +1662,10 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     $$(".auth-tab").forEach(function(b){
       b.setAttribute("aria-selected", b.getAttribute("data-auth") === mode ? "true" : "false");
     });
-    var isWx = mode === "wechat";
-    authPhoneBox.hidden = isWx;
-    authWxBox.hidden = !isWx;
-    if (isWx){
-      drawWxQr();
-      return;
-    }
     authLabel.textContent = COPY[mode].label;
     authInput.placeholder = COPY[mode].ph;
     authInput.value = "";
-    authInput.setAttribute("inputmode", "tel");
+    authInput.setAttribute("inputmode", mode === "qq" ? "numeric" : "tel");
     authErr.textContent = COPY[mode].err;
     authErr.classList.remove("show");
     authInput.focus();
@@ -1729,7 +1679,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
   });
   function submitAuth(){
     var v = authInput.value.replace(/\s/g,"");
-    var ok = /^1[3-9][0-9]{9}$/.test(v);
+    var ok = authMode === "qq" ? /^[1-9][0-9]{4,10}$/.test(v) : /^1[3-9][0-9]{9}$/.test(v);
     if (!ok){
       authErr.textContent = COPY[authMode].err;
       authErr.classList.add("show");
@@ -1741,13 +1691,6 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     toast("登录成功，可以开始提交了");
   }
   $("#authSubmit").addEventListener("click", submitAuth);
-  $("#wxLoginBtn").addEventListener("click", function(){
-    var tail = String(Math.floor(Math.random() * 900000) + 100000);
-    applyAccount({type:"wechat", number:"wx_" + tail, at:Date.now()});
-    persistPrefs();
-    replay(this, "pop", 620);
-    toast("微信登录成功，可以开始提交了");
-  });
   authInput.addEventListener("keydown", function(e){ if (e.key === "Enter") submitAuth(); });
 
   /* 皮肤 */
@@ -1794,7 +1737,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
   renderCard();
   syncCount();
   if (!state.account) openGate();
-  else setAuthMode("phone");
+  else setAuthMode("qq");
 })();
 </script>
 </body>
