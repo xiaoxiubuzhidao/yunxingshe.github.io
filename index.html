@@ -1696,15 +1696,21 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
   function cloudPost(rec){
     var row = recToRow(rec);
     var ok = false;
+    var ctrl = ("AbortController" in window) ? new AbortController() : null;
+    var timer = ctrl ? setTimeout(function(){ try{ ctrl.abort(); }catch(e){} }, 4000) : null;
     return fetch(CLOUD.url + "/rest/v1/submissions", {
       method:"POST",
       headers:{"apikey":CLOUD.key, "Authorization":"Bearer " + CLOUD.key, "Content-Type":"application/json", "Prefer":"return=minimal"},
-      body:JSON.stringify(row)
+      body:JSON.stringify(row),
+      signal: ctrl ? ctrl.signal : undefined
     }).then(function(r){
       if (!r.ok) return r.text().then(function(t){ throw new Error(t); });
       ok = true;
     }).catch(function(){
-      /* 主通道不通，交给备用通道 */
+      /* 主通道不通或超时，交给备用通道 */
+    }).then(function(){
+      if (timer) clearTimeout(timer);
+      return null;
     }).then(function(){
       return mirrorUpsert(row).then(function(){ ok = true; }, function(){});
     }).then(function(){
@@ -1977,33 +1983,45 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
   function loadNotice(){
     var local = readNoticeLocal();
     var localSite = readSiteLocal();
-    var sb = fetch(CLOUD.url + "/rest/v1/submissions?id=in.(" + NOTICE_ROW + "," + SITE_ROW + ")&select=id,at,data", {
-      headers:{"apikey":CLOUD.key, "Authorization":"Bearer " + CLOUD.key}
-    }).then(function(r){ return r.ok ? r.json() : []; }).catch(function(){ return []; });
-    sb.then(function(rows){
-      return mirrorRead().catch(function(){ return null; }).then(function(snap){
-        var mirrorRows = (snap && snap.rows) ? snap.rows : [];
-        var merged = mergeRows(rows || [], mirrorRows).filter(function(r){
-          return r.id === NOTICE_ROW || r.id === SITE_ROW;
-        });
-        var notice = local, site = localSite;
-        merged.forEach(function(row){
-          var d = row.data || {};
-          if (row.id === NOTICE_ROW){
-            var cn = {id:NOTICE_ROW, at:Number(row.at), title:d.title || "", body:d.body || "", active:!!d.active};
-            if (!notice || cn.at >= Number(notice.at || 0)) notice = cn;
-          } else if (row.id === SITE_ROW){
-            var cs = {id:SITE_ROW, at:Number(row.at), closed:!!d.closed, title:d.title || "", body:d.body || ""};
-            if (!site || cs.at >= Number(site.at || 0)) site = cs;
-          }
-        });
-        return {notice:notice, site:site};
+    /* 先用本机缓存的站点状态兜底，不依赖任何网络 */
+    renderSite(localSite);
+    function paint(rows, extra){
+      var merged = mergeRows(extra || [], rows || []).filter(function(r){
+        return r.id === NOTICE_ROW || r.id === SITE_ROW;
       });
-    }).then(function(res){
-      renderSite(res.site);
-      if (res.site && res.site.closed) return;
-      renderNotice(res.notice);
-    }).catch(function(){});
+      var notice = local, site = localSite;
+      merged.forEach(function(row){
+        var d = row.data || {};
+        if (row.id === NOTICE_ROW){
+          var cn = {id:NOTICE_ROW, at:Number(row.at), title:d.title || "", body:d.body || "", active:!!d.active};
+          if (!notice || cn.at >= Number(notice.at || 0)) notice = cn;
+        } else if (row.id === SITE_ROW){
+          var cs = {id:SITE_ROW, at:Number(row.at), closed:!!d.closed, title:d.title || "", body:d.body || ""};
+          if (!site || cs.at >= Number(site.at || 0)) site = cs;
+        }
+      });
+      renderSite(site);
+      if (site && site.closed) return;
+      renderNotice(notice);
+    }
+    /* 备用通道先渲染，绝不被主通道拖住 */
+    mirrorRead().catch(function(){ return null; }).then(function(snap){
+      paint((snap && snap.rows) ? snap.rows : []);
+    });
+    /* 主通道单独跑，4 秒超时直接放弃 */
+    var ctrl = ("AbortController" in window) ? new AbortController() : null;
+    var timer = ctrl ? setTimeout(function(){ try{ ctrl.abort(); }catch(e){} }, 4000) : null;
+    fetch(CLOUD.url + "/rest/v1/submissions?id=in.(" + NOTICE_ROW + "," + SITE_ROW + ")&select=id,at,data", {
+      headers:{"apikey":CLOUD.key, "Authorization":"Bearer " + CLOUD.key},
+      signal: ctrl ? ctrl.signal : undefined
+    }).then(function(r){ return r.ok ? r.json() : []; })
+      .then(function(rows){
+        return mirrorRead().catch(function(){ return null; }).then(function(snap){
+          paint((snap && snap.rows) ? snap.rows : [], rows || []);
+        });
+      })
+      .catch(function(){})
+      .then(function(){ if (timer) clearTimeout(timer); });
   }
   if (!noticeCard || !noticeFab) return;
   $("#noticeClose").addEventListener("click", function(){
