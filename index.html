@@ -62,7 +62,8 @@
 [data-scene="none"]{--scene:#a294f8;--scene-rgb:162,148,248}
 
 *,*::before,*::after{box-sizing:border-box}
-html,body{margin:0;padding:0}
+html,html{-webkit-text-size-adjust:100%}
+body{margin:0;padding:0}
 body{min-height:100vh;background:var(--bg-page);color:var(--text);font-family:var(--font-sans);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
 h1,h2,h3,p{margin:0}
 button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
@@ -498,7 +499,14 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
 }
 .notice-fab[hidden]{display:none}
 .notice-dot{width:6px;height:6px;border-radius:50%;background:var(--cyan);box-shadow:0 0 7px rgba(99,241,238,.9)}
-@media (max-width:420px){ .notice-card{right:10px;left:10px;width:auto;bottom:12px} }
+@media (max-width:420px){
+  .notice-card{
+    right:10px;left:10px;width:auto;bottom:calc(10px + env(safe-area-inset-bottom));
+    max-height:52vh;display:flex;flex-direction:column;
+  }
+  .notice-body{max-height:none;flex:1 1 auto;overflow:auto;-webkit-overflow-scrolling:touch}
+  .notice-fab{bottom:calc(12px + env(safe-area-inset-bottom))}
+}
 .gate{position:fixed;inset:0;z-index:80;display:grid;place-items:center;padding:16px}
 .gate[hidden]{display:none}
 .gate-veil{position:absolute;inset:0;background:rgba(5,6,12,.62);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
@@ -587,11 +595,24 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
 
 @media (max-width:520px){
   .brand-sub{display:none}
-  .nav{padding:11px 13px;border-radius:24px;gap:9px}
-  .acct{padding:0 10px;max-width:34vw}
+  .nav{flex-direction:column;align-items:stretch;padding:12px 13px;border-radius:22px;gap:11px}
+  .brand{flex:0 0 auto}
+  .brand-name{font-size:15.5px}
+  .tools{margin-left:0;width:100%;flex-wrap:wrap;gap:6px;justify-content:flex-start}
+  .acct{flex:0 1 auto;max-width:none;padding:0 11px}
+  .mini-toggle{flex:0 0 auto}
+  .seg-btn{padding:0 10px;font-size:11.5px;white-space:nowrap}
+  .theme-seg{flex:0 0 auto}
   .panel{padding:16px 13px}
   .submit-btn,.ghost-link{width:100%}
   .submit-actions{width:100%}
+  .shell{padding:0 12px}
+  .topbar{padding-top:14px}
+  .page-head h1{font-size:26px;line-height:1.2}
+  .maps{gap:8px}
+  .map{padding:11px 10px;min-height:56px}
+  .map-name{font-size:13.5px}
+  .card-clock{font-size:20px}
 }
 @media (min-width:560px){ .scenes{grid-template-columns:repeat(3,1fr)} }
 @media (min-width:720px){
