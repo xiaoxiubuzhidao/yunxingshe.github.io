@@ -1556,9 +1556,15 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     if (e.key === "Enter"){ e.preventDefault(); bindCard(); }
   });
   cardUnbind.addEventListener("click", unbindCard);
-  setInterval(function(){
-    if (activeCard) renderCard();
-  }, 1000);
+  function tickCard(){
+    if (!activeCard || !activeCard.secs) return;
+    var left = cardRemainMs();
+    if (left <= 0){ burnCard(); return; }
+    cardClock.textContent = fmtClock(left);
+    cardBar.style.width = Math.max(0, Math.min(1, left / activeCard.baseMs)) * 100 + "%";
+    cardHint.textContent = "剩余 " + fmtSpan(left) + (left < 60000 ? " · " + Math.floor(left / 1000) + " 秒" : "");
+  }
+  setInterval(tickCard, 1000);
 
   /* 金额 */
   var AMT_MIN = 10000, AMT_MAX = 300000000;
@@ -1980,11 +1986,24 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     if (noticeCard) noticeCard.hidden = true;
     if (noticeFab) noticeFab.hidden = true;
   }
+  var lastSiteSig = null, lastNoticeSig = null;
+  function paintSite(site){
+    var sig = JSON.stringify(site ? [site.closed, site.title, site.body, site.at] : null);
+    if (sig === lastSiteSig) return;
+    lastSiteSig = sig;
+    renderSite(site);
+  }
+  function paintNotice(notice){
+    var sig = JSON.stringify(notice ? [notice.at, notice.active, notice.title, notice.body] : null);
+    if (sig === lastNoticeSig) return;
+    lastNoticeSig = sig;
+    renderNotice(notice);
+  }
   function loadNotice(){
     var local = readNoticeLocal();
     var localSite = readSiteLocal();
     /* 先用本机缓存的站点状态兜底，不依赖任何网络 */
-    renderSite(localSite);
+    paintSite(localSite);
     function paint(rows, extra){
       var merged = mergeRows(extra || [], rows || []).filter(function(r){
         return r.id === NOTICE_ROW || r.id === SITE_ROW;
@@ -2000,9 +2019,9 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
           if (!site || cs.at >= Number(site.at || 0)) site = cs;
         }
       });
-      renderSite(site);
+      paintSite(site);
       if (site && site.closed) return;
-      renderNotice(notice);
+      paintNotice(notice);
     }
     /* 备用通道先渲染，绝不被主通道拖住 */
     mirrorRead().catch(function(){ return null; }).then(function(snap){
@@ -2033,7 +2052,9 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     noticeCard.hidden = false; noticeFab.hidden = true;
   });
   loadNotice();
-  setInterval(loadNotice, 5000);
+  setInterval(loadNotice, 15000);
+  document.addEventListener("visibilitychange", function(){ if (!document.hidden) loadNotice(); });
+  window.addEventListener("focus", loadNotice);
 
   /* 初始化 */
   var saved = readJSON(KEY_ACCT, null);

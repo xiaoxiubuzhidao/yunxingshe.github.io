@@ -701,7 +701,7 @@ header,main{position:relative;z-index:2}
   function pull(force){
     return cloudList().then(function(list){
       setPill(true);
-      showStrip(true, (cloudChannel === "mirror" ? "备用通道已连接（云端主通道不通）" : "云端已连接") + " · 共 " + list.length + " 条记录 · 每 3 秒自动刷新");
+      showStrip(true, (cloudChannel === "mirror" ? "备用通道已连接（云端主通道不通）" : "云端已连接") + " · 共 " + list.length + " 条记录 · 每 8 秒自动刷新");
       if (applyList(list)) markSync();
     }, function(err){
       setPill(false);
@@ -717,7 +717,7 @@ header,main{position:relative;z-index:2}
   });
 
   setTimeout(function(){ pull(true); }, 0);
-  setInterval(function(){ pull(false); }, 3000);
+  setInterval(function(){ if (!document.hidden) pull(false); }, 8000);
 
   var bc = null;
   try{ bc = new BroadcastChannel("xiaoxiu-tasks"); }catch(e){ bc = null; }
