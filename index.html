@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="dark" data-glass="on" data-scene="shu">
+<html lang="zh-CN" data-theme="dark" data-glass="on" data-scene="shu" data-ver="1119a">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -872,7 +872,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
   </div>
 
   <footer class="foot">
-    <span>小修科技 · 前台提交页，数据写入浏览器本机数据库</span>
+    <span>小修科技 · 前台提交页 · v1119a</span>
     <span>数据保存在浏览器 localStorage</span>
   </footer>
 </main>
@@ -2091,6 +2091,25 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
 
   if (!state.account) openGate();
   else setAuthMode("qq");
+})();
+</script>
+<script>
+/* 版本自检：命中旧缓存时自动跳过一次，避免用户看到旧功能 */
+(function(){
+  try{
+    var KEY = "xiaoxiu-ver-" + location.pathname;
+    if (sessionStorage.getItem(KEY)) return;
+    fetch("version.txt?t=" + Date.now(), {cache:"no-store"})
+      .then(function(r){ return r.ok ? r.text() : ""; })
+      .then(function(v){
+        v = (v || "").trim();
+        var cur = document.documentElement.getAttribute("data-ver") || "";
+        if (v && cur && v !== cur){
+          sessionStorage.setItem(KEY, "1");
+          location.replace(location.pathname + "?v=" + encodeURIComponent(v));
+        }
+      }).catch(function(){});
+  }catch(e){}
 })();
 </script>
 </body>
