@@ -763,9 +763,17 @@ header,main{position:relative;z-index:2}
     }).then(function(r){ if (!r.ok) throw new Error("mirror write " + r.status); });
   }
   var mirrorQueue = Promise.resolve();
+  function mirrorReadRetry(left){
+    return mirrorRead().catch(function(err){
+      if (left <= 0) throw err;
+      return new Promise(function(resolve){ setTimeout(resolve, 350); })
+        .then(function(){ return mirrorReadRetry(left - 1); });
+    });
+  }
   function mirrorMutate(fn){
     var job = function(){
-      return mirrorRead().catch(function(){ return null; }).then(function(s){
+      /* 读失败时绝不写入，避免把整份快照清空 */
+      return mirrorReadRetry(1).then(function(s){
         var rows = (s && s.rows) ? s.rows.slice() : [];
         return mirrorWrite(fn(rows));
       });
