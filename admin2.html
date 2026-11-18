@@ -466,6 +466,7 @@ header,main{position:relative;z-index:2}
     </div>
     <div class="notice-actions">
       <button class="ghost-btn" id="noticePublish" type="button">发布公告</button>
+      <button class="ghost-btn" id="noticeOff" type="button">关闭公告</button>
       <button class="ghost-btn danger" id="noticeRetract" type="button">关闭前台网页</button>
       <button class="ghost-btn" id="siteOpenBtn" type="button">恢复前台</button>
     </div>
@@ -1232,8 +1233,11 @@ header,main{position:relative;z-index:2}
     saveNoticeLocal(n);
     paintNoticeState(n);
     pushNoticeCloud(n)
-      .then(function(r){ toast(r.ok ? (active ? "公告已发布，前台将自动弹出" : "前台公告已关闭") : "已保存到本机，云端写入失败"); })
-      .catch(function(){ toast(active ? "已保存到本机，云端不可达" : "前台公告已关闭（仅本机）"); });
+      .then(function(r){ toast(r.ok ? (active ? "公告已发布，前台将自动弹出" : "已关闭前台公告") : "已存本机，两个通道都没写成功，请点「重试连接」"); })
+      .catch(function(e){
+        var why = (e && e.message ? " · " + e.message : "").replace(/\s+/g, " ").slice(0, 80);
+        toast(active ? ("发布失败，已存本机" + why) : ("公告已在本机关闭" + why));
+      });
   }
   var noticeModal = $("#noticeModal");
   var modalAction = null;
@@ -1263,6 +1267,11 @@ header,main{position:relative;z-index:2}
     document.body.style.overflow = "";
   }
   $("#noticePublish").addEventListener("click", function(){ publishNotice(true); });
+  $("#noticeOff").addEventListener("click", function(){
+    publishNotice(false);
+    noticeTitleInput.value = "";
+    noticeBodyInput.value = "";
+  });
   $("#siteOpenBtn").addEventListener("click", function(){ setSite(false); });
   $("#noticeRetract").addEventListener("click", openCloseModal);
   $("#nmCancel").addEventListener("click", closeModal);
