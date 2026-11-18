@@ -887,6 +887,17 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
+<!-- ===== 公告悬浮窗 ===== -->
+<button class="notice-fab" id="noticeFab" type="button" hidden><span class="notice-dot" aria-hidden="true"></span>查看公告</button>
+<div class="notice-card liquid" id="noticeCard" hidden role="dialog" aria-labelledby="noticeTitleText">
+  <div class="notice-title-row">
+    <span class="notice-badge">公告</span>
+    <div class="notice-title" id="noticeTitleText">—</div>
+  </div>
+  <div class="notice-body" id="noticeBodyText"></div>
+  <div class="notice-foot"><button class="notice-close" id="noticeClose" type="button">知道了</button></div>
+</div>
+
 <script>
 (function(){
   window.addEventListener("error", function(e){
@@ -1815,6 +1826,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
       renderNotice(n);
     });
   }
+  if (!noticeCard || !noticeFab) return;
   $("#noticeClose").addEventListener("click", function(){
     if (noticeCurrent) markSeen(noticeCurrent.at);
     noticeCard.hidden = true;
@@ -1863,15 +1875,5 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
   else setAuthMode("qq");
 })();
 </script>
-<!-- ===== 公告悬浮窗 ===== -->
-<button class="notice-fab" id="noticeFab" type="button" hidden><span class="notice-dot" aria-hidden="true"></span>查看公告</button>
-<div class="notice-card liquid" id="noticeCard" hidden role="dialog" aria-labelledby="noticeTitleText">
-  <div class="notice-title-row">
-    <span class="notice-badge">公告</span>
-    <div class="notice-title" id="noticeTitleText">—</div>
-  </div>
-  <div class="notice-body" id="noticeBodyText"></div>
-  <div class="notice-foot"><button class="notice-close" id="noticeClose" type="button">知道了</button></div>
-</div>
 </body>
 </html>
