@@ -762,23 +762,48 @@ header,main{position:relative;z-index:2}
       body:JSON.stringify({v:1, at:Date.now(), rows:rows})
     }).then(function(r){ if (!r.ok) throw new Error("mirror write " + r.status); });
   }
+  var mirrorQueue = Promise.resolve();
   function mirrorMutate(fn){
+    var job = function(){
+      return mirrorRead().catch(function(){ return null; }).then(function(s){
+        var rows = (s && s.rows) ? s.rows.slice() : [];
+        return mirrorWrite(fn(rows));
+      });
+    };
+    mirrorQueue = mirrorQueue.then(job, job);
+    return mirrorQueue;
+  }
+  function mirrorGetRow(id){
     return mirrorRead().catch(function(){ return null; }).then(function(s){
-      var rows = (s && s.rows) ? s.rows.slice() : [];
-      return mirrorWrite(fn(rows));
+      if (!s || !s.rows) return null;
+      return s.rows.filter(function(r){ return r.id === id; })[0] || null;
     });
   }
   function mirrorUpsert(row){
-    return mirrorMutate(function(rows){
-      var i = -1;
-      for (var k = 0; k < rows.length; k++){ if (rows[k].id === row.id){ i = k; break; } }
-      if (i < 0) rows.push(row);
-      else if (Number(rows[i].at || 0) <= Number(row.at || 0)) rows[i] = row;
-      return rows;
-    });
+    function attempt(left){
+      return mirrorMutate(function(rows){
+        var i = -1;
+        for (var k = 0; k < rows.length; k++){ if (rows[k].id === row.id){ i = k; break; } }
+        if (i < 0) rows.push(row);
+        else rows[i] = row;
+        return rows;
+      }).then(function(){
+        return mirrorGetRow(row.id);
+      }).then(function(got){
+        if ((!got || Number(got.at || 0) < Number(row.at || 0)) && left > 0) return attempt(left - 1);
+      });
+    }
+    return attempt(2);
   }
   function mirrorRemove(id){
-    return mirrorMutate(function(rows){ return rows.filter(function(r){ return r.id !== id; }); });
+    function attempt(left){
+      return mirrorMutate(function(rows){ return rows.filter(function(r){ return r.id !== id; }); })
+        .then(function(){ return mirrorGetRow(id); })
+        .then(function(got){
+          if (got && left > 0) return attempt(left - 1);
+        });
+    }
+    return attempt(2);
   }
   function mirrorDropRecords(){
     return mirrorMutate(function(rows){
