@@ -453,6 +453,37 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
 [data-theme="light"] .foot{border-top-color:rgba(21,26,36,.10)}
 
 /* 闸门 */
+.notice-card{
+  position:fixed;right:16px;bottom:16px;z-index:90;width:min(340px,calc(100vw - 32px));
+  padding:14px 15px 12px;border-radius:18px;box-sizing:border-box;
+  animation:rise .3s cubic-bezier(.22,1,.36,1) both;
+}
+.notice-card[hidden]{display:none}
+.notice-title-row{display:flex;align-items:flex-start;gap:8px}
+.notice-badge{
+  flex:none;margin-top:2px;padding:2px 7px;border-radius:999px;font-size:10px;font-weight:700;
+  color:#0b1a12;background:var(--cyan);letter-spacing:.02em;
+}
+.notice-title{font-size:13.5px;font-weight:800;line-height:1.45;word-break:break-word}
+.notice-body{
+  margin-top:8px;max-height:150px;overflow:auto;font-size:12.5px;line-height:1.8;color:var(--text-dim);
+  white-space:pre-wrap;word-break:break-word;
+}
+.notice-foot{margin-top:10px;display:flex;justify-content:flex-end}
+.notice-close{
+  height:32px;padding:0 14px;border-radius:10px;font-size:12px;font-family:inherit;cursor:pointer;
+  color:var(--text);background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.16);
+}
+.notice-close:hover{background:rgba(255,255,255,.18)}
+.notice-fab{
+  position:fixed;right:16px;bottom:16px;z-index:90;display:inline-flex;align-items:center;gap:7px;
+  height:38px;padding:0 14px;border-radius:999px;font-size:12px;font-family:inherit;cursor:pointer;
+  color:var(--text);background:rgba(20,24,36,.72);border:1px solid rgba(255,255,255,.18);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+}
+.notice-fab[hidden]{display:none}
+.notice-dot{width:6px;height:6px;border-radius:50%;background:var(--cyan);box-shadow:0 0 7px rgba(99,241,238,.9)}
+@media (max-width:420px){ .notice-card{right:10px;left:10px;width:auto;bottom:12px} }
 .gate{position:fixed;inset:0;z-index:80;display:grid;place-items:center;padding:16px}
 .gate[hidden]{display:none}
 .gate-veil{position:absolute;inset:0;background:rgba(5,6,12,.62);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
@@ -1712,6 +1743,52 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     });
   });
 
+  /* ---------- 公告悬浮窗 ---------- */
+  var NOTICE_KEY = "xiaoxiu-notice-v1", NOTICE_SEEN = "xiaoxiu-notice-seen", NOTICE_ROW = "NOTICE-1";
+  var noticeCard = $("#noticeCard"), noticeFab = $("#noticeFab");
+  var noticeCurrent = null;
+  function readNoticeLocal(){
+    try{ return JSON.parse(localStorage.getItem(NOTICE_KEY) || "null"); }catch(e){ return null; }
+  }
+  function seenAt(){ try{ return Number(localStorage.getItem(NOTICE_SEEN) || 0); }catch(e){ return 0; } }
+  function markSeen(at){ try{ localStorage.setItem(NOTICE_SEEN, String(at)); }catch(e){} }
+  function renderNotice(n){
+    noticeCurrent = n;
+    if (!n || !n.active || !n.title){ noticeCard.hidden = true; noticeFab.hidden = true; return; }
+    $("#noticeTitleText").textContent = n.title;
+    $("#noticeBodyText").textContent = n.body || "";
+    $("#noticeBodyText").scrollTop = 0;
+    if (seenAt() >= Number(n.at || 0)){
+      noticeCard.hidden = true; noticeFab.hidden = false;
+    } else {
+      noticeFab.hidden = true; noticeCard.hidden = false;
+    }
+  }
+  function loadNotice(){
+    var local = readNoticeLocal();
+    fetch(CLOUD.url + "/rest/v1/submissions?id=eq." + NOTICE_ROW + "&select=at,data", {
+      headers:{"apikey":CLOUD.key, "Authorization":"Bearer " + CLOUD.key}
+    }).then(function(r){ return r.ok ? r.json() : null; }).then(function(rows){
+      if (!rows || !rows.length) return local;
+      var d = rows[0].data || {};
+      var cn = {id:NOTICE_ROW, at:Number(rows[0].at), title:d.title || "", body:d.body || "", active:!!d.active};
+      if (!local || cn.at >= Number(local.at || 0)) return cn;
+      return local;
+    }).catch(function(){ return local; }).then(function(n){
+      renderNotice(n);
+    });
+  }
+  $("#noticeClose").addEventListener("click", function(){
+    if (noticeCurrent) markSeen(noticeCurrent.at);
+    noticeCard.hidden = true;
+    noticeFab.hidden = false;
+  });
+  noticeFab.addEventListener("click", function(){
+    noticeCard.hidden = false; noticeFab.hidden = true;
+  });
+  loadNotice();
+  setInterval(loadNotice, 5000);
+
   /* 初始化 */
   var saved = readJSON(KEY_ACCT, null);
   if (saved){
@@ -1740,5 +1817,15 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
   else setAuthMode("qq");
 })();
 </script>
+<!-- ===== 公告悬浮窗 ===== -->
+<button class="notice-fab" id="noticeFab" type="button" hidden><span class="notice-dot" aria-hidden="true"></span>查看公告</button>
+<div class="notice-card liquid" id="noticeCard" hidden role="dialog" aria-labelledby="noticeTitleText">
+  <div class="notice-title-row">
+    <span class="notice-badge">公告</span>
+    <div class="notice-title" id="noticeTitleText">—</div>
+  </div>
+  <div class="notice-body" id="noticeBodyText"></div>
+  <div class="notice-foot"><button class="notice-close" id="noticeClose" type="button">知道了</button></div>
+</div>
 </body>
 </html>

@@ -135,6 +135,19 @@ header,main{position:relative;z-index:2}
 .page-head h1{font-size:clamp(26px,6.4vw,32px);font-weight:800;letter-spacing:-.028em;line-height:1.16}
 .page-head p{margin-top:7px;font-size:12.5px;color:var(--text-faint);line-height:1.7}
 
+.notice-box{margin-bottom:12px}
+.notice-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.notice-head h2{font-size:14px;font-weight:800;letter-spacing:-.01em}
+.notice-state{font-size:11px;color:var(--text-faint)}
+.notice-state.ok{color:var(--green)}
+.notice-field{margin-bottom:10px}
+.notice-field label{display:block;font-size:11.5px;color:var(--text-faint);margin-bottom:6px}
+.notice-field input,.notice-field textarea{
+  width:100%;box-sizing:border-box;border-radius:12px;border:1px solid rgba(255,255,255,.14);
+  background:rgba(0,0,0,.22);color:var(--text);font-family:inherit;font-size:14px;padding:10px 12px;
+}
+.notice-field textarea{min-height:96px;resize:vertical;line-height:1.7}
+.notice-actions{display:flex;flex-wrap:wrap;gap:8px}
 .stats{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-bottom:12px}
 .stat{padding:12px 13px;border-radius:14px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.08)}
 [data-theme="light"] .stat{background:rgba(255,255,255,.55);border-color:rgba(255,255,255,.9)}
@@ -389,6 +402,25 @@ header,main{position:relative;z-index:2}
     <div class="stat"><div class="stat-label">累计时长</div><div class="stat-num" id="statHours">0<small>h</small></div></div>
     <div class="stat"><div class="stat-label">最近提交</div><div class="stat-num" id="statLatest" style="font-size:14px">—</div></div>
   </div>
+
+  <section class="board liquid notice-box" aria-labelledby="noticeTitle">
+    <div class="notice-head">
+      <h2 id="noticeTitle">前台公告</h2>
+      <span class="notice-state" id="noticeState">未发布</span>
+    </div>
+    <div class="notice-field">
+      <label for="noticeTitleInput">公告标题</label>
+      <input id="noticeTitleInput" type="text" maxlength="40" placeholder="例如：服务器维护通知">
+    </div>
+    <div class="notice-field">
+      <label for="noticeBodyInput">公告内容</label>
+      <textarea id="noticeBodyInput" maxlength="600" placeholder="写好后点「发布公告」，前台右下角会弹出悬浮窗"></textarea>
+    </div>
+    <div class="notice-actions">
+      <button class="ghost-btn" id="noticePublish" type="button">发布公告</button>
+      <button class="ghost-btn danger" id="noticeRetract" type="button">撤回公告</button>
+    </div>
+  </section>
 
   <section class="board liquid" aria-labelledby="boardTitle">
     <div class="cloud-strip" id="cloudStrip" hidden><span id="cloudText2"></span><button type="button" id="cloudRetry">重试连接</button></div>
@@ -671,7 +703,7 @@ header,main{position:relative;z-index:2}
     dot.style.boxShadow = ok ? "0 0 8px rgba(63,217,119,.9)" : "0 0 8px rgba(233,173,72,.85)";
   }
   function cloudList(){
-    return fetch(CLOUD.url + "/rest/v1/submissions?select=id,at,data&order=at.desc&limit=500", {headers:CH})
+    return fetch(CLOUD.url + "/rest/v1/submissions?select=id,at,data&id=not.like.NOTICE-*&order=at.desc&limit=500", {headers:CH})
       .then(function(r){
         if (!r.ok) return r.text().then(function(t){ throw new Error(t); });
         return r.json();
@@ -694,7 +726,7 @@ header,main{position:relative;z-index:2}
       .then(function(r){ if (!r.ok) throw new Error("delete failed"); });
   }
   function cloudClear(){
-    return fetch(CLOUD.url + "/rest/v1/submissions?id=neq.", {method:"DELETE", headers:CH})
+    return fetch(CLOUD.url + "/rest/v1/submissions?id=not.like.NOTICE-*", {method:"DELETE", headers:CH})
       .then(function(r){ if (!r.ok) throw new Error("clear failed"); });
   }
   function cloudPush(rec){
@@ -891,6 +923,71 @@ header,main{position:relative;z-index:2}
 
   /* 本地双击打开时，前台文件名不是 index.html */
   if (location.protocol === "file:") $(".empty-cta").href = "小修科技-前台提交.html";
+
+  /* ---------- 前台公告 ---------- */
+  var NOTICE_KEY = "xiaoxiu-notice-v1";
+  var NOTICE_ROW = "NOTICE-1";
+  var noticeTitleInput = $("#noticeTitleInput"), noticeBodyInput = $("#noticeBodyInput"), noticeState = $("#noticeState");
+  function saveNoticeLocal(n){ try{ localStorage.setItem(NOTICE_KEY, JSON.stringify(n)); }catch(e){} }
+  function readNoticeLocal(){
+    try{ return JSON.parse(localStorage.getItem(NOTICE_KEY) || "null"); }catch(e){ return null; }
+  }
+  function noticeRow(n){
+    return {id:NOTICE_ROW, at:Number(n.at)||Date.now(), data:{kind:"notice", title:n.title, body:n.body, active:!!n.active}};
+  }
+  function pushNoticeCloud(n){
+    return fetch(CLOUD.url + "/rest/v1/submissions", {
+      method:"POST",
+      headers:Object.assign({"Content-Type":"application/json","Prefer":"resolution=merge-duplicates,return=minimal"}, CH),
+      body:JSON.stringify(noticeRow(n))
+    });
+  }
+  function pullNoticeCloud(){
+    return fetch(CLOUD.url + "/rest/v1/submissions?id=eq." + NOTICE_ROW + "&select=at,data", {headers:CH})
+      .then(function(r){ return r.ok ? r.json() : null; })
+      .then(function(rows){
+        if (!rows || !rows.length) return null;
+        var d = rows[0].data || {};
+        return {id:NOTICE_ROW, at:Number(rows[0].at), title:d.title || "", body:d.body || "", active:!!d.active};
+      });
+  }
+  function paintNoticeState(n){
+    if (!n || !n.active){
+      noticeState.textContent = "未发布（前台不显示）";
+      noticeState.classList.remove("ok");
+      return;
+    }
+    noticeState.textContent = "已发布 · " + new Date(n.at).toLocaleString("zh-CN", {hour12:false}) ;
+    noticeState.classList.add("ok");
+  }
+  function loadNoticeForm(){
+    pullNoticeCloud().then(function(cn){
+      if (!cn) return readNoticeLocal();
+      return cn;
+    }).catch(function(){ return readNoticeLocal(); }).then(function(n){
+      if (!n) { paintNoticeState(null); return; }
+      noticeTitleInput.value = n.title || "";
+      noticeBodyInput.value = n.body || "";
+      paintNoticeState(n);
+    });
+  }
+  function publishNotice(active){
+    var title = noticeTitleInput.value.trim();
+    var body = noticeBodyInput.value.trim();
+    if (active && (!title || !body)){
+      toast("公告标题和内容都要填写");
+      return;
+    }
+    var n = {id:NOTICE_ROW, at:Date.now(), title:title, body:body, active:!!active};
+    saveNoticeLocal(n);
+    paintNoticeState(n);
+    pushNoticeCloud(n)
+      .then(function(r){ toast(r.ok ? (active ? "公告已发布" : "公告已撤回") : "已保存到本机，云端写入失败"); })
+      .catch(function(){ toast("已保存到本机，云端不可达"); });
+  }
+  $("#noticePublish").addEventListener("click", function(){ publishNotice(true); });
+  $("#noticeRetract").addEventListener("click", function(){ publishNotice(false); });
+  loadNoticeForm();
 
   /* ---------- 初始化 ---------- */
   tasks = readTasks();
