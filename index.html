@@ -507,6 +507,25 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
   transition:transform .18s,filter .2s;
 }
 .gate-submit:hover{transform:translateY(-1px);filter:brightness(1.06)}
+.profile-head{display:flex;align-items:center;gap:12px}
+.profile-avatar{
+  width:46px;height:46px;flex:none;border-radius:14px;display:grid;place-items:center;
+  font-size:17px;font-weight:800;color:#fff;background:linear-gradient(135deg,rgba(var(--scene-rgb),.95),rgba(var(--scene-rgb),.55));
+  border:1px solid rgba(255,255,255,.22);
+}
+.profile-sub{margin-top:4px;font-size:12px;color:var(--text-faint)}
+.profile-rows{margin-top:16px;border-top:1px solid rgba(255,255,255,.08)}
+.profile-row{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:11px 2px;border-bottom:1px solid rgba(255,255,255,.08);font-size:12.5px;
+}
+.profile-row span{color:var(--text-faint)}
+.profile-row strong{font-weight:700;font-variant-numeric:tabular-nums;text-align:right}
+.prof-logout{
+  margin-top:10px;width:100%;height:44px;border-radius:13px;font-size:13px;font-family:inherit;cursor:pointer;
+  color:#ffb4b4;background:rgba(255,107,107,.10);border:1px solid rgba(255,107,107,.32);
+}
+.prof-logout:hover{background:rgba(255,107,107,.18)}
 .gate-note{margin-top:12px;font-size:10.5px;color:var(--text-faint);line-height:1.65;text-align:center}
 
 /* toast */
@@ -830,6 +849,29 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
       <p class="wx-note">演示登录：未接入微信开放平台，点击即以微信身份进入</p>
     </div>
     <p class="gate-note">账号仅保存在本机，不会上传到服务器</p>
+  </div>
+</div>
+
+<!-- ===== 个人主页 ===== -->
+<div class="gate" id="profile" hidden>
+  <div class="gate-veil" aria-hidden="true" data-close="1"></div>
+  <div class="gate-card liquid" role="dialog" aria-modal="true" aria-labelledby="profileTitle">
+    <div class="profile-head">
+      <div class="profile-avatar" id="profAvatar">修</div>
+      <div>
+        <h2 class="gate-title" id="profileTitle" style="margin-top:0">个人主页</h2>
+        <p class="profile-sub" id="profSub">手机 13****89</p>
+      </div>
+    </div>
+    <div class="profile-rows">
+      <div class="profile-row"><span>账号</span><strong id="profAccount">—</strong></div>
+      <div class="profile-row"><span>工号</span><strong id="profStaff">—</strong></div>
+      <div class="profile-row"><span>当前卡密</span><strong id="profCard">—</strong></div>
+      <div class="profile-row"><span>卡密剩余</span><strong id="profCardTime">—</strong></div>
+      <div class="profile-row"><span>累计提交</span><strong id="profCount">0 条</strong></div>
+    </div>
+    <button class="gate-submit" id="profClose" type="button">返回</button>
+    <button class="prof-logout" id="profLogout" type="button">退出登录</button>
   </div>
 </div>
 
@@ -1586,9 +1628,42 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     prev.mode = state.mode;
     writeJSON(KEY_ACCT, prev);
   }
-  $("#acctBtn").addEventListener("click", function(){
+  function openProfile(){
     if (!state.account){ openGate(); return; }
-    toast("当前账号：" + (state.account.type === "wechat" ? "微信 " + String(state.account.number).slice(-4) : "手机 " + maskNumber(state.account.number)));
+    var acct = state.account;
+    var label = acct.type === "wechat" ? ("微信 " + String(acct.number).slice(-4)) : ("手机 " + maskNumber(acct.number));
+    $("#profAvatar").textContent = acct.type === "wechat" ? "微" : "手";
+    $("#profSub").textContent = label;
+    $("#profAccount").textContent = label;
+    $("#profStaff").textContent = state.staffId || "未填写";
+    $("#profCard").textContent = activeCard ? activeCard.code : "未填写";
+    if (activeCard){
+      $("#profCardTime").textContent = activeCard.secs ? (fmtSpan(cardRemainMs()) + "（" + fmtClock(cardRemainMs()) + "）") : "永久有效";
+    } else {
+      $("#profCardTime").textContent = "—";
+    }
+    $("#profCount").textContent = loadTasks().length + " 条";
+    $("#profile").hidden = false;
+    document.body.style.overflow = "hidden";
+  }
+  function closeProfile(){
+    $("#profile").hidden = true;
+    if (!state.account) return;
+    document.body.style.overflow = "";
+  }
+  function logout(){
+    state.account = null;
+    persistPrefs();
+    closeProfile();
+    $("#acctText").textContent = "未登录";
+    toast("已退出登录");
+    openGate();
+  }
+  $("#acctBtn").addEventListener("click", openProfile);
+  $("#profClose").addEventListener("click", closeProfile);
+  $("#profLogout").addEventListener("click", logout);
+  $("#profile").addEventListener("click", function(e){
+    if (e.target.getAttribute("data-close") === "1") closeProfile();
   });
 
   /* 闸门 */
