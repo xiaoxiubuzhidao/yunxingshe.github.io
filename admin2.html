@@ -716,7 +716,7 @@ header,main{position:relative;z-index:2}
     pull(true);
   });
 
-  pull(true);
+  setTimeout(function(){ pull(true); }, 0);
   setInterval(function(){ pull(false); }, 3000);
 
   var bc = null;
@@ -819,6 +819,8 @@ header,main{position:relative;z-index:2}
   }
   var mirrorCache = [], mirrorCachedAt = 0;
   function mirrorRows(force){
+    mirrorCache = mirrorCache || [];
+    mirrorCachedAt = mirrorCachedAt || 0;
     var stale = Date.now() - mirrorCachedAt > 6000;
     if (!force && !stale && mirrorCache.length) return Promise.resolve(mirrorCache);
     return mirrorRead().then(function(snap){
