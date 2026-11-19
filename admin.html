@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="dark" data-glass="on" data-scene="shu" data-ver="1119a">
+<html lang="zh-CN" data-theme="dark" data-glass="on" data-scene="shu" data-ver="1119b">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -1118,23 +1118,35 @@ header,main{position:relative;z-index:2}
       body:JSON.stringify(row)
     }).then(function(r){ if (!r.ok) throw new Error("site push failed"); return r; });
     var mir = mirrorUpsert(row).then(function(){ mirrorCachedAt = 0; });
-    return Promise.allSettled([sb, mir]).then(function(res){
-      if (res[0].status === "rejected" && res[1].status === "rejected") throw new Error("site push failed");
+    var direct = fetch(MIRROR_URL + "-site", {
+      method:"POST",
+      headers:{"Content-Type":"text/plain"},
+      body:JSON.stringify({at:row.at, closed:row.data.closed, title:row.data.title, body:row.data.body})
+    }).then(function(r){ if (!r.ok) throw new Error("site direct " + r.status); return r; });
+    return Promise.allSettled([sb, mir, direct]).then(function(res){
+      if (res[0].status === "rejected" && res[1].status === "rejected" && res[2].status === "rejected") throw new Error("site push failed");
       return {ok:true};
     });
   }
   function pullSiteCloud(){
     var sb = fetch(CLOUD.url + "/rest/v1/submissions?id=eq." + SITE_ROW + "&select=at,data", {headers:CH})
       .then(function(r){ return r.ok ? r.json() : []; }).catch(function(){ return []; });
-    return sb.then(function(rows){
-      return mirrorRead().catch(function(){ return null; }).then(function(snap){
-        var mirrorRows = (snap && snap.rows) ? snap.rows.filter(function(r){ return r.id === SITE_ROW; }) : [];
-        var merged = mergeRows(rows || [], mirrorRows);
-        var row = merged.filter(function(r){ return r.id === SITE_ROW; })[0];
-        if (!row) return null;
+    var direct = fetch(MIRROR_URL + "-site?t=" + Date.now(), {cache:"no-store"})
+      .then(function(r){ return r.ok ? r.json() : null; }).catch(function(){ return null; });
+    return Promise.all([sb, mirrorRead().catch(function(){ return null; }), direct]).then(function(res){
+      var rows = res[0] || [], snap = res[1], directSite = res[2];
+      var mirrorRows = (snap && snap.rows) ? snap.rows.filter(function(r){ return r.id === SITE_ROW; }) : [];
+      var merged = mergeRows(rows, mirrorRows);
+      var row = merged.filter(function(r){ return r.id === SITE_ROW; })[0];
+      var best = null;
+      if (row){
         var d = row.data || {};
-        return {id:SITE_ROW, at:Number(row.at), closed:!!d.closed, title:d.title || "", body:d.body || ""};
-      });
+        best = {id:SITE_ROW, at:Number(row.at), closed:!!d.closed, title:d.title || "", body:d.body || ""};
+      }
+      if (directSite && Number(directSite.at || 0) > Number((best && best.at) || 0)){
+        best = {id:SITE_ROW, at:Number(directSite.at), closed:!!directSite.closed, title:directSite.title || "", body:directSite.body || ""};
+      }
+      return best;
     });
   }
   function paintSite(n){

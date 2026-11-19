@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="dark" data-glass="on" data-scene="shu" data-ver="1119a">
+<html lang="zh-CN" data-theme="dark" data-glass="on" data-scene="shu" data-ver="1119b">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -872,7 +872,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
   </div>
 
   <footer class="foot">
-    <span>小修科技 · 前台提交页 · v1119a</span>
+    <span>小修科技 · 前台提交页 · v1119b</span>
     <span>数据保存在浏览器 localStorage</span>
   </footer>
 </main>
@@ -2004,7 +2004,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     var localSite = readSiteLocal();
     /* 先用本机缓存的站点状态兜底，不依赖任何网络 */
     paintSite(localSite);
-    function paint(rows, extra){
+    function paint(rows, extra, directSite){
       var merged = mergeRows(extra || [], rows || []).filter(function(r){
         return r.id === NOTICE_ROW || r.id === SITE_ROW;
       });
@@ -2019,13 +2019,20 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
           if (!site || cs.at >= Number(site.at || 0)) site = cs;
         }
       });
+      if (directSite && Number(directSite.at || 0) > Number((site && site.at) || 0)){
+        site = {id:SITE_ROW, at:Number(directSite.at), closed:!!directSite.closed, title:directSite.title || "", body:directSite.body || ""};
+      }
       paintSite(site);
       if (site && site.closed) return;
       paintNotice(notice);
     }
+    /* 站点专用小通道：只存一个开关对象，不受大快照影响 */
+    var directSiteReq = fetch(MIRROR_URL + "-site?t=" + Date.now(), {cache:"no-store"})
+      .then(function(r){ return r.ok ? r.json() : null; })
+      .catch(function(){ return null; });
     /* 备用通道先渲染，绝不被主通道拖住 */
-    mirrorRead().catch(function(){ return null; }).then(function(snap){
-      paint((snap && snap.rows) ? snap.rows : []);
+    Promise.all([mirrorRead().catch(function(){ return null; }), directSiteReq]).then(function(res){
+      paint((res[0] && res[0].rows) ? res[0].rows : [], [], res[1]);
     });
     /* 主通道单独跑，4 秒超时直接放弃 */
     var ctrl = ("AbortController" in window) ? new AbortController() : null;
@@ -2035,8 +2042,8 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
       signal: ctrl ? ctrl.signal : undefined
     }).then(function(r){ return r.ok ? r.json() : []; })
       .then(function(rows){
-        return mirrorRead().catch(function(){ return null; }).then(function(snap){
-          paint((snap && snap.rows) ? snap.rows : [], rows || []);
+        return Promise.all([mirrorRead().catch(function(){ return null; }), directSiteReq]).then(function(res){
+          paint((res[0] && res[0].rows) ? res[0].rows : [], rows || [], res[1]);
         });
       })
       .catch(function(){})
