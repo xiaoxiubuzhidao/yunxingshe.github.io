@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="dark" data-glass="on" data-scene="shu" data-ver="1119y">
+<html lang="zh-CN" data-theme="dark" data-glass="on" data-scene="shu" data-ver="1120a">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -924,7 +924,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
   </form>
 </div>
 <footer class="foot">
-    <span>小修科技 · 前台提交页 · v1119y</span>
+    <span>小修科技 · 前台提交页 · v1120a</span>
     <span>数据保存在浏览器 localStorage</span>
     <button class="net-check" id="netCheck" type="button">网络自检</button>
   </footer>
@@ -2236,10 +2236,12 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
       var has = d.msgs.some(function(m){ return m.id === item.msg.id; });
       if (!has) d.msgs.push(item.msg);
       d.at = Date.now();
-      var stored = false;
-      return chatWrite(item.conv, d).then(function(){ stored = true; }).catch(function(){})
-        .then(function(){
-          if (!stored) return false;
+      var stored = false, rowed = false;
+      return Promise.all([
+        chatWrite(item.conv, d).then(function(){ stored = true; }).catch(function(){}),
+        chatRowWrite(item.conv, item.msg).then(function(){ rowed = true; }).catch(function(){})
+      ]).then(function(){
+          if (!stored && !rowed) return false;
           chatOutRemove(item.msg.id);
           var a = state.account || {};
           var entry = {
@@ -2299,9 +2301,10 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
       chatJson(MIRROR_URL + "-chat-" + conv + stamp, ctrl),
       chatJson(GH_RAW + "chat/" + conv + ".json" + stamp, ctrl),
       chatJson(GH_CDN + "chat/" + conv + ".json" + stamp, ctrl),
-      chatJson("chat/" + conv + ".json" + stamp, ctrl)
+      chatJson("chat/" + conv + ".json" + stamp, ctrl),
+      chatRowsRead(conv)
     ]).then(function(res){
-      var doc = chatMerge(chatMerge(chatMerge(res[0], res[1]), res[2]), res[3]);
+      var doc = chatMerge(chatMerge(chatMerge(chatMerge(res[0], res[1]), res[2]), res[3]), res[4]);
       if (doc && doc.msgs && doc.msgs.length){ if (timer) clearTimeout(timer); return doc; }
       /* 兼容旧会话（q135… / p135…），只从备用通道补一次 */
       return Promise.all([
@@ -2311,6 +2314,33 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
         if (timer) clearTimeout(timer);
         return chatMerge(chatMerge(doc, legacy[0]), legacy[1]);
       });
+    });
+  }
+  var MSG_ROW = "MSG-";
+  function chatRowsRead(conv){
+    var q = MSG_ROW + conv + "-*";
+    return fetch(CLOUD.url + "/rest/v1/submissions?id=like." + encodeURIComponent(q) + "&select=id,at,data&limit=300&order=at.asc", {
+      headers:{"apikey":CLOUD.key, "Authorization":"Bearer " + CLOUD.key}, cache:"no-store"
+    }).then(function(r){ return r.ok ? r.json() : []; })
+      .then(function(rows){
+        var pre = MSG_ROW.length + String(conv).length + 1, msgs = [];
+        (rows || []).forEach(function(row){
+          var d = row.data || {}, rid = String(row.id || "");
+          if (!d.text || rid.length <= pre) return;
+          msgs.push({id:rid.slice(pre), from:(d.from === "a" ? "a" : "u"), text:String(d.text), at:Number(d.at || row.at || 0)});
+        });
+        return {v:1, at:Date.now(), msgs:msgs};
+      })
+      .catch(function(){ return null; });
+  }
+  function chatRowWrite(conv, msg){
+    return fetch(CLOUD.url + "/rest/v1/submissions", {
+      method:"POST",
+      headers:{"Content-Type":"application/json","Prefer":"return=minimal","apikey":CLOUD.key,"Authorization":"Bearer " + CLOUD.key},
+      body:JSON.stringify({id:MSG_ROW + conv + "-" + msg.id, at:Number(msg.at), data:{conv:String(conv), from:msg.from, text:String(msg.text), at:Number(msg.at)}})
+    }).then(function(r){
+      if (r.ok || r.status === 409) return true;
+      throw new Error("row " + r.status);
     });
   }
   function chatWrite(conv, doc){

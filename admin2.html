@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="dark" data-glass="on" data-scene="shu" data-ver="1119z">
+<html lang="zh-CN" data-theme="dark" data-glass="on" data-scene="shu" data-ver="1120a">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -1462,6 +1462,33 @@ header,main{position:relative;z-index:2}
     out.msgs.sort(function(x, y){ return Number(x.at || 0) - Number(y.at || 0); });
     return out;
   }
+  var MSG_ROW = "MSG-";
+  function csRowsRead(conv){
+    var q = MSG_ROW + conv + "-*";
+    return fetch(CLOUD.url + "/rest/v1/submissions?id=like." + encodeURIComponent(q) + "&select=id,at,data&limit=300&order=at.asc", {
+      headers:{"apikey":CLOUD.key, "Authorization":"Bearer " + CLOUD.key}, cache:"no-store"
+    }).then(function(r){ return r.ok ? r.json() : []; })
+      .then(function(rows){
+        var pre = MSG_ROW.length + String(conv).length + 1, msgs = [];
+        (rows || []).forEach(function(row){
+          var d = row.data || {}, rid = String(row.id || "");
+          if (!d.text || rid.length <= pre) return;
+          msgs.push({id:rid.slice(pre), from:(d.from === "a" ? "a" : "u"), text:String(d.text), at:Number(d.at || row.at || 0)});
+        });
+        return {v:1, at:Date.now(), msgs:msgs};
+      })
+      .catch(function(){ return null; });
+  }
+  function csRowWrite(conv, msg){
+    return fetch(CLOUD.url + "/rest/v1/submissions", {
+      method:"POST",
+      headers:Object.assign({"Content-Type":"application/json","Prefer":"return=minimal"}, CH),
+      body:JSON.stringify({id:MSG_ROW + conv + "-" + msg.id, at:Number(msg.at), data:{conv:String(conv), from:msg.from, text:String(msg.text), at:Number(msg.at)}})
+    }).then(function(r){
+      if (r.ok || r.status === 409) return true;
+      throw new Error("row " + r.status);
+    });
+  }
   function csRead(conv){
     var stamp = "?t=" + Date.now();
     function one(url){
@@ -1474,9 +1501,10 @@ header,main{position:relative;z-index:2}
       one(GH_RAW + "chat/" + conv + ".json" + stamp),
       one(MIRROR_URL + "-chat-q" + conv + stamp),
       one(MIRROR_URL + "-chat-p" + conv + stamp),
-      one("chat/" + conv + ".json" + stamp)
+      one("chat/" + conv + ".json" + stamp),
+      csRowsRead(conv)
     ]).then(function(res){
-      return csMerge(csMerge(csMerge(res[0], res[1]), csMerge(res[2], res[3])), res[4]);
+      return csMerge(csMerge(csMerge(csMerge(res[0], res[1]), csMerge(res[2], res[3])), res[4]), res[5]);
     });
   }
   function csWrite(conv, doc){
@@ -1579,7 +1607,11 @@ header,main{position:relative;z-index:2}
     csRead(conv).then(function(doc){
       var d = (doc && doc.msgs) ? {v:1, msgs:doc.msgs.slice(-199)} : {v:1, msgs:[]};
       d.msgs.push(msg); d.at = Date.now();
-      return csWrite(conv, d);
+      var rowed = false;
+      return Promise.all([
+        csWrite(conv, d).catch(function(){}),
+        csRowWrite(conv, msg).then(function(){ rowed = true; }).catch(function(){})
+      ]).then(function(){ return rowed; });
     }).then(function(){
       return csIndexRead().then(function(idx){
         var users = (idx && idx.users) ? idx.users.slice() : [];
