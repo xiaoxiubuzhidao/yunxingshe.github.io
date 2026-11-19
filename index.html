@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="dark" data-glass="on" data-scene="shu" data-ver="1119m">
+<html lang="zh-CN" data-theme="dark" data-glass="on" data-scene="shu" data-ver="1119n">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -920,7 +920,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
   </form>
 </div>
 <footer class="foot">
-    <span>小修科技 · 前台提交页 · v1119m</span>
+    <span>小修科技 · 前台提交页 · v1119n</span>
     <span>数据保存在浏览器 localStorage</span>
     <button class="net-check" id="netCheck" type="button">网络自检</button>
   </footer>
@@ -2180,7 +2180,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
   }
   function chatConv(acct){
     if (!acct || !acct.number) return "";
-    return (acct.type === "qq" ? "q" : "p") + acct.number;
+    return String(acct.number).replace(/\D/g, "");
   }
   function chatSeen(){
     try{ return JSON.parse(localStorage.getItem(CHAT_SEEN_KEY) || "{}") || {}; }catch(e){ return {}; }
@@ -2214,8 +2214,16 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
       chatJson(GH_RAW + "chat/" + conv + ".json" + stamp, ctrl),
       chatJson(GH_CDN + "chat/" + conv + ".json" + stamp, ctrl)
     ]).then(function(res){
-      if (timer) clearTimeout(timer);
-      return chatMerge(chatMerge(res[0], res[1]), res[2]);
+      var doc = chatMerge(chatMerge(res[0], res[1]), res[2]);
+      if (doc && doc.msgs && doc.msgs.length){ if (timer) clearTimeout(timer); return doc; }
+      /* 兼容旧会话（q135… / p135…），只从备用通道补一次 */
+      return Promise.all([
+        chatJson(MIRROR_URL + "-chat-q" + conv + stamp, ctrl),
+        chatJson(MIRROR_URL + "-chat-p" + conv + stamp, ctrl)
+      ]).then(function(legacy){
+        if (timer) clearTimeout(timer);
+        return chatMerge(chatMerge(doc, legacy[0]), legacy[1]);
+      });
     });
   }
   function chatWrite(conv, doc){

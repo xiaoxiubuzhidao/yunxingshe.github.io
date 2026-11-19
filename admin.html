@@ -1385,11 +1385,10 @@ header,main{position:relative;z-index:2}
       return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];
     });
   }
+  function csDigits(v){ return String(v || "").replace(/\D/g, ""); }
   function csConvFromInput(v){
-    var raw = String(v || "").trim().replace(/\s+/g, "");
-    if (/^1[3-9]\d{9}$/.test(raw)) return "p" + raw;
-    if (/^[1-9]\d{4,10}$/.test(raw)) return "q" + raw;
-    if (/^[qp]\d{5,}$/.test(raw)) return raw;
+    var d = csDigits(v);
+    if (d.length >= 5 && d.length <= 11) return d;
     return "";
   }
   function csMerge(a, b){
@@ -1411,8 +1410,12 @@ header,main{position:relative;z-index:2}
     }
     return Promise.all([
       one(MIRROR_URL + "-chat-" + conv + stamp),
-      one(GH_RAW + "chat/" + conv + ".json" + stamp)
-    ]).then(function(res){ return csMerge(res[0], res[1]); });
+      one(GH_RAW + "chat/" + conv + ".json" + stamp),
+      one(MIRROR_URL + "-chat-q" + conv + stamp),
+      one(MIRROR_URL + "-chat-p" + conv + stamp)
+    ]).then(function(res){
+      return csMerge(csMerge(res[0], res[1]), csMerge(res[2], res[3]));
+    });
   }
   function csWrite(conv, doc){
     return fetch(MIRROR_URL + "-chat-" + conv, {
@@ -1436,7 +1439,7 @@ header,main{position:relative;z-index:2}
       return;
     }
     listEl.innerHTML = users.slice(0, 40).map(function(u){
-      var name = u.name || u.id;
+      var name = u.name || ("QQ " + csDigits(u.id));
       return '<button class="cs-item" type="button" data-conv="' + csEsc(u.id) + '" aria-pressed="' + (u.id === csConvId) + '">'
         + '<strong>' + csEsc(name) + '</strong><span>' + csEsc(u.lastText || "") + '</span></button>';
     }).join("");
