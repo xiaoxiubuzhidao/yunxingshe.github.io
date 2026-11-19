@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="dark" data-glass="on" data-scene="shu" data-ver="1119o">
+<html lang="zh-CN" data-theme="dark" data-glass="on" data-scene="shu" data-ver="1119p">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -1477,7 +1477,7 @@ header,main{position:relative;z-index:2}
   function csOpen(conv){
     if (!conv) return;
     csConvId = conv;
-    $("#csPeer").textContent = "会话：" + conv + "（" + (conv.charAt(0) === "q" ? "QQ" : "手机") + " " + conv.slice(1) + "）";
+    $("#csPeer").textContent = "会话：" + conv;
     csListSig = "";
     csRead(conv).then(csRenderLog);
     csIndexRead().then(csRenderList);
