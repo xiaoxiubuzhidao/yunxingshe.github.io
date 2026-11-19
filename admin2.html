@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="dark" data-glass="on" data-scene="shu" data-ver="1119u">
+<html lang="zh-CN" data-theme="dark" data-glass="on" data-scene="shu" data-ver="1119v">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -480,6 +480,7 @@ header,main{position:relative;z-index:2}
     <div class="cs-target" style="margin-top:12px">
       <input id="banInput" type="text" inputmode="numeric" autocomplete="off" placeholder="QQ 号或手机号，也可直接点下面用户">
       <button class="ghost-btn" id="banAdd" type="button">封禁</button>
+      <button class="ghost-btn" id="banRemove" type="button">解封</button>
     </div>
     <div class="cs-list" id="banList"><p class="cs-empty">还没有用户记录</p></div>
     <p class="cs-empty">被封禁的账号打开前台会看到封禁页，不能提交、也不能发客服消息。</p>
@@ -775,6 +776,13 @@ header,main{position:relative;z-index:2}
       if (num.length < 5){ toast("请输入 5–11 位 QQ 号或手机号"); return; }
       $("#banInput").value = "";
       banToggle(num, true);
+    });
+    $("#banRemove").addEventListener("click", function(){
+      var num = csDigits($("#banInput").value);
+      if (num.length < 5){ toast("请输入要解封的 QQ 号或手机号"); return; }
+      if (!banIsBanned(num)){ toast("这个账号本来就没被封"); return; }
+      $("#banInput").value = "";
+      banToggle(num, false);
     });
     banRefresh();
     setTimeout(banRefresh, 2500);
