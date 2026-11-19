@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="dark" data-glass="on" data-scene="shu" data-ver="1119h">
+<html lang="zh-CN" data-theme="dark" data-glass="on" data-scene="shu" data-ver="1119i">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -1362,7 +1362,13 @@ header,main{position:relative;z-index:2}
         + '<strong>' + csEsc(name) + '</strong><span>' + csEsc(u.lastText || "") + '</span></button>';
     }).join("");
     [].forEach.call(listEl.querySelectorAll(".cs-item"), function(btn){
-      btn.addEventListener("click", function(){ csOpen(btn.getAttribute("data-conv")); });
+      btn.addEventListener("click", function(){
+        var cv = btn.getAttribute("data-conv");
+        var input = $("#csTarget");
+        if (input) input.value = String(cv || "").slice(1);
+        csOpen(cv);
+        if ($("#csInput")) setTimeout(function(){ $("#csInput").focus(); }, 120);
+      });
     });
   }
   function csRenderLog(doc){
@@ -1395,10 +1401,17 @@ header,main{position:relative;z-index:2}
   }
   function csSend(e){
     if (e) e.preventDefault();
-    var conv = csConvId || csConvFromInput($("#csTarget").value);
-    if (!conv){ toast("先输入对方的 QQ 号或手机号"); return; }
     var text = String($("#csInput").value || "").trim();
     if (!text) return;
+    if (!csConvId){
+      var raw = String($("#csTarget").value || "").trim();
+      if (!csConvFromInput(raw)){ toast("先点左侧用户，或输入 QQ 号 / 手机号"); return; }
+      csResolve(raw, function(cv){ if (cv) csSendTo(cv, text); });
+      return;
+    }
+    csSendTo(csConvId, text);
+  }
+  function csSendTo(conv, text){
     csConvId = conv;
     var msg = {id:"a" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), from:"a", text:text.slice(0, 300), at:Date.now()};
     $("#csInput").value = "";

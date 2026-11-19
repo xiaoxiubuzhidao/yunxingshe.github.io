@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="dark" data-glass="on" data-scene="shu" data-ver="1119h">
+<html lang="zh-CN" data-theme="dark" data-glass="on" data-scene="shu" data-ver="1119i">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -908,7 +908,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
   </form>
 </div>
 <footer class="foot">
-    <span>小修科技 · 前台提交页 · v1119h</span>
+    <span>小修科技 · 前台提交页 · v1119i</span>
     <span>数据保存在浏览器 localStorage</span>
   </footer>
 </main>
@@ -2088,9 +2088,14 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     if (chatDot) chatDot.style.display = "none";
   }
   function chatRead(conv){
-    return fetch(MIRROR_URL + "-chat-" + conv + "?t=" + Date.now(), {cache:"no-store"})
+    var ctrl = (typeof AbortController !== "undefined") ? new AbortController() : null;
+    var timer = ctrl ? setTimeout(function(){ try{ ctrl.abort(); }catch(e){} }, 6000) : null;
+    return fetch(MIRROR_URL + "-chat-" + conv + "?t=" + Date.now(), {
+      cache:"no-store", signal: ctrl ? ctrl.signal : undefined
+    })
       .then(function(r){ return r.ok ? r.json() : null; })
-      .catch(function(){ return null; });
+      .catch(function(){ return null; })
+      .then(function(v){ if (timer) clearTimeout(timer); return v; });
   }
   function chatWrite(conv, doc){
     return fetch(MIRROR_URL + "-chat-" + conv, {
@@ -2139,7 +2144,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
         if (chatDock) chatDock.hidden = false;
         toast("客服发来一条新消息");
       }
-    }, function(){ chatBusy = false; });
+    });
   }
   function chatSend(e){
     if (e) e.preventDefault();
@@ -2317,7 +2322,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     chatFab.addEventListener("click", function(){
       if (!state.account){ openGate(); return; }
       chatDock.hidden = !chatDock.hidden;
-      if (!chatDock.hidden) chatPoll();
+      if (!chatDock.hidden){ chatBusy = false; chatPoll(); }
     });
     $("#chatClose").addEventListener("click", function(){ chatDock.hidden = true; });
     chatForm.addEventListener("submit", chatSend);
