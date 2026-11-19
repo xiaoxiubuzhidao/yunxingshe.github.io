@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="dark" data-glass="on" data-scene="shu" data-ver="1119w">
+<html lang="zh-CN" data-theme="dark" data-glass="on" data-scene="shu" data-ver="1119x">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -1392,7 +1392,7 @@ header,main{position:relative;z-index:2}
     var list = $("#banList"), users = (banData && banData.users) ? banData.users.slice() : [];
     var nums = {};
     var rows = [];
-    users.forEach(function(u){ var num = String((u && u.number) || u); nums[num] = 1; rows.push({number:num, name:((u && u.name) && String(u.name).replace(num, "").trim()) || (num.length === 11 ? "手机 " + num : "QQ " + num), banned:true}); });
+    users.forEach(function(u){ var num = String((u && u.number) || u); nums[num] = 1; rows.push({number:num, name:(num.length === 11 ? "手机 " : "QQ ") + num, banned:true}); });
     (known || []).forEach(function(u){
       var num = csDigits(u.id || u.number || "");
       if (!num || nums[num]) return;
