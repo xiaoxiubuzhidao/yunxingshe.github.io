@@ -1231,7 +1231,7 @@ header,main{position:relative;z-index:2}
   var GH = {owner:"xiaoxiubuzhidao", repo:"yunxingshe.github.io", branch:"main"};
   var GH_TOKEN_KEY = "xiaoxiu-gh-token";
   function ghToken(){ try{ return localStorage.getItem(GH_TOKEN_KEY) || ""; }catch(e){ return ""; } }
-  var GH_RAW = "https://raw.githubusercontent.com/" + GH.owner + "/" + GH.repo + "/" + GH.branch + "/";
+  var GH_RAW = "https://raw.githubusercontent.com/" + GH.owner + "/" + GH.repo + "/refs/heads/" + GH.branch + "/";
   var GH_API = "https://api.github.com/repos/" + GH.owner + "/" + GH.repo + "/contents/";
   var ghQueue = Promise.resolve(), ghStatusCache = null;
   function ghReadFile(path){

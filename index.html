@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="dark" data-glass="on" data-scene="shu" data-ver="1119k">
+<html lang="zh-CN" data-theme="dark" data-glass="on" data-scene="shu" data-ver="1119m">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -920,7 +920,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
   </form>
 </div>
 <footer class="foot">
-    <span>小修科技 · 前台提交页 · v1119k</span>
+    <span>小修科技 · 前台提交页 · v1119m</span>
     <span>数据保存在浏览器 localStorage</span>
     <button class="net-check" id="netCheck" type="button">网络自检</button>
   </footer>
@@ -1743,7 +1743,8 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
   var CLOUD = {url:"https://hqohhkfoonsczqrkrrxa.supabase.co", key:"sb_publishable_MoKTU1kxS2K0dd8CU9jO3w_ltqNerKu"};
   /* ---------- 备用通道：textdb.dev 快照（主通道不可达时兜底） ---------- */
   var MIRROR_URL = "https://textdb.dev/api/data/xxs-cloud-ea290ea62a014f37ae67df947586";
-  var GH_RAW = "https://raw.githubusercontent.com/xiaoxiubuzhidao/yunxingshe.github.io/main/";
+  var GH_RAW = "https://raw.githubusercontent.com/xiaoxiubuzhidao/yunxingshe.github.io/refs/heads/main/";
+  var GH_CDN = "https://cdn.jsdelivr.net/gh/xiaoxiubuzhidao/yunxingshe.github.io@main/";
   var lastGhStatus = null;
   function ghRows(st){
     var out = [];
@@ -1761,12 +1762,18 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
         .catch(function(){ return null; })
         .then(function(v){ if (tm) clearTimeout(tm); return v; });
     }
-    return Promise.all([one(GH_RAW + "status.json?t=" + Date.now()), one("status.json?t=" + Date.now())])
+    return Promise.all([
+      one(GH_RAW + "status.json?t=" + Date.now()),
+      one("status.json?t=" + Date.now()),
+      one(GH_CDN + "status.json?t=" + Date.now())
+    ])
       .then(function(res){
-        var a = res[0], b = res[1];
-        if (!a) return b;
-        if (!b) return a;
-        return Number(a.at || 0) >= Number(b.at || 0) ? a : b;
+        var best = null;
+        res.forEach(function(v){
+          if (!v) return;
+          if (!best || Number(v.at || 0) > Number(best.at || 0)) best = v;
+        });
+        return best;
       });
   }
 
@@ -2204,10 +2211,11 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     var stamp = "?t=" + Date.now();
     return Promise.all([
       chatJson(MIRROR_URL + "-chat-" + conv + stamp, ctrl),
-      chatJson(GH_RAW + "chat/" + conv + ".json" + stamp, ctrl)
+      chatJson(GH_RAW + "chat/" + conv + ".json" + stamp, ctrl),
+      chatJson(GH_CDN + "chat/" + conv + ".json" + stamp, ctrl)
     ]).then(function(res){
       if (timer) clearTimeout(timer);
-      return chatMerge(res[0], res[1]);
+      return chatMerge(chatMerge(res[0], res[1]), res[2]);
     });
   }
   function chatWrite(conv, doc){
