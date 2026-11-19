@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="dark" data-glass="on" data-scene="shu" data-ver="1119r">
+<html lang="zh-CN" data-theme="dark" data-glass="on" data-scene="shu" data-ver="1119s">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -923,7 +923,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
   </form>
 </div>
 <footer class="foot">
-    <span>小修科技 · 前台提交页 · v1119r</span>
+    <span>小修科技 · 前台提交页 · v1119s</span>
     <span>数据保存在浏览器 localStorage</span>
     <button class="net-check" id="netCheck" type="button">网络自检</button>
   </footer>
@@ -1756,9 +1756,8 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
   var lastGhStatus = null;
   var GH_TOKEN_KEY = "xiaoxiu-gh-token";
   function ghToken(){ try{ return localStorage.getItem(GH_TOKEN_KEY) || ""; }catch(e){ return ""; } }
-  function ghPutFile(path, obj){
-    var tk = ghToken();
-    if (!tk) return Promise.resolve(false);
+  var ghChain = Promise.resolve();
+  function ghPutOnce(path, obj, tk){
     var url = "https://api.github.com/repos/xiaoxiubuzhidao/yunxingshe.github.io/contents/" + path;
     return fetch(url + "?ref=main&t=" + Date.now(), {
       headers:{"Authorization":"token " + tk, "Accept":"application/vnd.github+json"}, cache:"no-store"
@@ -1773,8 +1772,20 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
           body:JSON.stringify(body)
         });
       })
-      .then(function(r){ return !!(r && r.ok); })
-      .catch(function(){ return false; });
+      .then(function(r){ return {ok:!!(r && r.ok), status:r ? r.status : 0}; })
+      .catch(function(){ return {ok:false, status:0}; });
+  }
+  function ghPutFile(path, obj){
+    var tk = ghToken();
+    if (!tk) return Promise.resolve(false);
+    ghChain = ghChain.then(function(){
+      return ghPutOnce(path, obj, tk).then(function(res){
+        if (res.ok) return true;
+        if (res.status !== 409 && res.status !== 422) return false;
+        return ghPutOnce(path, obj, tk).then(function(again){ return !!again.ok; });
+      });
+    }).catch(function(){ return false; });
+    return ghChain;
   }
   function ghChatWrite(conv, doc){
     return ghPutFile("chat/" + conv + ".json", doc);
