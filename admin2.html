@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="dark" data-glass="on" data-scene="shu" data-ver="1119t">
+<html lang="zh-CN" data-theme="dark" data-glass="on" data-scene="shu" data-ver="1119u">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -472,6 +472,19 @@ header,main{position:relative;z-index:2}
     </div>
   </section>
 
+  <section class="board liquid" aria-labelledby="banTitle">
+    <div class="notice-head">
+      <h2 id="banTitle">封禁用户</h2>
+      <span class="notice-state" id="banState">未封禁任何人</span>
+    </div>
+    <div class="cs-target" style="margin-top:12px">
+      <input id="banInput" type="text" inputmode="numeric" autocomplete="off" placeholder="QQ 号或手机号，也可直接点下面用户">
+      <button class="ghost-btn" id="banAdd" type="button">封禁</button>
+    </div>
+    <div class="cs-list" id="banList"><p class="cs-empty">还没有用户记录</p></div>
+    <p class="cs-empty">被封禁的账号打开前台会看到封禁页，不能提交、也不能发客服消息。</p>
+  </section>
+
   <section class="board liquid" aria-labelledby="csTitle">
     <div class="notice-head">
       <h2 id="csTitle">客服消息</h2>
@@ -755,6 +768,18 @@ header,main{position:relative;z-index:2}
     if (e.key === KEY_TASKS) pull(false);
   });
   window.addEventListener("focus", function(){ pull(false); });
+
+  if ($("#banAdd")){
+    $("#banAdd").addEventListener("click", function(){
+      var num = csDigits($("#banInput").value);
+      if (num.length < 5){ toast("请输入 5–11 位 QQ 号或手机号"); return; }
+      $("#banInput").value = "";
+      banToggle(num, true);
+    });
+    banRefresh();
+    setTimeout(banRefresh, 2500);
+    setInterval(function(){ if (!document.hidden) banRefresh(); }, 12000);
+  }
   if ($("#csForm")){
     $("#csForm").addEventListener("submit", csSend);
     $("#csOpenBtn").addEventListener("click", function(){
@@ -1318,6 +1343,73 @@ header,main{position:relative;z-index:2}
     noticeModal.hidden = true;
     modalAction = null;
     document.body.style.overflow = "";
+  }
+  /* ---------- 封禁用户 ---------- */
+  var BAN_URL = MIRROR_URL + "-ban", banData = null, banSig = "";
+  function banRead(){
+    return fetch(BAN_URL + "?t=" + Date.now(), {cache:"no-store"})
+      .then(function(r){ return r.ok ? r.json() : null; })
+      .catch(function(){ return null; });
+  }
+  function banSave(users){
+    banData = {v:1, at:Date.now(), users:users.slice(0, 200)};
+    return fetch(BAN_URL, {
+      method:"POST", headers:{"Content-Type":"text/plain"}, body:JSON.stringify(banData)
+    }).then(function(r){ if (!r.ok) throw new Error("ban " + r.status); return true; });
+  }
+  function banIsBanned(num){
+    return (banData && banData.users) ? banData.users.some(function(u){ return String((u && u.number) || u) === String(num); }) : false;
+  }
+  function banRender(known){
+    var list = $("#banList"), users = (banData && banData.users) ? banData.users.slice() : [];
+    var nums = {};
+    var rows = [];
+    users.forEach(function(u){ var num = String((u && u.number) || u); nums[num] = 1; rows.push({number:num, name:(u && u.name) || ("QQ " + num), banned:true}); });
+    (known || []).forEach(function(u){
+      var num = csDigits(u.id || u.number || "");
+      if (!num || nums[num]) return;
+      nums[num] = 1;
+      rows.push({number:num, name:u.name || ("QQ " + num), banned:false});
+    });
+    $("#banState").textContent = users.length ? ("已封禁 " + users.length + " 个账号") : "未封禁任何人";
+    var sig = JSON.stringify(rows);
+    if (sig === banSig) return;
+    banSig = sig;
+    if (!rows.length){ list.innerHTML = '<p class="cs-empty">还没有用户记录</p>'; return; }
+    list.innerHTML = rows.map(function(r){
+      return '<button class="cs-item" type="button" data-num="' + csEsc(r.number) + '" data-ban="' + (r.banned ? "1" : "0") + '" aria-pressed="' + (r.banned ? "true" : "false") + '">'
+        + '<strong>' + csEsc(r.name) + '</strong><span>' + r.number + ' · ' + (r.banned ? "已封禁，点一下解封" : "点一下封禁") + '</span></button>';
+    }).join("");
+    [].forEach.call(list.querySelectorAll(".cs-item"), function(btn){
+      btn.addEventListener("click", function(){
+        var num = btn.getAttribute("data-num");
+        var wasBanned = btn.getAttribute("data-ban") === "1";
+        banToggle(num, !wasBanned);
+      });
+    });
+  }
+  function banToggle(num, banned){
+    if (!num) return;
+    var users = (banData && banData.users) ? banData.users.slice() : [];
+    if (banned){
+      if (users.some(function(u){ return String((u && u.number) || u) === String(num); })) return;
+      var known = null;
+      users.forEach(function(){});
+      users.push({number:String(num), name:("QQ " + num), at:Date.now()});
+    } else {
+      users = users.filter(function(u){ return String((u && u.number) || u) !== String(num); });
+    }
+    banSig = "";
+    banSave(users).then(function(){
+      toast(banned ? ("已封禁 " + num) : ("已解封 " + num));
+      banRefresh();
+    }, function(){ toast("封禁失败，换个网络再试"); });
+  }
+  function banRefresh(){
+    Promise.all([banRead(), csIndexRead()]).then(function(res){
+      if (res[0]) banData = res[0];
+      banRender((res[1] && res[1].users) ? res[1].users : []);
+    });
   }
   /* ---------- 客服消息 ---------- */
   var csConvId = "", csListSig = "";

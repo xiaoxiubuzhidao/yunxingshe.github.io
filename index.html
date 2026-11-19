@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="dark" data-glass="on" data-scene="shu" data-ver="1119t">
+<html lang="zh-CN" data-theme="dark" data-glass="on" data-scene="shu" data-ver="1119u">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -923,7 +923,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
   </form>
 </div>
 <footer class="foot">
-    <span>小修科技 · 前台提交页 · v1119t</span>
+    <span>小修科技 · 前台提交页 · v1119u</span>
     <span>数据保存在浏览器 localStorage</span>
     <button class="net-check" id="netCheck" type="button">网络自检</button>
   </footer>
@@ -995,6 +995,16 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     <div class="site-closed-mark" aria-hidden="true">!</div>
     <div class="site-closed-title" id="siteClosedTitle">暂停服务</div>
     <div class="site-closed-body" id="siteClosedBody">站点正在维护，请稍后再来。</div>
+    <div class="site-closed-foot">小修科技</div>
+  </div>
+</div>
+
+<!-- ===== 封禁拦截 ===== -->
+<div class="site-closed" id="banWall" hidden>
+  <div class="site-closed-card liquid">
+    <div class="site-closed-mark" aria-hidden="true">×</div>
+    <div class="site-closed-title">账号已封禁</div>
+    <div class="site-closed-body" id="banWallBody">该账号已被限制使用，如有疑问请联系客服。</div>
     <div class="site-closed-foot">小修科技</div>
   </div>
 </div>
@@ -1911,6 +1921,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     var btn = ev.currentTarget;
     if (btn.dataset.busy === "1") return;
     if (!state.account){ openGate(); return; }
+    if (banHit(state.account)){ banApply(state.account); toast("账号已被封禁，无法提交"); return; }
     if (!state.staffId){
       toast("请先填写工号");
       replay(staffIdEl, "pop", 620);
@@ -2354,6 +2365,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     if (e) e.preventDefault();
     var held = chatConv(state.account);
     if (!held){ openGate(); return; }
+    if (banHit(state.account)){ banApply(state.account); toast("账号已被封禁，无法发送消息"); return; }
     var text = String(chatInput.value || "").trim();
     if (!text) return;
     chatInput.value = "";
@@ -2366,6 +2378,47 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
       var still = chatOut().some(function(it){ return it && it.msg && it.msg.id === msg.id; });
       if (still) toast("网络没通，消息已排队，联网后自动发出");
     }, 3500);
+  }
+  /* ---------- 账号封禁 ---------- */
+  var BAN_URL = MIRROR_URL + "-ban";
+  var banCache = null, banBusy = false;
+  function banRead(){
+    return fetch(BAN_URL + "?t=" + Date.now(), {cache:"no-store"})
+      .then(function(r){ return r.ok ? r.json() : null; })
+      .catch(function(){ return null; });
+  }
+  function banHit(acct){
+    if (!acct || !banCache || !banCache.users) return null;
+    var n = String(acct.number || "");
+    var found = null;
+    banCache.users.forEach(function(u){
+      var num = String((u && u.number) || u || "");
+      if (num && num === n) found = u;
+    });
+    return found;
+  }
+  function banApply(acct){
+    var wall = $("#banWall");
+    if (!wall) return;
+    var hit = banHit(acct);
+    wall.hidden = !hit;
+    if (hit){
+      $("#banWallBody").textContent = (hit.reason ? hit.reason + "。" : "") + "该账号已被限制使用，如有疑问请联系客服。";
+      document.body.style.overflow = "hidden";
+      if (chatDock) chatDock.hidden = true;
+    } else if ($("#siteClosed").hidden){
+      document.body.style.overflow = "";
+    }
+  }
+  function banLoad(){
+    if (banBusy) return Promise.resolve(banCache);
+    banBusy = true;
+    return banRead().then(function(v){
+      banBusy = false;
+      if (v) banCache = v;
+      banApply(state.account);
+      return banCache;
+    }, function(){ banBusy = false; return banCache; });
   }
   /* ---------- 公告悬浮窗 ---------- */
   var NOTICE_KEY = "xiaoxiu-notice-v1", NOTICE_SEEN = "xiaoxiu-notice-seen", NOTICE_ROW = "NOTICE-1", SITE_ROW = "SITE-1";
@@ -2519,6 +2572,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
   if (chatFab){
     chatFab.addEventListener("click", function(){
       if (!state.account){ openGate(); return; }
+      if (banHit(state.account)){ banApply(state.account); return; }
       chatDock.hidden = !chatDock.hidden;
       if (!chatDock.hidden){ chatBusy = false; chatPoll(); }
     });
@@ -2540,6 +2594,9 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     $("#netReload").addEventListener("click", function(){ location.replace(location.pathname + "?v=" + Date.now()); });
     if ($("#netCopy")) $("#netCopy").addEventListener("click", netCopy);
   }
+  banLoad();
+  setInterval(function(){ if (!document.hidden && state.account) banLoad(); }, 30000);
+
   if (!state.account) openGate();
   else setAuthMode("qq");
 })();
