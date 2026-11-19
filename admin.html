@@ -758,9 +758,11 @@ header,main{position:relative;z-index:2}
   if ($("#csForm")){
     $("#csForm").addEventListener("submit", csSend);
     $("#csOpenBtn").addEventListener("click", function(){
-      var conv = csConvFromInput($("#csTarget").value);
-      if (!conv){ toast("请输入 5–11 位 QQ 号或 11 位手机号"); return; }
-      csOpen(conv);
+      var raw = String($("#csTarget").value || "").trim();
+      csResolve(raw, function(conv){
+        if (!conv){ toast("请输入 5–11 位 QQ 号或 11 位手机号"); return; }
+        csOpen(conv);
+      });
     });
     csPoll();
     setInterval(csPoll, 8000);
@@ -1373,6 +1375,14 @@ header,main{position:relative;z-index:2}
       return '<div class="cs-row ' + (m.from === "a" ? "me" : "them") + '"><div class="cs-bubble">' + csEsc(m.text) + '</div></div>';
     }).join("");
     logEl.scrollTop = logEl.scrollHeight;
+  }
+  function csResolve(raw, cb){
+    var direct = csConvFromInput(raw);
+    csIndexRead().then(function(idx){
+      var users = (idx && idx.users) ? idx.users : [];
+      var hit = users.filter(function(u){ return u.id === raw || u.id.slice(1) === raw; })[0];
+      cb(hit ? hit.id : direct);
+    });
   }
   function csOpen(conv){
     if (!conv) return;
