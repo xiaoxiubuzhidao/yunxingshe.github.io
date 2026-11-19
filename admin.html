@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="dark" data-glass="on" data-scene="shu" data-ver="1119x">
+<html lang="zh-CN" data-theme="dark" data-glass="on" data-scene="shu" data-ver="1119z">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -1492,9 +1492,7 @@ header,main{position:relative;z-index:2}
     }
     var stamp = "?t=" + Date.now();
     return Promise.all([
-      one(MIRROR_URL + "-chat-list" + stamp),
-      one(GH_RAW + "chat/index.json" + stamp),
-      one("chat/index.json" + stamp)
+      one(MIRROR_URL + "-chat-list" + stamp)
     ]).then(function(res){
       var users = [], seen = {};
       res.forEach(function(idx){
