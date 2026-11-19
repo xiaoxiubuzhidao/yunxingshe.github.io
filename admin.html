@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="dark" data-glass="on" data-scene="shu" data-ver="1119q">
+<html lang="zh-CN" data-theme="dark" data-glass="on" data-scene="shu" data-ver="1119t">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -477,10 +477,6 @@ header,main{position:relative;z-index:2}
       <h2 id="csTitle">客服消息</h2>
       <span class="notice-state" id="csState">给指定账号发消息，前台会弹出聊天窗</span>
     </div>
-    <div class="cs-target" style="margin-top:12px">
-      <input id="ghToken" type="password" autocomplete="off" placeholder="GitHub 令牌（只需填一次，存这台电脑）">
-      <button class="ghost-btn" id="ghTokenSave" type="button">保存令牌</button>
-    </div>
     <div class="cs-wrap">
       <div class="cs-left">
         <div class="cs-target">
@@ -759,14 +755,6 @@ header,main{position:relative;z-index:2}
     if (e.key === KEY_TASKS) pull(false);
   });
   window.addEventListener("focus", function(){ pull(false); });
-  if ($("#ghTokenSave")){
-    try{ if (ghToken()) $("#ghToken").value = ghToken(); }catch(e){}
-    $("#ghTokenSave").addEventListener("click", function(){
-      var v = String($("#ghToken").value || "").trim();
-      try{ localStorage.setItem(GH_TOKEN_KEY, v); }catch(e){}
-      toast(v ? "令牌已保存在这台电脑" : "已清空令牌");
-    });
-  }
   if ($("#csForm")){
     $("#csForm").addEventListener("submit", csSend);
     $("#csOpenBtn").addEventListener("click", function(){
@@ -1222,59 +1210,13 @@ header,main{position:relative;z-index:2}
     var n = {id:SITE_ROW, at:Date.now(), closed:!!closed, title:title, body:body};
     saveSiteLocal(n);
     paintSite(n);
-    ghStatusPush({site:{closed:!!closed, title:title, body:body, at:n.at}});
     pushSiteCloud(n)
       .then(function(r){ toast(r.ok ? (closed ? "前台网页已关闭，用户将看到这张关闭页" : "前台网页已恢复") : "已保存到本机，云端写入失败"); })
       .catch(function(){ toast(closed ? "已关闭（仅本机生效）" : "已恢复（仅本机生效）"); });
   }
-  /* ---------- GitHub 直连通道（给手机端兜底） ---------- */
+  /* ---------- GitHub 只读通道（给手机端兜底） ---------- */
   var GH = {owner:"xiaoxiubuzhidao", repo:"yunxingshe.github.io", branch:"main"};
-  var GH_TOKEN_KEY = "xiaoxiu-gh-token";
-  function ghToken(){ try{ return localStorage.getItem(GH_TOKEN_KEY) || ""; }catch(e){ return ""; } }
   var GH_RAW = "https://raw.githubusercontent.com/" + GH.owner + "/" + GH.repo + "/refs/heads/" + GH.branch + "/";
-  var GH_API = "https://api.github.com/repos/" + GH.owner + "/" + GH.repo + "/contents/";
-  var ghQueue = Promise.resolve(), ghStatusCache = null;
-  function ghReadFile(path){
-    return fetch(GH_API + path + "?ref=" + GH.branch + "&t=" + Date.now(), {
-      headers:{"Authorization":"token " + ghToken(), "Accept":"application/vnd.github+json"},
-      cache:"no-store"
-    }).then(function(r){ return r.ok ? r.json() : null; }).catch(function(){ return null; });
-  }
-  function ghWrite(path, obj, msg){
-    if (!ghToken()) return Promise.resolve(false);
-    ghQueue = ghQueue.then(function(){
-      return ghReadFile(path).then(function(meta){
-        var body = {
-          message: msg || ("update " + path),
-          content: btoa(unescape(encodeURIComponent(JSON.stringify(obj)))),
-          branch: GH.branch
-        };
-        if (meta && meta.sha) body.sha = meta.sha;
-        return fetch(GH_API + path, {
-          method:"PUT",
-          headers:{"Authorization":"token " + ghToken(), "Content-Type":"application/json", "Accept":"application/vnd.github+json"},
-          body: JSON.stringify(body)
-        });
-      }).then(function(r){ if (!r.ok) throw new Error("gh " + (r && r.status)); return true; });
-    }).catch(function(){ return false; });
-    return ghQueue;
-  }
-  function ghStatusLoad(){
-    return fetch(GH_RAW + "status.json?t=" + Date.now(), {cache:"no-store"})
-      .then(function(r){ return r.ok ? r.json() : null; })
-      .catch(function(){ return null; })
-      .then(function(v){ if (v) ghStatusCache = v; return ghStatusCache; });
-  }
-  function ghStatusPush(patch){
-    return ghStatusLoad().then(function(cur){
-      var base = cur || {v:1, at:0};
-      var next = {v:1, at:Date.now(), site:base.site || null, notice:base.notice || null};
-      if (patch.site) next.site = patch.site;
-      if (patch.notice) next.notice = patch.notice;
-      ghStatusCache = next;
-      return ghWrite("status.json", next, "status " + next.at);
-    });
-  }
   /* ---------- 前台公告 ---------- */
   var NOTICE_KEY = "xiaoxiu-notice-v1";
   var NOTICE_ROW = "NOTICE-1";
@@ -1343,7 +1285,6 @@ header,main{position:relative;z-index:2}
     var n = {id:NOTICE_ROW, at:Date.now(), title:title, body:body, active:!!active};
     saveNoticeLocal(n);
     paintNoticeState(n);
-    ghStatusPush({notice:{title:title, body:body, active:!!active, at:n.at}});
     pushNoticeCloud(n)
       .then(function(r){ toast(r.ok ? (active ? "公告已发布，前台将自动弹出" : "已关闭前台公告") : "已存本机，两个通道都没写成功，请点「重试连接」"); })
       .catch(function(e){
@@ -1520,9 +1461,7 @@ header,main{position:relative;z-index:2}
     csRead(conv).then(function(doc){
       var d = (doc && doc.msgs) ? {v:1, msgs:doc.msgs.slice(-199)} : {v:1, msgs:[]};
       d.msgs.push(msg); d.at = Date.now();
-      return csWrite(conv, d).then(function(){
-        return ghWrite("chat/" + conv + ".json", d, "chat " + conv);
-      });
+      return csWrite(conv, d);
     }).then(function(){
       return csIndexRead().then(function(idx){
         var users = (idx && idx.users) ? idx.users.slice() : [];

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="dark" data-glass="on" data-scene="shu" data-ver="1119s">
+<html lang="zh-CN" data-theme="dark" data-glass="on" data-scene="shu" data-ver="1119t">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -923,7 +923,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
   </form>
 </div>
 <footer class="foot">
-    <span>小修科技 · 前台提交页 · v1119s</span>
+    <span>小修科技 · 前台提交页 · v1119t</span>
     <span>数据保存在浏览器 localStorage</span>
     <button class="net-check" id="netCheck" type="button">网络自检</button>
   </footer>
@@ -937,10 +937,6 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     <button class="chat-close" id="netClose" type="button" aria-label="关闭">×</button>
   </div>
   <div class="net-list" id="netList"><p class="chat-empty">点「开始检测」查看结果</p></div>
-  <div class="net-token">
-    <input id="ghTokenFront" type="password" autocomplete="off" placeholder="可选：GitHub 令牌，让手机也能直接发消息">
-    <button id="ghTokenFrontSave" type="button">保存</button>
-  </div>
   <div class="net-acts">
     <button id="netRun" type="button">开始检测</button>
     <button id="netCopy" type="button">复制结果</button>
@@ -1754,71 +1750,6 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
   var GH_RAW = "https://raw.githubusercontent.com/xiaoxiubuzhidao/yunxingshe.github.io/refs/heads/main/";
   var GH_CDN = "https://cdn.jsdelivr.net/gh/xiaoxiubuzhidao/yunxingshe.github.io@main/";
   var lastGhStatus = null;
-  var GH_TOKEN_KEY = "xiaoxiu-gh-token";
-  function ghToken(){ try{ return localStorage.getItem(GH_TOKEN_KEY) || ""; }catch(e){ return ""; } }
-  var ghChain = Promise.resolve();
-  function ghPutOnce(path, obj, tk){
-    var url = "https://api.github.com/repos/xiaoxiubuzhidao/yunxingshe.github.io/contents/" + path;
-    return fetch(url + "?ref=main&t=" + Date.now(), {
-      headers:{"Authorization":"token " + tk, "Accept":"application/vnd.github+json"}, cache:"no-store"
-    }).then(function(r){ return r.ok ? r.json() : null; })
-      .catch(function(){ return null; })
-      .then(function(meta){
-        var body = {message:"chat update", content:btoa(unescape(encodeURIComponent(JSON.stringify(obj)))), branch:"main"};
-        if (meta && meta.sha) body.sha = meta.sha;
-        return fetch(url, {
-          method:"PUT",
-          headers:{"Authorization":"token " + tk, "Content-Type":"application/json", "Accept":"application/vnd.github+json"},
-          body:JSON.stringify(body)
-        });
-      })
-      .then(function(r){ return {ok:!!(r && r.ok), status:r ? r.status : 0}; })
-      .catch(function(){ return {ok:false, status:0}; });
-  }
-  function ghPutFile(path, obj){
-    var tk = ghToken();
-    if (!tk) return Promise.resolve(false);
-    ghChain = ghChain.then(function(){
-      return ghPutOnce(path, obj, tk).then(function(res){
-        if (res.ok) return true;
-        if (res.status !== 409 && res.status !== 422) return false;
-        return ghPutOnce(path, obj, tk).then(function(again){ return !!again.ok; });
-      });
-    }).catch(function(){ return false; });
-    return ghChain;
-  }
-  function ghChatWrite(conv, doc){
-    return ghPutFile("chat/" + conv + ".json", doc);
-  }
-  function ghChatIndex(entry){
-    if (!ghToken()) return Promise.resolve(false);
-    var url = "https://api.github.com/repos/xiaoxiubuzhidao/yunxingshe.github.io/contents/chat/index.json";
-    return fetch(url + "?ref=main&t=" + Date.now(), {
-      headers:{"Authorization":"token " + ghToken(), "Accept":"application/vnd.github+json"}, cache:"no-store"
-    }).then(function(r){ return r.ok ? r.json() : null; })
-      .catch(function(){ return null; })
-      .then(function(meta){
-        return fetch(GH_RAW + "chat/index.json?t=" + Date.now(), {cache:"no-store"})
-          .then(function(r){ return r.ok ? r.json() : null; })
-          .catch(function(){ return null; })
-          .then(function(idx){
-            var users = (idx && idx.users) ? idx.users.slice() : [];
-            var i = -1;
-            for (var k = 0; k < users.length; k++){ if (users[k].id === entry.id){ i = k; break; } }
-            if (i < 0) users.unshift(entry); else users[i] = entry;
-            var body = {message:"chat index", content:btoa(unescape(encodeURIComponent(JSON.stringify({v:1, at:Date.now(), users:users.slice(0,120)})))), branch:"main"};
-            if (meta && meta.sha) body.sha = meta.sha;
-            return fetch(url, {
-              method:"PUT",
-              headers:{"Authorization":"token " + ghToken(), "Content-Type":"application/json", "Accept":"application/vnd.github+json"},
-              body:JSON.stringify(body)
-            });
-          });
-      })
-      .then(function(r){ return !!(r && r.ok); })
-      .catch(function(){ return false; });
-  }
-
   function ghRows(st){
     var out = [];
     if (!st) return out;
@@ -2256,12 +2187,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
           method:"POST", headers:{"Content-Type":"text/plain"}, body:"ok " + Date.now()
         }).then(function(r){ if (!r.ok) throw new Error("HTTP " + r.status); return true; }, function(){ throw new Error("连不上"); });
       }),
-      netProbe(ghToken() ? "写入 GitHub（已填令牌）" : "写入 GitHub（未填令牌）", function(){
-        if (!ghToken()) return Promise.resolve(false).then(function(){ throw new Error("需要先填令牌"); });
-        return netGet("https://api.github.com/repos/xiaoxiubuzhidao/yunxingshe.github.io/contents/chat?ref=main&t=" + Date.now(), {
-          headers:{"Authorization":"token " + ghToken(), "Accept":"application/vnd.github+json"}
-        });
-      })
+      netProbe("GitHub 文件读取", function(){ return netGet(GH_CDN + "version.txt?t=" + Date.now()); })
     ]).then(function(res){
       var ver = document.documentElement.getAttribute("data-ver") || "?";
       list.innerHTML = res.map(function(r){
@@ -2301,10 +2227,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
       var stored = false;
       return chatWrite(item.conv, d).then(function(){ stored = true; }).catch(function(){})
         .then(function(){
-          var ghOk = ghToken() ? ghChatWrite(item.conv, d) : Promise.resolve(false);
-          return ghOk;
-        }).then(function(ghOk){
-          if (!stored && !ghOk) return false;
+          if (!stored) return false;
           chatOutRemove(item.msg.id);
           var a = state.account || {};
           var entry = {
@@ -2315,7 +2238,6 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
             from:"u"
           };
           chatIndexWrite(entry);
-          if (ghToken()) ghChatIndex(entry);
           chatPoll();
           return true;
         });
@@ -2617,12 +2539,6 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     $("#netRun").addEventListener("click", netRun);
     $("#netReload").addEventListener("click", function(){ location.replace(location.pathname + "?v=" + Date.now()); });
     if ($("#netCopy")) $("#netCopy").addEventListener("click", netCopy);
-    try{ if (ghToken()) $("#ghTokenFront").value = ghToken(); }catch(e){}
-    $("#ghTokenFrontSave").addEventListener("click", function(){
-      var v = String($("#ghTokenFront").value || "").trim();
-      try{ localStorage.setItem(GH_TOKEN_KEY, v); }catch(e){}
-      toast(v ? "已保存，这台设备可以直接发消息" : "已清空");
-    });
   }
   if (!state.account) openGate();
   else setAuthMode("qq");
