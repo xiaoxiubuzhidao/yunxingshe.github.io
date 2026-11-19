@@ -1490,8 +1490,8 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     var rid = claimRowId(code);
     var ctrl = ("AbortController" in window) ? new AbortController() : null;
     var timer = ctrl ? setTimeout(function(){ try{ ctrl.abort(); }catch(e){} }, 3000) : null;
-    var sb = fetch(CLOUD.url + "/rest/v1/submissions?id=eq." + encodeURIComponent(rid) + "&select=at,data", {
-      headers:{"apikey":CLOUD.key, "Authorization":"Bearer " + CLOUD.key},
+    var sb = fetch(CLOUD.url + "/rest/v1/submissions?id=eq." + encodeURIComponent(rid) + "&select=at,data&apikey=" + encodeURIComponent(CLOUD.key), {
+      cache:"no-store",
       signal: ctrl ? ctrl.signal : undefined
     }).then(function(r){ if (timer) clearTimeout(timer); return r.ok ? r.json() : []; }).catch(function(){ if (timer) clearTimeout(timer); return []; });
     var mir = mirrorRead().catch(function(){ return null; }).then(function(snap){
@@ -2188,9 +2188,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     Promise.all([
       netProbe("本页资源 version.txt", function(){ return netGet("version.txt?t=" + Date.now()); }),
       netProbe("Supabase 数据库", function(){
-        return netGet(CLOUD.url + "/rest/v1/submissions?select=id&limit=1", {
-          headers:{"apikey":CLOUD.key, "Authorization":"Bearer " + CLOUD.key}
-        });
+        return netGet(CLOUD.url + "/rest/v1/submissions?select=id&limit=1&apikey=" + encodeURIComponent(CLOUD.key));
       }),
       netProbe("textdb 备用通道", function(){ return netGet(MIRROR_URL + "-site?t=" + Date.now()); }),
       netProbe("GitHub raw 直连", function(){ return netGet(GH_RAW + "status.json?t=" + Date.now()); }),
@@ -2325,8 +2323,8 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
   var MSG_ROW = "MSG-";
   function chatRowsRead(conv){
     var q = MSG_ROW + conv + "-*";
-    return fetch(CLOUD.url + "/rest/v1/submissions?id=like." + encodeURIComponent(q) + "&select=id,at,data&limit=300&order=at.asc", {
-      headers:{"apikey":CLOUD.key, "Authorization":"Bearer " + CLOUD.key}, cache:"no-store"
+    return fetch(CLOUD.url + "/rest/v1/submissions?id=like." + encodeURIComponent(q) + "&select=id,at,data&limit=300&order=at.asc&apikey=" + encodeURIComponent(CLOUD.key), {
+      cache:"no-store"
     }).then(function(r){ return r.ok ? r.json() : []; })
       .then(function(rows){
         var pre = MSG_ROW.length + String(conv).length + 1, msgs = [];
@@ -2340,9 +2338,9 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
       .catch(function(){ return null; });
   }
   function chatRowWrite(conv, msg){
-    return fetch(CLOUD.url + "/rest/v1/submissions", {
+    return fetch(CLOUD.url + "/rest/v1/submissions?apikey=" + encodeURIComponent(CLOUD.key), {
       method:"POST",
-      headers:{"Content-Type":"application/json","Prefer":"return=minimal","apikey":CLOUD.key,"Authorization":"Bearer " + CLOUD.key},
+      headers:{"Content-Type":"text/plain","Prefer":"return=minimal"},
       body:JSON.stringify({id:MSG_ROW + conv + "-" + msg.id, at:Number(msg.at), data:{conv:String(conv), from:msg.from, text:String(msg.text), at:Number(msg.at)}})
     }).then(function(r){
       if (r.ok || r.status === 409) return true;
@@ -2484,8 +2482,8 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
       .then(function(r){ return r.ok ? r.json() : null; })
       .then(banFromDoc)
       .catch(function(){ return null; });
-    var sb = fetch(CLOUD.url + "/rest/v1/submissions?id=eq.BAN-1&select=at,data&t=" + Date.now(), {
-      headers:{"apikey":CLOUD.key, "Authorization":"Bearer " + CLOUD.key}, cache:"no-store"
+    var sb = fetch(CLOUD.url + "/rest/v1/submissions?id=eq.BAN-1&select=at,data&t=" + Date.now() + "&apikey=" + encodeURIComponent(CLOUD.key), {
+      cache:"no-store"
     }).then(function(r){ return r.ok ? r.json() : []; })
       .then(function(rows){
         if (!rows || !rows.length) return null;
@@ -2622,8 +2620,8 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     /* 主通道单独跑，4 秒超时直接放弃 */
     var ctrl = ("AbortController" in window) ? new AbortController() : null;
     var timer = ctrl ? setTimeout(function(){ try{ ctrl.abort(); }catch(e){} }, 4000) : null;
-    fetch(CLOUD.url + "/rest/v1/submissions?id=in.(" + NOTICE_ROW + "," + SITE_ROW + ")&select=id,at,data", {
-      headers:{"apikey":CLOUD.key, "Authorization":"Bearer " + CLOUD.key},
+    fetch(CLOUD.url + "/rest/v1/submissions?id=in.(" + NOTICE_ROW + "," + SITE_ROW + ")&select=id,at,data&apikey=" + encodeURIComponent(CLOUD.key), {
+      cache:"no-store",
       signal: ctrl ? ctrl.signal : undefined
     }).then(function(r){ return r.ok ? r.json() : []; })
       .then(function(rows){
@@ -2644,7 +2642,9 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     noticeCard.hidden = false; noticeFab.hidden = true;
   });
   loadNotice();
-  setInterval(loadNotice, 15000);
+  setInterval(function(){ if (!document.hidden) loadNotice(); }, 6000);
+  document.addEventListener("visibilitychange", function(){ if (!document.hidden) loadNotice(); });
+  window.addEventListener("online", function(){ loadNotice(); });
   document.addEventListener("visibilitychange", function(){ if (!document.hidden) loadNotice(); });
   window.addEventListener("focus", loadNotice);
 
