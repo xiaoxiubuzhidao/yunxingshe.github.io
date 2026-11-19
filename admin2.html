@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="dark" data-glass="on" data-scene="shu" data-ver="1119v">
+<html lang="zh-CN" data-theme="dark" data-glass="on" data-scene="shu" data-ver="1119w">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -1361,18 +1361,38 @@ header,main{position:relative;z-index:2}
   }
   function banSave(users){
     banData = {v:1, at:Date.now(), users:users.slice(0, 200)};
-    return fetch(BAN_URL, {
+    banSig = "";
+    banRenderLocal();
+    var tb = fetch(BAN_URL, {
       method:"POST", headers:{"Content-Type":"text/plain"}, body:JSON.stringify(banData)
     }).then(function(r){ if (!r.ok) throw new Error("ban " + r.status); return true; });
+    var sb = fetch(CLOUD.url + "/rest/v1/submissions?id=eq.BAN-1", {
+      method:"DELETE", headers:Object.assign({"Accept":"application/json"}, CH)
+    }).catch(function(){}).then(function(){
+      return fetch(CLOUD.url + "/rest/v1/submissions", {
+        method:"POST",
+        headers:Object.assign({"Content-Type":"application/json","Prefer":"return=minimal"}, CH),
+        body:JSON.stringify({id:"BAN-1", at:banData.at, data:{users:banData.users}})
+      });
+    }).then(function(r){ if (!r.ok) throw new Error("ban sb " + r.status); return true; });
+    return Promise.all([tb, sb.catch(function(){ return false; })]).then(function(res){
+      if (!res[0] && !res[1]) throw new Error("ban failed");
+      return true;
+    });
   }
   function banIsBanned(num){
     return (banData && banData.users) ? banData.users.some(function(u){ return String((u && u.number) || u) === String(num); }) : false;
   }
+  function banRenderLocal(){
+    banRender(banKnown || []);
+  }
+  var banKnown = [];
   function banRender(known){
+    banKnown = known || banKnown;
     var list = $("#banList"), users = (banData && banData.users) ? banData.users.slice() : [];
     var nums = {};
     var rows = [];
-    users.forEach(function(u){ var num = String((u && u.number) || u); nums[num] = 1; rows.push({number:num, name:(u && u.name) || ("QQ " + num), banned:true}); });
+    users.forEach(function(u){ var num = String((u && u.number) || u); nums[num] = 1; rows.push({number:num, name:((u && u.name) && String(u.name).replace(num, "").trim()) || (num.length === 11 ? "手机 " + num : "QQ " + num), banned:true}); });
     (known || []).forEach(function(u){
       var num = csDigits(u.id || u.number || "");
       if (!num || nums[num]) return;
@@ -1415,7 +1435,7 @@ header,main{position:relative;z-index:2}
   }
   function banRefresh(){
     Promise.all([banRead(), csIndexRead()]).then(function(res){
-      if (res[0]) banData = res[0];
+      if (res[0] && (!banData || Number(res[0].at || 0) >= Number(banData.at || 0))) banData = res[0];
       banRender((res[1] && res[1].users) ? res[1].users : []);
     });
   }

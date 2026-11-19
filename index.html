@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="dark" data-glass="on" data-scene="shu" data-ver="1119u">
+<html lang="zh-CN" data-theme="dark" data-glass="on" data-scene="shu" data-ver="1119v">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -923,7 +923,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
   </form>
 </div>
 <footer class="foot">
-    <span>小修科技 · 前台提交页 · v1119u</span>
+    <span>小修科技 · 前台提交页 · v1119v</span>
     <span>数据保存在浏览器 localStorage</span>
     <button class="net-check" id="netCheck" type="button">网络自检</button>
   </footer>
@@ -2382,17 +2382,42 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
   /* ---------- 账号封禁 ---------- */
   var BAN_URL = MIRROR_URL + "-ban";
   var banCache = null, banBusy = false;
+  function banNorm(v){
+    var n = String(v || "").replace(/\D/g, "");
+    return n.length > 11 ? n.slice(-11) : n;
+  }
+  function banFromDoc(v){
+    if (!v || !v.users) return null;
+    return {at:Number(v.at || 0), users:v.users.map(function(u){
+      return {number:banNorm((u && u.number) || u), name:(u && u.name) || "", reason:(u && u.reason) || ""};
+    })};
+  }
   function banRead(){
-    return fetch(BAN_URL + "?t=" + Date.now(), {cache:"no-store"})
+    var tb = fetch(BAN_URL + "?t=" + Date.now(), {cache:"no-store"})
       .then(function(r){ return r.ok ? r.json() : null; })
+      .then(banFromDoc)
       .catch(function(){ return null; });
+    var sb = fetch(CLOUD.url + "/rest/v1/submissions?id=eq.BAN-1&select=at,data&t=" + Date.now(), {
+      headers:{"apikey":CLOUD.key, "Authorization":"Bearer " + CLOUD.key}, cache:"no-store"
+    }).then(function(r){ return r.ok ? r.json() : []; })
+      .then(function(rows){
+        if (!rows || !rows.length) return null;
+        var d = rows[0].data || {};
+        return banFromDoc({at:rows[0].at || d.at, users:d.users || []});
+      })
+      .catch(function(){ return null; });
+    return Promise.all([tb, sb]).then(function(res){
+      var a = res[0], b = res[1];
+      if (a && b) return (Number(b.at) >= Number(a.at)) ? b : a;
+      return a || b || null;
+    });
   }
   function banHit(acct){
     if (!acct || !banCache || !banCache.users) return null;
-    var n = String(acct.number || "");
+    var n = banNorm(acct.number);
     var found = null;
     banCache.users.forEach(function(u){
-      var num = String((u && u.number) || u || "");
+      var num = banNorm((u && u.number) || u || "");
       if (num && num === n) found = u;
     });
     return found;
