@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="dark" data-glass="on" data-scene="shu" data-ver="1119q">
+<html lang="zh-CN" data-theme="dark" data-glass="on" data-scene="shu" data-ver="1119r">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -923,7 +923,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
   </form>
 </div>
 <footer class="foot">
-    <span>小修科技 · 前台提交页 · v1119q</span>
+    <span>小修科技 · 前台提交页 · v1119r</span>
     <span>数据保存在浏览器 localStorage</span>
     <button class="net-check" id="netCheck" type="button">网络自检</button>
   </footer>
@@ -943,6 +943,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
   </div>
   <div class="net-acts">
     <button id="netRun" type="button">开始检测</button>
+    <button id="netCopy" type="button">复制结果</button>
     <button id="netReload" type="button">强制更新</button>
   </div>
 </div>
@@ -2208,6 +2209,23 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
         throw new Error("连不上");
       });
   }
+  var netLast = "";
+  function netCopy(){
+    var txt = netLast || "还没跑检测";
+    function done(){ toast("检测结果已复制"); }
+    if (navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(txt).then(done, function(){ netCopyFallback(txt); });
+    } else netCopyFallback(txt);
+  }
+  function netCopyFallback(txt){
+    var box = document.createElement("textarea");
+    box.value = txt;
+    box.style.position = "fixed"; box.style.opacity = "0";
+    document.body.appendChild(box);
+    box.select();
+    try{ document.execCommand("copy"); toast("检测结果已复制"); }catch(e){ toast("复制失败，请手动截图"); }
+    document.body.removeChild(box);
+  }
   function netRun(){
     var list = $("#netList");
     if (!list) return;
@@ -2221,19 +2239,81 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
       }),
       netProbe("textdb 备用通道", function(){ return netGet(MIRROR_URL + "-site?t=" + Date.now()); }),
       netProbe("GitHub raw 直连", function(){ return netGet(GH_RAW + "status.json?t=" + Date.now()); }),
-      netProbe("GitHub API", function(){ return netGet("https://api.github.com/repos/xiaoxiubuzhidao/yunxingshe.github.io?t=" + Date.now()); })
+      netProbe("GitHub API", function(){ return netGet("https://api.github.com/repos/xiaoxiubuzhidao/yunxingshe.github.io?t=" + Date.now()); }),
+      netProbe("写入 textdb", function(){
+        return fetch(MIRROR_URL + "-probe", {
+          method:"POST", headers:{"Content-Type":"text/plain"}, body:"ok " + Date.now()
+        }).then(function(r){ if (!r.ok) throw new Error("HTTP " + r.status); return true; }, function(){ throw new Error("连不上"); });
+      }),
+      netProbe(ghToken() ? "写入 GitHub（已填令牌）" : "写入 GitHub（未填令牌）", function(){
+        if (!ghToken()) return Promise.resolve(false).then(function(){ throw new Error("需要先填令牌"); });
+        return netGet("https://api.github.com/repos/xiaoxiubuzhidao/yunxingshe.github.io/contents/chat?ref=main&t=" + Date.now(), {
+          headers:{"Authorization":"token " + ghToken(), "Accept":"application/vnd.github+json"}
+        });
+      })
     ]).then(function(res){
       var ver = document.documentElement.getAttribute("data-ver") || "?";
       list.innerHTML = res.map(function(r){
         return '<div class="net-row' + (r.ok ? "" : " bad") + '"><i>' + (r.ok ? "✓" : "✕") + '</i><span>' + r.n + '</span>'
           + '<span class="ms">' + r.ms + 'ms' + (r.ok ? "" : " · " + r.err) + '</span></div>';
       }).join("") + '<div class="net-row"><i>·</i><span>版本 v' + ver + ' · ' + String(navigator.userAgent || "").slice(0, 76) + '</span></div>';
+      netLast = res.map(function(r){ return (r.ok ? "OK " : "FAIL ") + r.n + " " + r.ms + "ms"; }).join("\n") + "\nver " + ver + " " + navigator.userAgent;
     });
   }
   /* ---------- 客服会话 ---------- */
   var chatFab = $("#chatFab"), chatDock = $("#chatDock"), chatLog = $("#chatLog");
   var chatForm = $("#chatForm"), chatInput = $("#chatInput"), chatDot = $("#chatDot");
   var CHAT_SEEN_KEY = "xiaoxiu-chatseen-v1", chatBusy = false;
+  var CHAT_OUT_KEY = "xiaoxiu-chat-out-v1";
+  function chatOut(){
+    try{ return JSON.parse(localStorage.getItem(CHAT_OUT_KEY) || "[]") || []; }catch(e){ return []; }
+  }
+  function chatOutSave(list){
+    try{ localStorage.setItem(CHAT_OUT_KEY, JSON.stringify((list || []).slice(-40))); }catch(e){}
+  }
+  function chatOutPush(conv, msg){
+    var list = chatOut(); list.push({conv:conv, msg:msg}); chatOutSave(list);
+  }
+  function chatOutRemove(id){
+    chatOutSave(chatOut().filter(function(it){ return !(it && it.msg && it.msg.id === id); }));
+  }
+  function chatFlush(){
+    var list = chatOut();
+    if (!list.length) return;
+    var item = list[0];
+    if (!item || !item.conv || !item.msg) { chatOutSave(list.slice(1)); return; }
+    chatRead(item.conv).then(function(doc){
+      var d = (doc && doc.msgs) ? {v:1, msgs:doc.msgs.slice(-199)} : {v:1, msgs:[]};
+      var has = d.msgs.some(function(m){ return m.id === item.msg.id; });
+      if (!has) d.msgs.push(item.msg);
+      d.at = Date.now();
+      var stored = false;
+      return chatWrite(item.conv, d).then(function(){ stored = true; }).catch(function(){})
+        .then(function(){
+          var ghOk = ghToken() ? ghChatWrite(item.conv, d) : Promise.resolve(false);
+          return ghOk;
+        }).then(function(ghOk){
+          if (!stored && !ghOk) return false;
+          chatOutRemove(item.msg.id);
+          var a = state.account || {};
+          var entry = {
+            id:item.conv,
+            name:(a.type === "qq" ? "QQ " : "手机 ") + (a.number || item.conv),
+            lastText:String(item.msg.text || "").slice(0, 40),
+            lastAt:item.msg.at,
+            from:"u"
+          };
+          chatIndexWrite(entry);
+          if (ghToken()) ghChatIndex(entry);
+          chatPoll();
+          return true;
+        });
+    }).then(function(ok){
+      if (ok) setTimeout(chatFlush, 0);
+      else setTimeout(chatFlush, 15000);
+    });
+  }
+
   function chatEsc(v){
     return String(v == null ? "" : v).replace(/[&<>"']/g, function(c){
       return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];
@@ -2347,30 +2427,12 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     var msg = {id:"m" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), from:"u", text:text.slice(0,300), at:Date.now()};
     chatLog.innerHTML += '<div class="chat-row me"><div class="chat-bubble">' + chatEsc(msg.text) + '</div></div>';
     chatLog.scrollTop = chatLog.scrollHeight;
-    chatRead(held).then(function(doc){
-      var d = (doc && doc.msgs) ? {v:1, msgs:doc.msgs.slice(-199)} : {v:1, msgs:[]};
-      d.msgs.push(msg); d.at = Date.now();
-      var a = state.account;
-      var entry = {
-        id:held,
-        name:(a.type === "qq" ? "QQ " : "手机 ") + a.number,
-        lastText:text.slice(0, 40),
-        lastAt:msg.at,
-        from:"u"
-      };
-      var stored = false;
-      return chatWrite(held, d).then(function(){
-        stored = true;
-        return chatIndexWrite(entry);
-      }).catch(function(){
-        toast("主通道没通，改走 GitHub");
-      }).then(function(){
-        return Promise.all([ghChatWrite(held, d), ghChatIndex(entry)]);
-      }).then(function(res){
-        if (stored || res[0]){ chatPoll(); }
-        else { toast("发送失败：这台设备的网络连不上服务器"); }
-      });
-    });
+    chatOutPush(held, msg);
+    chatFlush();
+    setTimeout(function(){
+      var still = chatOut().some(function(it){ return it && it.msg && it.msg.id === msg.id; });
+      if (still) toast("网络没通，消息已排队，联网后自动发出");
+    }, 3500);
   }
   /* ---------- 公告悬浮窗 ---------- */
   var NOTICE_KEY = "xiaoxiu-notice-v1", NOTICE_SEEN = "xiaoxiu-notice-seen", NOTICE_ROW = "NOTICE-1", SITE_ROW = "SITE-1";
@@ -2530,7 +2592,10 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     $("#chatClose").addEventListener("click", function(){ chatDock.hidden = true; });
     chatForm.addEventListener("submit", chatSend);
     chatPoll();
+    chatFlush();
     setInterval(function(){ if (!document.hidden) chatPoll(); }, 12000);
+    setInterval(function(){ if (!document.hidden) chatFlush(); }, 15000);
+    window.addEventListener("online", function(){ chatFlush(); chatPoll(); });
     document.addEventListener("visibilitychange", function(){ if (!document.hidden) chatPoll(); });
   }
 
@@ -2540,6 +2605,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     $("#netClose").addEventListener("click", function(){ $("#netModal").hidden = true; });
     $("#netRun").addEventListener("click", netRun);
     $("#netReload").addEventListener("click", function(){ location.replace(location.pathname + "?v=" + Date.now()); });
+    if ($("#netCopy")) $("#netCopy").addEventListener("click", netCopy);
     try{ if (ghToken()) $("#ghTokenFront").value = ghToken(); }catch(e){}
     $("#ghTokenFrontSave").addEventListener("click", function(){
       var v = String($("#ghTokenFront").value || "").trim();
