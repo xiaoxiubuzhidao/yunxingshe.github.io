@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="dark" data-glass="on" data-scene="shu" data-ver="1119v">
+<html lang="zh-CN" data-theme="dark" data-glass="on" data-scene="shu" data-ver="1119y">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -501,9 +501,10 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
 .notice-dot{width:6px;height:6px;border-radius:50%;background:var(--cyan);box-shadow:0 0 7px rgba(99,241,238,.9)}
 @media (max-width:420px){
   .notice-card{
-    right:10px;left:10px;width:auto;bottom:calc(10px + env(safe-area-inset-bottom));
-    max-height:52vh;display:flex;flex-direction:column;
+    right:10px;left:10px;width:auto;bottom:calc(60px + env(safe-area-inset-bottom));
+    max-height:44vh;display:flex;flex-direction:column;
   }
+  body.chat-open .notice-card{display:none}
   .notice-body{max-height:none;flex:1 1 auto;overflow:auto;-webkit-overflow-scrolling:touch}
   .notice-fab{bottom:calc(12px + env(safe-area-inset-bottom))}
 }
@@ -923,7 +924,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
   </form>
 </div>
 <footer class="foot">
-    <span>小修科技 · 前台提交页 · v1119v</span>
+    <span>小修科技 · 前台提交页 · v1119y</span>
     <span>数据保存在浏览器 localStorage</span>
     <button class="net-check" id="netCheck" type="button">网络自检</button>
   </footer>
@@ -2599,9 +2600,10 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
       if (!state.account){ openGate(); return; }
       if (banHit(state.account)){ banApply(state.account); return; }
       chatDock.hidden = !chatDock.hidden;
+      document.body.classList.toggle("chat-open", !chatDock.hidden);
       if (!chatDock.hidden){ chatBusy = false; chatPoll(); }
     });
-    $("#chatClose").addEventListener("click", function(){ chatDock.hidden = true; });
+    $("#chatClose").addEventListener("click", function(){ chatDock.hidden = true; document.body.classList.remove("chat-open"); });
     chatForm.addEventListener("submit", chatSend);
     chatPoll();
     chatFlush();
