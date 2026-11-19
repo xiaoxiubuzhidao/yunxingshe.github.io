@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="dark" data-glass="on" data-scene="shu" data-ver="1119d">
+<html lang="zh-CN" data-theme="dark" data-glass="on" data-scene="shu" data-ver="1119e">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -507,6 +507,30 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
   .notice-body{max-height:none;flex:1 1 auto;overflow:auto;-webkit-overflow-scrolling:touch}
   .notice-fab{bottom:calc(12px + env(safe-area-inset-bottom))}
 }
+/* 客服会话 */
+.chat-fab{position:fixed;left:16px;bottom:16px;z-index:90;display:inline-flex;align-items:center;gap:7px;height:38px;padding:0 14px;border-radius:999px;font-size:12px;font-family:inherit;color:var(--text);background:rgba(20,24,36,.72);border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);cursor:pointer}
+.chat-fab[hidden]{display:none}
+.chat-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 7px rgba(162,148,248,.9)}
+.chat-dock{position:fixed;left:16px;bottom:62px;z-index:91;width:min(330px,calc(100vw - 32px));height:min(430px,58vh);display:flex;flex-direction:column;border-radius:18px;overflow:hidden;animation:rise .28s cubic-bezier(.22,1,.36,1) both}
+.chat-dock[hidden]{display:none}
+.chat-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding:12px 14px 10px;border-bottom:1px solid rgba(255,255,255,.09)}
+.chat-head b{font-size:13px;font-weight:800}
+.chat-head small{display:block;margin-top:2px;font-size:10.5px;color:var(--text-dim)}
+.chat-close{flex:none;width:26px;height:26px;border-radius:9px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.08);color:var(--text);cursor:pointer;font-size:14px;line-height:1;font-family:inherit}
+.chat-log{flex:1 1 auto;min-height:0;overflow:auto;padding:12px 12px 6px;display:flex;flex-direction:column;gap:8px;-webkit-overflow-scrolling:touch}
+.chat-row{display:flex}
+.chat-row.me{justify-content:flex-end}
+.chat-bubble{max-width:78%;padding:8px 11px;border-radius:12px;font-size:12.5px;line-height:1.6;word-break:break-word;white-space:pre-wrap}
+.chat-row.them .chat-bubble{background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.10);color:var(--text)}
+.chat-row.me .chat-bubble{background:linear-gradient(135deg,var(--accent),var(--accent-deep));color:#fff}
+.chat-empty{margin:auto;font-size:12px;color:var(--text-faint);text-align:center}
+.chat-form{display:flex;gap:8px;padding:10px 12px calc(10px + env(safe-area-inset-bottom));border-top:1px solid rgba(255,255,255,.09)}
+.chat-form input{flex:1 1 auto;min-width:0;height:36px;padding:0 12px;border-radius:10px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.06);color:var(--text);font-family:inherit;font-size:16px}
+.chat-form button{flex:none;height:36px;padding:0 14px;border-radius:10px;border:0;background:linear-gradient(135deg,var(--accent),var(--accent-deep));color:#fff;font-family:inherit;font-size:12.5px;font-weight:700;cursor:pointer}
+@media (max-width:520px){
+  .chat-dock{left:10px;right:10px;width:auto;bottom:calc(62px + env(safe-area-inset-bottom));height:min(56vh,420px)}
+  .chat-fab{left:10px;bottom:calc(12px + env(safe-area-inset-bottom))}
+}
 .gate{position:fixed;inset:0;z-index:80;display:grid;place-items:center;padding:16px}
 .gate[hidden]{display:none}
 .gate-veil{position:absolute;inset:0;background:rgba(5,6,12,.62);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
@@ -871,8 +895,20 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     <button class="mini-link" id="exportJsonBtn" type="button">导出记录 JSON</button>
   </div>
 
-  <footer class="foot">
-    <span>小修科技 · 前台提交页 · v1119d</span>
+  <button class="chat-fab" id="chatFab" type="button"><span class="chat-dot" id="chatDot" aria-hidden="true"></span>联系客服</button>
+<div class="chat-dock liquid" id="chatDock" hidden role="dialog" aria-labelledby="chatTitle">
+  <div class="chat-head">
+    <div><b id="chatTitle">客服会话</b><small>留言后客服会尽快回复</small></div>
+    <button class="chat-close" id="chatClose" type="button" aria-label="关闭">×</button>
+  </div>
+  <div class="chat-log" id="chatLog"><p class="chat-empty">还没有消息，发一句试试</p></div>
+  <form class="chat-form" id="chatForm" autocomplete="off">
+    <input id="chatInput" maxlength="300" placeholder="输入消息…">
+    <button type="submit">发送</button>
+  </form>
+</div>
+<footer class="foot">
+    <span>小修科技 · 前台提交页 · v1119e</span>
     <span>数据保存在浏览器 localStorage</span>
   </footer>
 </main>
@@ -2030,6 +2066,106 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     });
   });
 
+  /* ---------- 客服会话 ---------- */
+  var chatFab = $("#chatFab"), chatDock = $("#chatDock"), chatLog = $("#chatLog");
+  var chatForm = $("#chatForm"), chatInput = $("#chatInput"), chatDot = $("#chatDot");
+  var CHAT_SEEN_KEY = "xiaoxiu-chatseen-v1", chatBusy = false;
+  function chatEsc(v){
+    return String(v == null ? "" : v).replace(/[&<>"']/g, function(c){
+      return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];
+    });
+  }
+  function chatConv(acct){
+    if (!acct || !acct.number) return "";
+    return (acct.type === "qq" ? "q" : "p") + acct.number;
+  }
+  function chatSeen(){
+    try{ return JSON.parse(localStorage.getItem(CHAT_SEEN_KEY) || "{}") || {}; }catch(e){ return {}; }
+  }
+  function chatMarkSeen(conv, at){
+    var m = chatSeen(); m[conv] = at;
+    try{ localStorage.setItem(CHAT_SEEN_KEY, JSON.stringify(m)); }catch(e){}
+    if (chatDot) chatDot.style.display = "none";
+  }
+  function chatRead(conv){
+    return fetch(MIRROR_URL + "-chat-" + conv + "?t=" + Date.now(), {cache:"no-store"})
+      .then(function(r){ return r.ok ? r.json() : null; })
+      .catch(function(){ return null; });
+  }
+  function chatWrite(conv, doc){
+    return fetch(MIRROR_URL + "-chat-" + conv, {
+      method:"POST", headers:{"Content-Type":"text/plain"}, body:JSON.stringify(doc)
+    }).then(function(r){ if (!r.ok) throw new Error("chat " + r.status); return true; });
+  }
+  function chatIndexWrite(entry){
+    var url = MIRROR_URL + "-chat-list";
+    return fetch(url + "?t=" + Date.now(), {cache:"no-store"})
+      .then(function(r){ return r.ok ? r.json() : null; })
+      .catch(function(){ return null; })
+      .then(function(idx){
+        var users = (idx && idx.users) ? idx.users.slice() : [];
+        var i = -1;
+        for (var k = 0; k < users.length; k++){ if (users[k].id === entry.id){ i = k; break; } }
+        if (i < 0) users.unshift(entry); else users[i] = entry;
+        return fetch(url, {method:"POST", headers:{"Content-Type":"text/plain"}, body:JSON.stringify({v:1, at:Date.now(), users:users.slice(0,120)})})
+          .then(function(r){ if (!r.ok) throw new Error("index " + r.status); });
+      }).catch(function(){});
+  }
+  function chatRender(doc){
+    if (!chatLog) return;
+    var msgs = (doc && doc.msgs) ? doc.msgs.slice(-80) : [];
+    if (!msgs.length){
+      chatLog.innerHTML = '<p class="chat-empty">还没有消息，发一句试试</p>';
+      return;
+    }
+    chatLog.innerHTML = msgs.map(function(m){
+      return '<div class="chat-row ' + (m.from === "a" ? "them" : "me") + '"><div class="chat-bubble">' + chatEsc(m.text) + '</div></div>';
+    }).join("");
+    chatLog.scrollTop = chatLog.scrollHeight;
+  }
+  function chatPoll(){
+    var conv = chatConv(state.account);
+    if (!conv || chatBusy) return;
+    chatBusy = true;
+    chatRead(conv).then(function(doc){
+      chatBusy = false;
+      chatRender(doc);
+      var msgs = (doc && doc.msgs) ? doc.msgs : [];
+      var lastAdmin = 0;
+      msgs.forEach(function(m){ if (m.from === "a" && Number(m.at) > lastAdmin) lastAdmin = Number(m.at); });
+      var seen = Number(chatSeen()[conv] || 0);
+      if (lastAdmin > seen){
+        chatMarkSeen(conv, lastAdmin);
+        if (chatDock) chatDock.hidden = false;
+        toast("客服发来一条新消息");
+      }
+    }, function(){ chatBusy = false; });
+  }
+  function chatSend(e){
+    if (e) e.preventDefault();
+    var held = chatConv(state.account);
+    if (!held){ openGate(); return; }
+    var text = String(chatInput.value || "").trim();
+    if (!text) return;
+    chatInput.value = "";
+    var msg = {id:"m" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), from:"u", text:text.slice(0,300), at:Date.now()};
+    chatLog.innerHTML += '<div class="chat-row me"><div class="chat-bubble">' + chatEsc(msg.text) + '</div></div>';
+    chatLog.scrollTop = chatLog.scrollHeight;
+    chatRead(held).then(function(doc){
+      var d = (doc && doc.msgs) ? {v:1, msgs:doc.msgs.slice(-199)} : {v:1, msgs:[]};
+      d.msgs.push(msg); d.at = Date.now();
+      return chatWrite(held, d);
+    }).then(function(){
+      var a = state.account;
+      return chatIndexWrite({
+        id:held,
+        name:(a.type === "qq" ? "QQ " : "手机 ") + a.number,
+        lastText:text.slice(0, 40),
+        lastAt:msg.at,
+        from:"u"
+      });
+    }).then(function(){ chatPoll(); }, function(){ toast("发送失败，换个网络再试"); });
+  }
   /* ---------- 公告悬浮窗 ---------- */
   var NOTICE_KEY = "xiaoxiu-notice-v1", NOTICE_SEEN = "xiaoxiu-notice-seen", NOTICE_ROW = "NOTICE-1", SITE_ROW = "SITE-1";
   var noticeCard = $("#noticeCard"), noticeFab = $("#noticeFab");
@@ -2176,6 +2312,19 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     renderCard();
     syncCount();
   }catch(e){}
+
+  if (chatFab){
+    chatFab.addEventListener("click", function(){
+      if (!state.account){ openGate(); return; }
+      chatDock.hidden = !chatDock.hidden;
+      if (!chatDock.hidden) chatPoll();
+    });
+    $("#chatClose").addEventListener("click", function(){ chatDock.hidden = true; });
+    chatForm.addEventListener("submit", chatSend);
+    chatPoll();
+    setInterval(function(){ if (!document.hidden) chatPoll(); }, 12000);
+    document.addEventListener("visibilitychange", function(){ if (!document.hidden) chatPoll(); });
+  }
 
   if (!state.account) openGate();
   else setAuthMode("qq");

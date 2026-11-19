@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="dark" data-glass="on" data-scene="shu" data-ver="1119d">
+<html lang="zh-CN" data-theme="dark" data-glass="on" data-scene="shu" data-ver="1119e">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -472,6 +472,30 @@ header,main{position:relative;z-index:2}
     </div>
   </section>
 
+  <section class="board liquid" aria-labelledby="csTitle">
+    <div class="notice-head">
+      <h2 id="csTitle">客服消息</h2>
+      <span class="notice-state" id="csState">给指定账号发消息，前台会弹出聊天窗</span>
+    </div>
+    <div class="cs-wrap">
+      <div class="cs-left">
+        <div class="cs-target">
+          <input id="csTarget" type="text" inputmode="numeric" autocomplete="off" placeholder="QQ 号或手机号">
+          <button class="ghost-btn" id="csOpenBtn" type="button">打开</button>
+        </div>
+        <div class="cs-list" id="csList"><p class="cs-empty">还没有用户发来消息</p></div>
+      </div>
+      <div class="cs-right">
+        <div class="cs-peer" id="csPeer">未选择会话</div>
+        <div class="cs-log" id="csLog"><p class="cs-empty">选择左侧会话，或输入账号后点「打开」</p></div>
+        <form class="cs-form" id="csForm" autocomplete="off">
+          <input id="csInput" maxlength="300" placeholder="输入要发送的内容…">
+          <button class="ghost-btn" type="submit">发送</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
   <section class="board liquid" aria-labelledby="boardTitle">
     <div class="cloud-strip" id="cloudStrip" hidden><span id="cloudText2"></span><button type="button" id="cloudRetry">重试连接</button></div>
 
@@ -731,6 +755,17 @@ header,main{position:relative;z-index:2}
     if (e.key === KEY_TASKS) pull(false);
   });
   window.addEventListener("focus", function(){ pull(false); });
+  if ($("#csForm")){
+    $("#csForm").addEventListener("submit", csSend);
+    $("#csOpenBtn").addEventListener("click", function(){
+      var conv = csConvFromInput($("#csTarget").value);
+      if (!conv){ toast("请输入 5–11 位 QQ 号或 11 位手机号"); return; }
+      csOpen(conv);
+    });
+    csPoll();
+    setInterval(csPoll, 8000);
+  }
+
 
   function fmtAmount(v){
     if (!v) return "—";
@@ -1277,6 +1312,110 @@ header,main{position:relative;z-index:2}
     noticeModal.hidden = true;
     modalAction = null;
     document.body.style.overflow = "";
+  }
+  /* ---------- 客服消息 ---------- */
+  var csConvId = "", csListSig = "";
+  function csEsc(v){
+    return String(v == null ? "" : v).replace(/[&<>"']/g, function(c){
+      return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];
+    });
+  }
+  function csConvFromInput(v){
+    var raw = String(v || "").trim().replace(/\s+/g, "");
+    if (/^1[3-9]\d{9}$/.test(raw)) return "p" + raw;
+    if (/^[1-9]\d{4,10}$/.test(raw)) return "q" + raw;
+    if (/^[qp]\d{5,}$/.test(raw)) return raw;
+    return "";
+  }
+  function csRead(conv){
+    return fetch(MIRROR_URL + "-chat-" + conv + "?t=" + Date.now(), {cache:"no-store"})
+      .then(function(r){ return r.ok ? r.json() : null; })
+      .catch(function(){ return null; });
+  }
+  function csWrite(conv, doc){
+    return fetch(MIRROR_URL + "-chat-" + conv, {
+      method:"POST", headers:{"Content-Type":"text/plain"}, body:JSON.stringify(doc)
+    }).then(function(r){ if (!r.ok) throw new Error("chat " + r.status); return true; });
+  }
+  function csIndexRead(){
+    return fetch(MIRROR_URL + "-chat-list?t=" + Date.now(), {cache:"no-store"})
+      .then(function(r){ return r.ok ? r.json() : null; })
+      .catch(function(){ return null; });
+  }
+  function csRenderList(idx){
+    var users = (idx && idx.users) ? idx.users.slice() : [];
+    var listEl = $("#csList");
+    users.sort(function(a, b){ return Number(b.lastAt || 0) - Number(a.lastAt || 0); });
+    var sig = JSON.stringify(users.slice(0, 40));
+    if (sig === csListSig) return;
+    csListSig = sig;
+    if (!users.length){
+      listEl.innerHTML = '<p class="cs-empty">还没有用户发来消息</p>';
+      return;
+    }
+    listEl.innerHTML = users.slice(0, 40).map(function(u){
+      var name = u.name || u.id;
+      return '<button class="cs-item" type="button" data-conv="' + csEsc(u.id) + '" aria-pressed="' + (u.id === csConvId) + '">'
+        + '<strong>' + csEsc(name) + '</strong><span>' + csEsc(u.lastText || "") + '</span></button>';
+    }).join("");
+    [].forEach.call(listEl.querySelectorAll(".cs-item"), function(btn){
+      btn.addEventListener("click", function(){ csOpen(btn.getAttribute("data-conv")); });
+    });
+  }
+  function csRenderLog(doc){
+    var logEl = $("#csLog");
+    var msgs = (doc && doc.msgs) ? doc.msgs.slice(-80) : [];
+    if (!msgs.length){
+      logEl.innerHTML = '<p class="cs-empty">还没有消息，写一句发过去</p>';
+      return;
+    }
+    logEl.innerHTML = msgs.map(function(m){
+      return '<div class="cs-row ' + (m.from === "a" ? "me" : "them") + '"><div class="cs-bubble">' + csEsc(m.text) + '</div></div>';
+    }).join("");
+    logEl.scrollTop = logEl.scrollHeight;
+  }
+  function csOpen(conv){
+    if (!conv) return;
+    csConvId = conv;
+    $("#csPeer").textContent = "会话：" + conv + "（" + (conv.charAt(0) === "q" ? "QQ" : "手机") + " " + conv.slice(1) + "）";
+    csListSig = "";
+    csRead(conv).then(csRenderLog);
+    csIndexRead().then(csRenderList);
+  }
+  function csSend(e){
+    if (e) e.preventDefault();
+    var conv = csConvId || csConvFromInput($("#csTarget").value);
+    if (!conv){ toast("先输入对方的 QQ 号或手机号"); return; }
+    var text = String($("#csInput").value || "").trim();
+    if (!text) return;
+    csConvId = conv;
+    var msg = {id:"a" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), from:"a", text:text.slice(0, 300), at:Date.now()};
+    $("#csInput").value = "";
+    csRead(conv).then(function(doc){
+      var d = (doc && doc.msgs) ? {v:1, msgs:doc.msgs.slice(-199)} : {v:1, msgs:[]};
+      d.msgs.push(msg); d.at = Date.now();
+      return csWrite(conv, d);
+    }).then(function(){
+      return csIndexRead().then(function(idx){
+        var users = (idx && idx.users) ? idx.users.slice() : [];
+        var i = -1;
+        for (var k = 0; k < users.length; k++){ if (users[k].id === conv){ i = k; break; } }
+        var entry = {id:conv, name:(users[i] && users[i].name) || ((conv.charAt(0) === "q" ? "QQ " : "手机 ") + conv.slice(1)), lastText:text.slice(0, 40), lastAt:msg.at, from:"a"};
+        if (i < 0) users.push(entry); else users[i] = entry;
+        return fetch(MIRROR_URL + "-chat-list", {method:"POST", headers:{"Content-Type":"text/plain"}, body:JSON.stringify({v:1, at:Date.now(), users:users.slice(0, 120)})})
+          .then(function(r){ if (!r.ok) throw new Error("index " + r.status); });
+      });
+    }).then(function(){
+      csOpen(conv);
+      toast("已发送给 " + conv);
+    }, function(){ toast("发送失败，换个网络再试"); });
+  }
+  function csPoll(){
+    if (document.hidden) return;
+    csIndexRead().then(function(idx){
+      csRenderList(idx);
+      if (csConvId) csRead(csConvId).then(csRenderLog);
+    });
   }
   $("#noticePublish").addEventListener("click", function(){ publishNotice(true); });
   $("#noticeOff").addEventListener("click", function(){
