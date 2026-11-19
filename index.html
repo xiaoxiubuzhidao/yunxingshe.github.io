@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="dark" data-glass="on" data-scene="shu" data-ver="1120a">
+<html lang="zh-CN" data-theme="dark" data-glass="on" data-scene="shu" data-ver="1120b">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -918,13 +918,14 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     <button class="chat-close" id="chatClose" type="button" aria-label="关闭">×</button>
   </div>
   <div class="chat-log" id="chatLog"><p class="chat-empty">还没有消息，发一句试试</p></div>
+  <p class="chat-warn" id="chatWarn" hidden></p>
   <form class="chat-form" id="chatForm" autocomplete="off">
     <input id="chatInput" maxlength="300" placeholder="输入消息…">
-    <button type="submit">发送</button>
+    <button type="submit" id="chatSendBtn">发送</button>
   </form>
 </div>
 <footer class="foot">
-    <span>小修科技 · 前台提交页 · v1120a</span>
+    <span>小修科技 · 前台提交页 · v1120b</span>
     <span>数据保存在浏览器 localStorage</span>
     <button class="net-check" id="netCheck" type="button">网络自检</button>
   </footer>
@@ -2231,6 +2232,11 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     if (!list.length) return;
     var item = list[0];
     if (!item || !item.conv || !item.msg) { chatOutSave(list.slice(1)); return; }
+    if (langHit(item.msg.text)){
+      chatOutRemove(item.msg.id);
+      setTimeout(chatFlush, 1000);
+      return;
+    }
     chatRead(item.conv).then(function(doc){
       var d = (doc && doc.msgs) ? {v:1, msgs:doc.msgs.slice(-199)} : {v:1, msgs:[]};
       var has = d.msgs.some(function(m){ return m.id === item.msg.id; });
@@ -2392,6 +2398,48 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
       }
     });
   }
+  var BAD_WORDS = ["傻逼","煞笔","沙比","撒比","妈的","他妈","草你妈","操你妈","你妈死","去死","死全家","狗东西","狗日的","贱人","婊子","尼玛","滚出去","滚蛋","废物","智障","脑残","变态","约炮","裸聊","色情","黄片","开房","嫖","博彩","赌球","刷单","返利","代练","外挂","加微信","微信转账","支付宝转账","私聊我","fuck","shit","bitch","asshole","dick","porn","nigger"];
+  function langNorm(v){
+    return String(v || "")
+      .replace(/[\u200b-\u200f\ufeff]/g, "")
+      .replace(/[\s\p{P}\p{S}]/gu, "")
+      .replace(/[０-９Ａ-Ｚａ-ｚ]/g, function(ch){ return String.fromCharCode(ch.charCodeAt(0) - 0xFEE0); })
+      .toLowerCase();
+  }
+  function langHit(text){
+    var n = langNorm(text);
+    if (!n) return "";
+    for (var i = 0; i < BAD_WORDS.length; i++){
+      if (n.indexOf(langNorm(BAD_WORDS[i])) >= 0) return BAD_WORDS[i];
+    }
+    return "";
+  }
+  function langWarn(hit, text){
+    var warn = $("#chatWarn"), btn = $("#chatSendBtn");
+    if (!warn) return;
+    if (hit){
+      warn.textContent = "检测到不良用语「" + hit + "」，请修改后再发送";
+      warn.hidden = false;
+      if (chatInput) chatInput.classList.add("bad");
+      if (btn) btn.disabled = true;
+    } else {
+      warn.hidden = true;
+      if (chatInput) chatInput.classList.remove("bad");
+      if (btn) btn.disabled = false;
+    }
+  }
+  function langRecord(conv, hit, text){
+    var url = MIRROR_URL + "-lang-" + conv;
+    fetch(url + "?t=" + Date.now(), {cache:"no-store"})
+      .then(function(r){ return r.ok ? r.json() : null; })
+      .catch(function(){ return null; })
+      .then(function(doc){
+        var items = (doc && doc.items) ? doc.items.slice(-49) : [];
+        items.push({at:Date.now(), word:hit, text:String(text).slice(0,80)});
+        return fetch(url, {method:"POST", headers:{"Content-Type":"text/plain"}, body:JSON.stringify({v:1, at:Date.now(), items:items})});
+      })
+      .catch(function(){});
+  }
   function chatSend(e){
     if (e) e.preventDefault();
     var held = chatConv(state.account);
@@ -2399,7 +2447,15 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     if (banHit(state.account)){ banApply(state.account); toast("账号已被封禁，无法发送消息"); return; }
     var text = String(chatInput.value || "").trim();
     if (!text) return;
+    var badWord = langHit(text);
+    if (badWord){
+      langWarn(badWord, text);
+      langRecord(held, badWord, text);
+      toast("消息含不良用语，已被拦截");
+      return;
+    }
     chatInput.value = "";
+    langWarn("");
     var msg = {id:"m" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), from:"u", text:text.slice(0,300), at:Date.now()};
     chatLog.innerHTML += '<div class="chat-row me"><div class="chat-bubble">' + chatEsc(msg.text) + '</div></div>';
     chatLog.scrollTop = chatLog.scrollHeight;
@@ -2635,6 +2691,14 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     });
     $("#chatClose").addEventListener("click", function(){ chatDock.hidden = true; document.body.classList.remove("chat-open"); });
     chatForm.addEventListener("submit", chatSend);
+    var langTimer = null;
+    chatInput.addEventListener("input", function(){
+      if (langTimer) clearTimeout(langTimer);
+      langTimer = setTimeout(function(){
+        var t = String(chatInput.value || "");
+        langWarn(langHit(t), t);
+      }, 220);
+    });
     chatPoll();
     chatFlush();
     setInterval(function(){ if (!document.hidden) chatPoll(); }, 12000);
