@@ -374,6 +374,8 @@ header,main{position:relative;z-index:2}
   *,*::before,*::after{animation-duration:.001s!important;animation-iteration-count:1!important;transition-duration:.001s!important}
   .veil{animation:none!important}
 }
+  .cs-lang{margin:0;padding:6px 2px 0;font-size:11px;line-height:1.5;color:#ffb4b4}
+  .cs-lang[hidden]{display:none}
 </style>
 </head>
 <body>
@@ -501,6 +503,7 @@ header,main{position:relative;z-index:2}
       </div>
       <div class="cs-right">
         <div class="cs-peer" id="csPeer">未选择会话</div>
+        <p class="cs-lang" id="csLang" hidden></p>
         <div class="cs-log" id="csLog"><p class="cs-empty">选择左侧会话，或输入账号后点「打开」</p></div>
         <form class="cs-form" id="csForm" autocomplete="off">
           <input id="csInput" maxlength="300" placeholder="输入要发送的内容…">
