@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="dark" data-glass="on" data-scene="shu" data-ver="1119i">
+<html lang="zh-CN" data-theme="dark" data-glass="on" data-scene="shu" data-ver="1119k">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -507,6 +507,18 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
   .notice-body{max-height:none;flex:1 1 auto;overflow:auto;-webkit-overflow-scrolling:touch}
   .notice-fab{bottom:calc(12px + env(safe-area-inset-bottom))}
 }
+/* 网络自检 */
+.net-check{margin-left:auto;padding:0;border:0;background:none;color:var(--text-dim);font-family:inherit;font-size:11.5px;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.net-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding:12px 14px 10px;border-bottom:1px solid rgba(255,255,255,.09)}
+.net-head b{font-size:13.5px}
+.net-head small{display:block;margin-top:3px;font-size:10.5px;color:var(--text-dim)}
+.net-list{padding:12px 14px;display:flex;flex-direction:column;gap:9px;font-size:12px;max-height:46vh;overflow:auto}
+.net-row{display:flex;align-items:flex-start;gap:7px;line-height:1.5;word-break:break-all}
+.net-row i{font-style:normal;font-weight:700;color:var(--green)}
+.net-row.bad i{color:#e85f5f}
+.net-row .ms{margin-left:auto;color:var(--text-faint);font-variant-numeric:tabular-nums;white-space:nowrap}
+.net-acts{display:flex;gap:8px;padding:10px 14px calc(12px + env(safe-area-inset-bottom));border-top:1px solid rgba(255,255,255,.09)}
+.net-acts button{flex:1;height:36px;border-radius:10px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.07);color:var(--text);font-family:inherit;font-size:12.5px;font-weight:700;cursor:pointer}
 /* 客服会话 */
 .chat-fab{position:fixed;left:16px;bottom:16px;z-index:90;display:inline-flex;align-items:center;gap:7px;height:38px;padding:0 14px;border-radius:999px;font-size:12px;font-family:inherit;color:var(--text);background:rgba(20,24,36,.72);border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);cursor:pointer}
 .chat-fab[hidden]{display:none}
@@ -908,11 +920,25 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
   </form>
 </div>
 <footer class="foot">
-    <span>小修科技 · 前台提交页 · v1119i</span>
+    <span>小修科技 · 前台提交页 · v1119k</span>
     <span>数据保存在浏览器 localStorage</span>
+    <button class="net-check" id="netCheck" type="button">网络自检</button>
   </footer>
 </main>
 
+
+<!-- ===== 网络自检 ===== -->
+<div class="chat-dock" id="netModal" hidden role="dialog" aria-labelledby="netTitle" style="height:min(430px,64vh)">
+  <div class="net-head">
+    <div><b id="netTitle">网络自检</b><small>这台设备能连上哪些通道</small></div>
+    <button class="chat-close" id="netClose" type="button" aria-label="关闭">×</button>
+  </div>
+  <div class="net-list" id="netList"><p class="chat-empty">点「开始检测」查看结果</p></div>
+  <div class="net-acts">
+    <button id="netRun" type="button">开始检测</button>
+    <button id="netReload" type="button">强制更新</button>
+  </div>
+</div>
 <!-- ===== 注册闸门 ===== -->
 <div class="gate" id="gate">
   <div class="gate-veil" aria-hidden="true"></div>
@@ -1717,6 +1743,33 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
   var CLOUD = {url:"https://hqohhkfoonsczqrkrrxa.supabase.co", key:"sb_publishable_MoKTU1kxS2K0dd8CU9jO3w_ltqNerKu"};
   /* ---------- 备用通道：textdb.dev 快照（主通道不可达时兜底） ---------- */
   var MIRROR_URL = "https://textdb.dev/api/data/xxs-cloud-ea290ea62a014f37ae67df947586";
+  var GH_RAW = "https://raw.githubusercontent.com/xiaoxiubuzhidao/yunxingshe.github.io/main/";
+  var lastGhStatus = null;
+  function ghRows(st){
+    var out = [];
+    if (!st) return out;
+    if (st.site) out.push({id:SITE_ROW, at:Number(st.site.at || st.at || 0), data:{closed:!!st.site.closed, title:st.site.title || "", body:st.site.body || ""}});
+    if (st.notice) out.push({id:NOTICE_ROW, at:Number(st.notice.at || st.at || 0), data:{title:st.notice.title || "", body:st.notice.body || "", active:!!st.notice.active}});
+    return out;
+  }
+  function ghStatusRead(){
+    function one(url){
+      var ctrl = ("AbortController" in window) ? new AbortController() : null;
+      var tm = ctrl ? setTimeout(function(){ try{ ctrl.abort(); }catch(e){} }, 5000) : null;
+      return fetch(url, {cache:"no-store", signal: ctrl ? ctrl.signal : undefined})
+        .then(function(r){ return r.ok ? r.json() : null; })
+        .catch(function(){ return null; })
+        .then(function(v){ if (tm) clearTimeout(tm); return v; });
+    }
+    return Promise.all([one(GH_RAW + "status.json?t=" + Date.now()), one("status.json?t=" + Date.now())])
+      .then(function(res){
+        var a = res[0], b = res[1];
+        if (!a) return b;
+        if (!b) return a;
+        return Number(a.at || 0) >= Number(b.at || 0) ? a : b;
+      });
+  }
+
   function mirrorRead(){
     return fetch(MIRROR_URL + "?t=" + Date.now(), {cache:"no-store"})
       .then(function(r){ if (!r.ok) throw new Error("mirror http " + r.status); return r.text(); })
@@ -2066,6 +2119,49 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     });
   });
 
+  /* ---------- 网络自检 ---------- */
+  function netProbe(name, fn){
+    var t0 = Date.now();
+    return fn().then(function(){ return {n:name, ok:true, ms:Date.now() - t0}; },
+                     function(e){
+                       return {n:name, ok:false, ms:Date.now() - t0, err:String((e && e.message) || e || "失败").slice(0, 42)};
+                     });
+  }
+  function netGet(url, opt){
+    var ctrl = ("AbortController" in window) ? new AbortController() : null;
+    var tm = ctrl ? setTimeout(function(){ try{ ctrl.abort(); }catch(e){} }, 7000) : null;
+    return fetch(url, Object.assign({cache:"no-store", signal: ctrl ? ctrl.signal : undefined}, opt || {}))
+      .then(function(r){
+        if (tm) clearTimeout(tm);
+        if (!r.ok) throw new Error("HTTP " + r.status);
+        return r.text();
+      }, function(e){
+        if (tm) clearTimeout(tm);
+        throw new Error("连不上");
+      });
+  }
+  function netRun(){
+    var list = $("#netList");
+    if (!list) return;
+    list.innerHTML = '<p class="chat-empty">检测中…</p>';
+    Promise.all([
+      netProbe("本页资源 version.txt", function(){ return netGet("version.txt?t=" + Date.now()); }),
+      netProbe("Supabase 数据库", function(){
+        return netGet(CLOUD.url + "/rest/v1/submissions?select=id&limit=1", {
+          headers:{"apikey":CLOUD.key, "Authorization":"Bearer " + CLOUD.key}
+        });
+      }),
+      netProbe("textdb 备用通道", function(){ return netGet(MIRROR_URL + "-site?t=" + Date.now()); }),
+      netProbe("GitHub raw 直连", function(){ return netGet(GH_RAW + "status.json?t=" + Date.now()); }),
+      netProbe("GitHub API", function(){ return netGet("https://api.github.com/repos/xiaoxiubuzhidao/yunxingshe.github.io?t=" + Date.now()); })
+    ]).then(function(res){
+      var ver = document.documentElement.getAttribute("data-ver") || "?";
+      list.innerHTML = res.map(function(r){
+        return '<div class="net-row' + (r.ok ? "" : " bad") + '"><i>' + (r.ok ? "✓" : "✕") + '</i><span>' + r.n + '</span>'
+          + '<span class="ms">' + r.ms + 'ms' + (r.ok ? "" : " · " + r.err) + '</span></div>';
+      }).join("") + '<div class="net-row"><i>·</i><span>版本 v' + ver + ' · ' + String(navigator.userAgent || "").slice(0, 76) + '</span></div>';
+    });
+  }
   /* ---------- 客服会话 ---------- */
   var chatFab = $("#chatFab"), chatDock = $("#chatDock"), chatLog = $("#chatLog");
   var chatForm = $("#chatForm"), chatInput = $("#chatInput"), chatDot = $("#chatDot");
@@ -2087,15 +2183,32 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     try{ localStorage.setItem(CHAT_SEEN_KEY, JSON.stringify(m)); }catch(e){}
     if (chatDot) chatDot.style.display = "none";
   }
+  function chatMerge(a, b){
+    if (!a) return b;
+    if (!b) return a;
+    var out = {v:1, at:Math.max(Number(a.at || 0), Number(b.at || 0)), msgs:(a.msgs || []).slice()};
+    var seen = {};
+    out.msgs.forEach(function(m){ seen[m.id] = 1; });
+    (b.msgs || []).forEach(function(m){ if (!seen[m.id]){ seen[m.id] = 1; out.msgs.push(m); } });
+    out.msgs.sort(function(x, y){ return Number(x.at || 0) - Number(y.at || 0); });
+    return out;
+  }
+  function chatJson(url, ctrl){
+    return fetch(url, {cache:"no-store", signal: ctrl ? ctrl.signal : undefined})
+      .then(function(r){ return r.ok ? r.json() : null; })
+      .catch(function(){ return null; });
+  }
   function chatRead(conv){
     var ctrl = (typeof AbortController !== "undefined") ? new AbortController() : null;
     var timer = ctrl ? setTimeout(function(){ try{ ctrl.abort(); }catch(e){} }, 6000) : null;
-    return fetch(MIRROR_URL + "-chat-" + conv + "?t=" + Date.now(), {
-      cache:"no-store", signal: ctrl ? ctrl.signal : undefined
-    })
-      .then(function(r){ return r.ok ? r.json() : null; })
-      .catch(function(){ return null; })
-      .then(function(v){ if (timer) clearTimeout(timer); return v; });
+    var stamp = "?t=" + Date.now();
+    return Promise.all([
+      chatJson(MIRROR_URL + "-chat-" + conv + stamp, ctrl),
+      chatJson(GH_RAW + "chat/" + conv + ".json" + stamp, ctrl)
+    ]).then(function(res){
+      if (timer) clearTimeout(timer);
+      return chatMerge(res[0], res[1]);
+    });
   }
   function chatWrite(conv, doc){
     return fetch(MIRROR_URL + "-chat-" + conv, {
@@ -2226,8 +2339,8 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     var localSite = readSiteLocal();
     /* 先用本机缓存的站点状态兜底，不依赖任何网络 */
     paintSite(localSite);
-    function paint(rows, extra, directSite){
-      var merged = mergeRows(extra || [], rows || []).filter(function(r){
+    function paint(rows, extra, directSite, gh){
+      var merged = mergeRows(extra || [], (rows || []).concat(ghRows(gh))).filter(function(r){
         return r.id === NOTICE_ROW || r.id === SITE_ROW;
       });
       var notice = local, site = localSite;
@@ -2252,9 +2365,11 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     var directSiteReq = fetch(MIRROR_URL + "-site?t=" + Date.now(), {cache:"no-store"})
       .then(function(r){ return r.ok ? r.json() : null; })
       .catch(function(){ return null; });
+    /* GitHub 直连通道（手机网络最常见可达），与备用通道并行 */
+    var ghReq = ghStatusRead().then(function(v){ if (v) lastGhStatus = v; return v; });
     /* 备用通道先渲染，绝不被主通道拖住 */
-    Promise.all([mirrorRead().catch(function(){ return null; }), directSiteReq]).then(function(res){
-      paint((res[0] && res[0].rows) ? res[0].rows : [], [], res[1]);
+    Promise.all([mirrorRead().catch(function(){ return null; }), directSiteReq, ghReq]).then(function(res){
+      paint((res[0] && res[0].rows) ? res[0].rows : [], [], res[1], res[2]);
     });
     /* 主通道单独跑，4 秒超时直接放弃 */
     var ctrl = ("AbortController" in window) ? new AbortController() : null;
@@ -2265,7 +2380,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     }).then(function(r){ return r.ok ? r.json() : []; })
       .then(function(rows){
         return Promise.all([mirrorRead().catch(function(){ return null; }), directSiteReq]).then(function(res){
-          paint((res[0] && res[0].rows) ? res[0].rows : [], rows || [], res[1]);
+          paint((res[0] && res[0].rows) ? res[0].rows : [], rows || [], res[1], lastGhStatus);
         });
       })
       .catch(function(){})
@@ -2331,6 +2446,13 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     document.addEventListener("visibilitychange", function(){ if (!document.hidden) chatPoll(); });
   }
 
+
+  if ($("#netCheck")){
+    $("#netCheck").addEventListener("click", function(){ $("#netModal").hidden = false; netRun(); });
+    $("#netClose").addEventListener("click", function(){ $("#netModal").hidden = true; });
+    $("#netRun").addEventListener("click", netRun);
+    $("#netReload").addEventListener("click", function(){ location.replace(location.pathname + "?v=" + Date.now()); });
+  }
   if (!state.account) openGate();
   else setAuthMode("qq");
 })();
