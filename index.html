@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="dark" data-glass="on" data-scene="shu" data-ver="1119b">
+<html lang="zh-CN" data-theme="dark" data-glass="on" data-scene="shu" data-ver="1119c">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -872,7 +872,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
   </div>
 
   <footer class="foot">
-    <span>小修科技 · 前台提交页 · v1119b</span>
+    <span>小修科技 · 前台提交页 · v1119c</span>
     <span>数据保存在浏览器 localStorage</span>
   </footer>
 </main>
@@ -1399,7 +1399,47 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
   function cardRemainMs(){
     if (!activeCard) return 0;
     if (!activeCard.secs) return Infinity;
+    if (activeCard.exp) return Math.max(0, activeCard.exp - Date.now());
     return Math.max(0, activeCard.baseMs - (Date.now() - activeCard.startAt));
+  }
+  function accountKey(){
+    var a = state.account;
+    return a ? ((a.type || "") + ":" + (a.number || "")) : "";
+  }
+  /* 卡密占用记录：CARD-<CODE>，owner 一旦写下，其他账号不可再用 */
+  function claimRowId(code){ return "CARD-" + code; }
+  function readCardClaim(code){
+    var rid = claimRowId(code);
+    var sb = fetch(CLOUD.url + "/rest/v1/submissions?id=eq." + encodeURIComponent(rid) + "&select=at,data", {
+      headers:{"apikey":CLOUD.key, "Authorization":"Bearer " + CLOUD.key}
+    }).then(function(r){ return r.ok ? r.json() : []; }).catch(function(){ return []; });
+    var mir = mirrorRead().catch(function(){ return null; }).then(function(snap){
+      return (snap && snap.rows) ? snap.rows.filter(function(r){ return r.id === rid; }) : [];
+    });
+    return Promise.all([sb, mir]).then(function(res){
+      var all = (res[0] || []).concat(res[1] || []);
+      if (!all.length) return null;
+      all.sort(function(a, b){ return Number(b.at || 0) - Number(a.at || 0); });
+      var d = all[0].data || {};
+      return {owner:d.owner || "", exp:Number(d.exp) || 0, secs:Number(d.secs) || 0, at:Number(all[0].at || 0)};
+    });
+  }
+  function claimCard(code, exp, secs){
+    var row = {id:claimRowId(code), at:Date.now(), data:{kind:"card", code:code, owner:accountKey(), exp:exp, secs:secs}};
+    var ctrl = ("AbortController" in window) ? new AbortController() : null;
+    var timer = ctrl ? setTimeout(function(){ try{ ctrl.abort(); }catch(e){} }, 4000) : null;
+    var sb = fetch(CLOUD.url + "/rest/v1/submissions", {
+      method:"POST",
+      headers:{"apikey":CLOUD.key, "Authorization":"Bearer " + CLOUD.key, "Content-Type":"application/json", "Prefer":"resolution=merge-duplicates,return=minimal"},
+      body:JSON.stringify(row),
+      signal: ctrl ? ctrl.signal : undefined
+    }).then(function(r){ if (timer) clearTimeout(timer); if (!r.ok) throw new Error("claim failed"); return r; })
+      .catch(function(){ if (timer) clearTimeout(timer); throw new Error("claim failed"); });
+    var mir = mirrorUpsert(row).catch(function(){ throw new Error("claim failed"); });
+    return Promise.allSettled([sb, mir]).then(function(res){
+      if (res[0].status === "rejected" && res[1].status === "rejected") throw new Error("云端不可达");
+      return true;
+    });
   }
   function fmtClock(ms){
     var t = Math.floor(Math.max(0, ms) / 1000);
@@ -1488,33 +1528,70 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
       cardErr.textContent = "卡密无效，请检查后重试"; cardErr.hidden = false; replay(cardInput, "pop", 520); return;
     }
     var secs = CARDS[raw];
-    if (!secs){
-      activeCard = {code:raw, secs:0, baseMs:0, startAt:Date.now()};
-      writeJSON(KEY_CARD, activeCard);
-      renderCard();
-      if (persistPrefs) persistPrefs();
-      replay(cardLive, "pop", 620);
-      toast("永久卡已启用 · 不限时长");
-      return;
-    }
-    var remainSec = (ledger[raw] === undefined) ? secs : Number(ledger[raw]);
-    if (!(remainSec > 0)){
-      burned[raw] = Date.now();
-      writeJSON(KEY_BURN, burned);
-      cardErr.textContent = "该卡密已失效（时间已用完）";
-      cardErr.hidden = false;
-      replay(cardInput, "pop", 520);
-      return;
-    }
-    activeCard = {code:raw, secs:secs, baseMs:remainSec * 1000, startAt:Date.now()};
-    writeJSON(KEY_CARD, activeCard);
-    ledger[raw] = remainSec;
-    writeJSON(KEY_LEDGER, ledger);
-    cardSync(raw, secs / 3600, Math.floor(remainSec / 60), state.staffId || "");
-    renderCard();
-    if (persistPrefs) persistPrefs();
-    replay(cardLive, "pop", 620);
-    toast("卡密已启用 · " + cardLabel(secs) + " · 立即开始计时");
+    var me = accountKey();
+    if (!me){ cardErr.textContent = "请先登录再绑定卡密"; cardErr.hidden = false; return; }
+    cardErr.textContent = "正在校验卡密是否已被占用…";
+    cardErr.hidden = false;
+    cardBindBtn.disabled = true;
+    function done(){ cardBindBtn.disabled = false; }
+    function fail(msg){ cardErr.textContent = msg; cardErr.hidden = false; replay(cardInput, "pop", 520); done(); }
+    readCardClaim(raw).then(function(claim){
+      if (claim && claim.owner && claim.owner !== me){
+        fail("该卡密已被其他账号使用，换一张");
+        return;
+      }
+      if (claim && claim.owner === me){
+        if (claim.exp && claim.exp <= Date.now()){
+          burned[raw] = Date.now(); writeJSON(KEY_BURN, burned);
+          fail("该卡密已过期作废");
+          return;
+        }
+        var leftMs = (!secs) ? 0 : (claim.exp ? Math.max(0, claim.exp - Date.now()) : secs * 1000);
+        activeCard = {code:raw, secs:secs, baseMs:leftMs, startAt:Date.now(), exp:claim.exp || 0};
+        writeJSON(KEY_CARD, activeCard);
+        cardErr.hidden = true;
+        renderCard();
+        if (persistPrefs) persistPrefs();
+        replay(cardLive, "pop", 620);
+        toast("这张卡是你已绑定的 · " + (secs ? "剩余 " + fmtSpan(leftMs) : "永久有效"));
+        done();
+        return;
+      }
+      if (!secs){
+        return claimCard(raw, 0, 0).then(function(){
+          activeCard = {code:raw, secs:0, baseMs:0, startAt:Date.now(), exp:0};
+          writeJSON(KEY_CARD, activeCard);
+          cardErr.hidden = true;
+          renderCard();
+          if (persistPrefs) persistPrefs();
+          replay(cardLive, "pop", 620);
+          toast("永久卡已启用 · 仅本账号可用");
+          done();
+        });
+      }
+      var remainSec = (ledger[raw] === undefined) ? secs : Number(ledger[raw]);
+      if (!(remainSec > 0)){
+        burned[raw] = Date.now(); writeJSON(KEY_BURN, burned);
+        fail("该卡密已失效（时间已用完）");
+        return;
+      }
+      var exp = Date.now() + remainSec * 1000;
+      return claimCard(raw, exp, secs).then(function(){
+        activeCard = {code:raw, secs:secs, baseMs:remainSec * 1000, startAt:Date.now(), exp:exp};
+        writeJSON(KEY_CARD, activeCard);
+        ledger[raw] = remainSec;
+        writeJSON(KEY_LEDGER, ledger);
+        cardSync(raw, secs / 3600, Math.floor(remainSec / 60), state.staffId || "");
+        cardErr.hidden = true;
+        renderCard();
+        if (persistPrefs) persistPrefs();
+        replay(cardLive, "pop", 620);
+        toast("卡密已启用 · " + cardLabel(secs) + " · 立即开始计时，仅本账号可用");
+        done();
+      });
+    }).catch(function(e){
+      fail((e && e.message === "云端不可达") ? "网络异常，卡密未能登记，请稍后重试" : "卡密校验失败，请重试");
+    });
   }
   function unbindCard(){
     if (!activeCard) return;
@@ -1531,6 +1608,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     var penalty = activeCard.secs === 18000 ? 7200 : (activeCard.secs === 5 ? 0 : 1800);
     var after = Math.max(0, leftSec - penalty);
     var code = activeCard.code, secs = activeCard.secs;
+    claimCard(code, after <= 0 ? Date.now() : Date.now() + after * 1000, secs).catch(function(){});
     activeCard = null;
     writeJSON(KEY_CARD, null);
     if (after <= 0){

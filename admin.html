@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="dark" data-glass="on" data-scene="shu" data-ver="1119b">
+<html lang="zh-CN" data-theme="dark" data-glass="on" data-scene="shu" data-ver="1119c">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -816,7 +816,7 @@ header,main{position:relative;z-index:2}
   }
   function mirrorDropRecords(){
     return mirrorMutate(function(rows){
-      return rows.filter(function(r){ return r.id === "NOTICE-1" || r.id === "SITE-1"; });
+      return rows.filter(function(r){ return r.id === "NOTICE-1" || r.id === "SITE-1" || r.id.indexOf("CARD-") === 0; });
     });
   }
   function mergeRows(a, b){
@@ -859,7 +859,7 @@ header,main{position:relative;z-index:2}
     if (!force && !stale && mirrorCache.length) return Promise.resolve(mirrorCache);
     return mirrorRead().then(function(snap){
       var rows = (snap && snap.rows) ? snap.rows : [];
-      mirrorCache = rows.filter(function(r){ return !(r.id === "NOTICE-1" || r.id === "SITE-1"); }).map(mapCloudRow);
+      mirrorCache = rows.filter(function(r){ return !(r.id === "NOTICE-1" || r.id === "SITE-1" || r.id.indexOf("CARD-") === 0); }).map(mapCloudRow);
       mirrorCachedAt = Date.now();
       return mirrorCache;
     });
@@ -871,7 +871,7 @@ header,main{position:relative;z-index:2}
         return r.json();
       })
       .then(function(rows){
-        return rows.filter(function(r){ return !(r.id === "NOTICE-1" || r.id === "SITE-1"); }).map(mapCloudRow);
+        return rows.filter(function(r){ return !(r.id === "NOTICE-1" || r.id === "SITE-1" || r.id.indexOf("CARD-") === 0); }).map(mapCloudRow);
       });
     var mir = mirrorRows(false);
     return Promise.allSettled([sb, mir]).then(function(res){
