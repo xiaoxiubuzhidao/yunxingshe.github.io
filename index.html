@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="dark" data-glass="on" data-scene="shu" data-ver="1119n">
+<html lang="zh-CN" data-theme="dark" data-glass="on" data-scene="shu" data-ver="1119o">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -920,7 +920,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
   </form>
 </div>
 <footer class="foot">
-    <span>小修科技 · 前台提交页 · v1119n</span>
+    <span>小修科技 · 前台提交页 · v1119o</span>
     <span>数据保存在浏览器 localStorage</span>
     <button class="net-check" id="netCheck" type="button">网络自检</button>
   </footer>
@@ -2212,9 +2212,10 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     return Promise.all([
       chatJson(MIRROR_URL + "-chat-" + conv + stamp, ctrl),
       chatJson(GH_RAW + "chat/" + conv + ".json" + stamp, ctrl),
-      chatJson(GH_CDN + "chat/" + conv + ".json" + stamp, ctrl)
+      chatJson(GH_CDN + "chat/" + conv + ".json" + stamp, ctrl),
+      chatJson("chat/" + conv + ".json" + stamp, ctrl)
     ]).then(function(res){
-      var doc = chatMerge(chatMerge(res[0], res[1]), res[2]);
+      var doc = chatMerge(chatMerge(chatMerge(res[0], res[1]), res[2]), res[3]);
       if (doc && doc.msgs && doc.msgs.length){ if (timer) clearTimeout(timer); return doc; }
       /* 兼容旧会话（q135… / p135…），只从备用通道补一次 */
       return Promise.all([

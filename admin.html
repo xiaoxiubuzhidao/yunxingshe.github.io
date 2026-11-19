@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="dark" data-glass="on" data-scene="shu" data-ver="1119i">
+<html lang="zh-CN" data-theme="dark" data-glass="on" data-scene="shu" data-ver="1119o">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -1412,9 +1412,10 @@ header,main{position:relative;z-index:2}
       one(MIRROR_URL + "-chat-" + conv + stamp),
       one(GH_RAW + "chat/" + conv + ".json" + stamp),
       one(MIRROR_URL + "-chat-q" + conv + stamp),
-      one(MIRROR_URL + "-chat-p" + conv + stamp)
+      one(MIRROR_URL + "-chat-p" + conv + stamp),
+      one("chat/" + conv + ".json" + stamp)
     ]).then(function(res){
-      return csMerge(csMerge(res[0], res[1]), csMerge(res[2], res[3]));
+      return csMerge(csMerge(csMerge(res[0], res[1]), csMerge(res[2], res[3])), res[4]);
     });
   }
   function csWrite(conv, doc){
