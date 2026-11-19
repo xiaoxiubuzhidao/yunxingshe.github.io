@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="dark" data-glass="on" data-scene="shu" data-ver="1119p">
+<html lang="zh-CN" data-theme="dark" data-glass="on" data-scene="shu" data-ver="1119q">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -519,6 +519,9 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
 .net-row .ms{margin-left:auto;color:var(--text-faint);font-variant-numeric:tabular-nums;white-space:nowrap}
 .net-acts{display:flex;gap:8px;padding:10px 14px calc(12px + env(safe-area-inset-bottom));border-top:1px solid rgba(255,255,255,.09)}
 .net-acts button{flex:1;height:36px;border-radius:10px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.07);color:var(--text);font-family:inherit;font-size:12.5px;font-weight:700;cursor:pointer}
+.net-token{display:flex;gap:8px;padding:0 14px 10px}
+.net-token input{flex:1 1 auto;min-width:0;height:34px;padding:0 10px;border-radius:9px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.06);color:var(--text);font-family:inherit;font-size:16px}
+.net-token button{flex:none;height:34px;padding:0 12px;border-radius:9px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.07);color:var(--text);font-family:inherit;font-size:12px;font-weight:700;cursor:pointer}
 /* 客服会话 */
 .chat-fab{position:fixed;left:16px;bottom:16px;z-index:90;display:inline-flex;align-items:center;gap:7px;height:38px;padding:0 14px;border-radius:999px;font-size:12px;font-family:inherit;color:var(--text);background:rgba(20,24,36,.72);border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);cursor:pointer}
 .chat-fab[hidden]{display:none}
@@ -920,7 +923,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
   </form>
 </div>
 <footer class="foot">
-    <span>小修科技 · 前台提交页 · v1119p</span>
+    <span>小修科技 · 前台提交页 · v1119q</span>
     <span>数据保存在浏览器 localStorage</span>
     <button class="net-check" id="netCheck" type="button">网络自检</button>
   </footer>
@@ -934,6 +937,10 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     <button class="chat-close" id="netClose" type="button" aria-label="关闭">×</button>
   </div>
   <div class="net-list" id="netList"><p class="chat-empty">点「开始检测」查看结果</p></div>
+  <div class="net-token">
+    <input id="ghTokenFront" type="password" autocomplete="off" placeholder="可选：GitHub 令牌，让手机也能直接发消息">
+    <button id="ghTokenFrontSave" type="button">保存</button>
+  </div>
   <div class="net-acts">
     <button id="netRun" type="button">开始检测</button>
     <button id="netReload" type="button">强制更新</button>
@@ -1746,6 +1753,60 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
   var GH_RAW = "https://raw.githubusercontent.com/xiaoxiubuzhidao/yunxingshe.github.io/refs/heads/main/";
   var GH_CDN = "https://cdn.jsdelivr.net/gh/xiaoxiubuzhidao/yunxingshe.github.io@main/";
   var lastGhStatus = null;
+  var GH_TOKEN_KEY = "xiaoxiu-gh-token";
+  function ghToken(){ try{ return localStorage.getItem(GH_TOKEN_KEY) || ""; }catch(e){ return ""; } }
+  function ghPutFile(path, obj){
+    var tk = ghToken();
+    if (!tk) return Promise.resolve(false);
+    var url = "https://api.github.com/repos/xiaoxiubuzhidao/yunxingshe.github.io/contents/" + path;
+    return fetch(url + "?ref=main&t=" + Date.now(), {
+      headers:{"Authorization":"token " + tk, "Accept":"application/vnd.github+json"}, cache:"no-store"
+    }).then(function(r){ return r.ok ? r.json() : null; })
+      .catch(function(){ return null; })
+      .then(function(meta){
+        var body = {message:"chat update", content:btoa(unescape(encodeURIComponent(JSON.stringify(obj)))), branch:"main"};
+        if (meta && meta.sha) body.sha = meta.sha;
+        return fetch(url, {
+          method:"PUT",
+          headers:{"Authorization":"token " + tk, "Content-Type":"application/json", "Accept":"application/vnd.github+json"},
+          body:JSON.stringify(body)
+        });
+      })
+      .then(function(r){ return !!(r && r.ok); })
+      .catch(function(){ return false; });
+  }
+  function ghChatWrite(conv, doc){
+    return ghPutFile("chat/" + conv + ".json", doc);
+  }
+  function ghChatIndex(entry){
+    if (!ghToken()) return Promise.resolve(false);
+    var url = "https://api.github.com/repos/xiaoxiubuzhidao/yunxingshe.github.io/contents/chat/index.json";
+    return fetch(url + "?ref=main&t=" + Date.now(), {
+      headers:{"Authorization":"token " + ghToken(), "Accept":"application/vnd.github+json"}, cache:"no-store"
+    }).then(function(r){ return r.ok ? r.json() : null; })
+      .catch(function(){ return null; })
+      .then(function(meta){
+        return fetch(GH_RAW + "chat/index.json?t=" + Date.now(), {cache:"no-store"})
+          .then(function(r){ return r.ok ? r.json() : null; })
+          .catch(function(){ return null; })
+          .then(function(idx){
+            var users = (idx && idx.users) ? idx.users.slice() : [];
+            var i = -1;
+            for (var k = 0; k < users.length; k++){ if (users[k].id === entry.id){ i = k; break; } }
+            if (i < 0) users.unshift(entry); else users[i] = entry;
+            var body = {message:"chat index", content:btoa(unescape(encodeURIComponent(JSON.stringify({v:1, at:Date.now(), users:users.slice(0,120)})))), branch:"main"};
+            if (meta && meta.sha) body.sha = meta.sha;
+            return fetch(url, {
+              method:"PUT",
+              headers:{"Authorization":"token " + ghToken(), "Content-Type":"application/json", "Accept":"application/vnd.github+json"},
+              body:JSON.stringify(body)
+            });
+          });
+      })
+      .then(function(r){ return !!(r && r.ok); })
+      .catch(function(){ return false; });
+  }
+
   function ghRows(st){
     var out = [];
     if (!st) return out;
@@ -2289,17 +2350,27 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     chatRead(held).then(function(doc){
       var d = (doc && doc.msgs) ? {v:1, msgs:doc.msgs.slice(-199)} : {v:1, msgs:[]};
       d.msgs.push(msg); d.at = Date.now();
-      return chatWrite(held, d);
-    }).then(function(){
       var a = state.account;
-      return chatIndexWrite({
+      var entry = {
         id:held,
         name:(a.type === "qq" ? "QQ " : "手机 ") + a.number,
         lastText:text.slice(0, 40),
         lastAt:msg.at,
         from:"u"
+      };
+      var stored = false;
+      return chatWrite(held, d).then(function(){
+        stored = true;
+        return chatIndexWrite(entry);
+      }).catch(function(){
+        toast("主通道没通，改走 GitHub");
+      }).then(function(){
+        return Promise.all([ghChatWrite(held, d), ghChatIndex(entry)]);
+      }).then(function(res){
+        if (stored || res[0]){ chatPoll(); }
+        else { toast("发送失败：这台设备的网络连不上服务器"); }
       });
-    }).then(function(){ chatPoll(); }, function(){ toast("发送失败，换个网络再试"); });
+    });
   }
   /* ---------- 公告悬浮窗 ---------- */
   var NOTICE_KEY = "xiaoxiu-notice-v1", NOTICE_SEEN = "xiaoxiu-notice-seen", NOTICE_ROW = "NOTICE-1", SITE_ROW = "SITE-1";
@@ -2469,6 +2540,12 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     $("#netClose").addEventListener("click", function(){ $("#netModal").hidden = true; });
     $("#netRun").addEventListener("click", netRun);
     $("#netReload").addEventListener("click", function(){ location.replace(location.pathname + "?v=" + Date.now()); });
+    try{ if (ghToken()) $("#ghTokenFront").value = ghToken(); }catch(e){}
+    $("#ghTokenFrontSave").addEventListener("click", function(){
+      var v = String($("#ghTokenFront").value || "").trim();
+      try{ localStorage.setItem(GH_TOKEN_KEY, v); }catch(e){}
+      toast(v ? "已保存，这台设备可以直接发消息" : "已清空");
+    });
   }
   if (!state.account) openGate();
   else setAuthMode("qq");

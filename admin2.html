@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="dark" data-glass="on" data-scene="shu" data-ver="1119p">
+<html lang="zh-CN" data-theme="dark" data-glass="on" data-scene="shu" data-ver="1119q">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -1424,9 +1424,28 @@ header,main{position:relative;z-index:2}
     }).then(function(r){ if (!r.ok) throw new Error("chat " + r.status); return true; });
   }
   function csIndexRead(){
-    return fetch(MIRROR_URL + "-chat-list?t=" + Date.now(), {cache:"no-store"})
-      .then(function(r){ return r.ok ? r.json() : null; })
-      .catch(function(){ return null; });
+    function one(url){
+      return fetch(url, {cache:"no-store"})
+        .then(function(r){ return r.ok ? r.json() : null; })
+        .catch(function(){ return null; });
+    }
+    var stamp = "?t=" + Date.now();
+    return Promise.all([
+      one(MIRROR_URL + "-chat-list" + stamp),
+      one(GH_RAW + "chat/index.json" + stamp),
+      one("chat/index.json" + stamp)
+    ]).then(function(res){
+      var users = [], seen = {};
+      res.forEach(function(idx){
+        (idx && idx.users ? idx.users : []).forEach(function(u){
+          var id = csDigits(u.id) || String(u.id || "");
+          if (!id || seen[id]) return;
+          seen[id] = 1;
+          users.push({id:id, name:u.name || id, lastText:u.lastText || "", lastAt:Number(u.lastAt || 0), from:u.from || "u"});
+        });
+      });
+      return {v:1, at:Date.now(), users:users};
+    });
   }
   function csRenderList(idx){
     var users = (idx && idx.users) ? idx.users.slice() : [];
