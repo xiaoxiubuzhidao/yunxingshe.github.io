@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="dark" data-glass="on" data-scene="shu" data-ver="1120e">
+<html lang="zh-CN" data-theme="dark" data-glass="on" data-scene="shu" data-ver="1120f">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -925,7 +925,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
   </form>
 </div>
 <footer class="foot">
-    <span>小修科技 · 前台提交页 · v1120e</span>
+    <span>小修科技 · 前台提交页 · v1120f</span>
     <span>数据保存在浏览器 localStorage</span>
     <button class="net-check" id="netCheck" type="button">网络自检</button>
   </footer>
@@ -1008,6 +1008,16 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     <div class="site-closed-title">账号已封禁</div>
     <div class="site-closed-body" id="banWallBody">该账号已被限制使用，如有疑问请联系客服。</div>
     <div class="site-closed-foot">小修科技</div>
+  </div>
+</div>
+
+<!-- ===== 发送诊断 ===== -->
+<div class="site-closed" id="chatDiag" hidden>
+  <div class="site-closed-card liquid" style="max-width:420px">
+    <div class="site-closed-title" style="font-size:18px">消息没发出去</div>
+    <div class="site-closed-body" id="chatDiagBody" style="font-size:12.5px;text-align:left;white-space:pre-wrap;line-height:1.9"></div>
+    <div class="site-closed-foot">请把这张截图发给管理员</div>
+    <button class="ghost-btn" id="chatDiagClose" type="button" style="margin-top:10px">关闭</button>
   </div>
 </div>
 
@@ -2455,6 +2465,40 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
       })
       .catch(function(){});
   }
+  function diagProbe(url, ms){
+    var ctrl = ("AbortController" in window) ? new AbortController() : null;
+    var t0 = Date.now();
+    var timer = ctrl ? setTimeout(function(){ try{ ctrl.abort(); }catch(e){} }, ms || 3000) : null;
+    return fetch(url, {cache:"no-store", signal: ctrl ? ctrl.signal : undefined})
+      .then(function(r){ if (timer) clearTimeout(timer); return {ok:r.ok, ms:Date.now()-t0, code:r.status}; })
+      .catch(function(){ if (timer) clearTimeout(timer); return {ok:false, ms:Date.now()-t0, code:0}; });
+  }
+  function chatDiag(){
+    var box = $("#chatDiag"), body = $("#chatDiagBody");
+    if (!box || !body) return;
+    body.textContent = "正在检测…";
+    box.hidden = false;
+    var sbUrl = CLOUD.url + "/rest/v1/submissions?select=id&limit=1&apikey=" + encodeURIComponent(CLOUD.key);
+    Promise.all([
+      diagProbe(sbUrl, 3500),
+      diagProbe(MIRROR_URL + "-site?t=" + Date.now(), 3500),
+      diagProbe(GH_RAW + "version.txt?t=" + Date.now(), 3500)
+    ]).then(function(res){
+      function line(name, r){
+        return name + (r.ok ? "  通（" + r.ms + "ms）" : "  不通（" + (r.code ? ("HTTP " + r.code) : "超时/被拦") + "，" + r.ms + "ms）");
+      }
+      body.textContent = [
+        line("Supabase 数据库", res[0]),
+        line("textdb 备用通道", res[1]),
+        line("GitHub 通道", res[2]),
+        "",
+        "本页版本：" + (document.documentElement.getAttribute("data-ver") || "?"),
+        "设备：" + (navigator.userAgent || "").slice(0, 60),
+        "",
+        "三条都不通 = 手机网络把云服务都拦了；只有 GitHub 通 = 我只能让后台单向推送，手机发不出去。"
+      ].join("\n");
+    });
+  }
   function chatSend(e){
     if (e) e.preventDefault();
     var held = chatConv(state.account);
@@ -2485,8 +2529,8 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     chatFlush();
     setTimeout(function(){
       var still = chatOut().some(function(it){ return it && it.msg && it.msg.id === msg.id; });
-      if (still) toast("网络没通，消息已排队，联网后自动发出");
-    }, 3500);
+      if (still){ toast("消息没发出去，正在检测通道…"); chatDiag(); }
+    }, 4000);
   }
   /* ---------- 账号封禁 ---------- */
   var BAN_URL = MIRROR_URL + "-ban";
@@ -2656,6 +2700,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
       .catch(function(){})
       .then(function(){ if (timer) clearTimeout(timer); });
   }
+  if ($("#chatDiagClose")) $("#chatDiagClose").addEventListener("click", function(){ $("#chatDiag").hidden = true; });
   if (!noticeCard || !noticeFab) return;
   $("#noticeClose").addEventListener("click", function(){
     if (noticeCurrent) markSeen(noticeCurrent.at);
