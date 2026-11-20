@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="dark" data-glass="on" data-scene="shu" data-ver="1120d">
+<html lang="zh-CN" data-theme="dark" data-glass="on" data-scene="shu" data-ver="1120e">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -925,7 +925,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
   </form>
 </div>
 <footer class="foot">
-    <span>小修科技 · 前台提交页 · v1120d</span>
+    <span>小修科技 · 前台提交页 · v1120e</span>
     <span>数据保存在浏览器 localStorage</span>
     <button class="net-check" id="netCheck" type="button">网络自检</button>
   </footer>
@@ -2234,6 +2234,24 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
   function chatOutRemove(id){
     chatOutSave(chatOut().filter(function(it){ return !(it && it.msg && it.msg.id === id); }));
   }
+  function chatWriteQuick(conv, msg){
+    var rowed = false, doced = false;
+    var rowTry = chatRowWrite(conv, msg).then(function(){ rowed = true; }).catch(function(){});
+    var docTry = (function(){
+      var ctrl = ("AbortController" in window) ? new AbortController() : null;
+      var timer = ctrl ? setTimeout(function(){ try{ ctrl.abort(); }catch(e){} }, 2500) : null;
+      return fetch(MIRROR_URL + "-chat-" + conv + "?t=" + Date.now(), {cache:"no-store", signal: ctrl ? ctrl.signal : undefined})
+        .then(function(r){ if (timer) clearTimeout(timer); return r.ok ? r.json() : null; })
+        .catch(function(){ if (timer) clearTimeout(timer); return null; })
+        .then(function(doc){
+          var d = (doc && doc.msgs) ? {v:1, msgs:doc.msgs.slice(-199)} : {v:1, msgs:[]};
+          if (!d.msgs.some(function(m){ return m.id === msg.id; })) d.msgs.push(msg);
+          d.at = Date.now();
+          return chatWrite(conv, d).then(function(){ doced = true; }).catch(function(){});
+        });
+    })();
+    return Promise.all([rowTry, docTry]).then(function(){ return rowed || doced; });
+  }
   function chatFlush(){
     var list = chatOut();
     if (!list.length) return;
@@ -2244,33 +2262,23 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
       setTimeout(chatFlush, 1000);
       return;
     }
-    chatRead(item.conv).then(function(doc){
-      var d = (doc && doc.msgs) ? {v:1, msgs:doc.msgs.slice(-199)} : {v:1, msgs:[]};
-      var has = d.msgs.some(function(m){ return m.id === item.msg.id; });
-      if (!has) d.msgs.push(item.msg);
-      d.at = Date.now();
-      var stored = false, rowed = false;
-      return Promise.all([
-        chatWrite(item.conv, d).then(function(){ stored = true; }).catch(function(){}),
-        chatRowWrite(item.conv, item.msg).then(function(){ rowed = true; }).catch(function(){})
-      ]).then(function(){
-          if (!stored && !rowed) return false;
-          chatOutRemove(item.msg.id);
-          var a = state.account || {};
-          var entry = {
-            id:item.conv,
-            name:(a.type === "qq" ? "QQ " : "手机 ") + (a.number || item.conv),
-            lastText:String(item.msg.text || "").slice(0, 40),
-            lastAt:item.msg.at,
-            from:"u"
-          };
-          chatIndexWrite(entry);
-          chatPoll();
-          return true;
-        });
+    chatWriteQuick(item.conv, item.msg).then(function(ok){
+      if (!ok) return false;
+      chatOutRemove(item.msg.id);
+      var a = state.account || {};
+      var entry = {
+        id:item.conv,
+        name:(a.type === "qq" ? "QQ " : "手机 ") + (a.number || item.conv),
+        lastText:String(item.msg.text || "").slice(0, 40),
+        lastAt:item.msg.at,
+        from:"u"
+      };
+      chatIndexWrite(entry);
+      chatPoll();
+      return true;
     }).then(function(ok){
       if (ok) setTimeout(chatFlush, 0);
-      else setTimeout(chatFlush, 15000);
+      else setTimeout(chatFlush, 5000);
     });
   }
 
@@ -2349,7 +2357,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
   function chatRowWrite(conv, msg){
     return fetch(CLOUD.url + "/rest/v1/submissions?apikey=" + encodeURIComponent(CLOUD.key), {
       method:"POST",
-      headers:{"Content-Type":"text/plain","Prefer":"return=minimal"},
+      headers:{"Content-Type":"application/json","Prefer":"return=minimal"},
       body:JSON.stringify({id:MSG_ROW + conv + "-" + msg.id, at:Number(msg.at), data:{conv:String(conv), from:msg.from, text:String(msg.text), at:Number(msg.at)}})
     }).then(function(r){
       if (r.ok || r.status === 409) return true;
@@ -2467,6 +2475,13 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     chatLog.innerHTML += '<div class="chat-row me"><div class="chat-bubble">' + chatEsc(msg.text) + '</div></div>';
     chatLog.scrollTop = chatLog.scrollHeight;
     chatOutPush(held, msg);
+    chatWriteQuick(held, msg).then(function(ok){
+      if (ok){
+        chatOutRemove(msg.id);
+        var a = state.account || {};
+        chatIndexWrite({id:held, name:(a.type === "qq" ? "QQ " : "手机 ") + (a.number || held), lastText:String(msg.text).slice(0,40), lastAt:msg.at, from:"u"});
+      }
+    }).catch(function(){});
     chatFlush();
     setTimeout(function(){
       var still = chatOut().some(function(it){ return it && it.msg && it.msg.id === msg.id; });
