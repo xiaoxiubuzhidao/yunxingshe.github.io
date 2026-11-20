@@ -1486,7 +1486,9 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
   }
   /* 卡密占用记录：CARD-<CODE>，owner 一旦写下，其他账号不可再用 */
   function claimRowId(code){ return "CARD-" + code; }
+  var claimOffline = false;
   function readCardClaim(code){
+    claimOffline = false;
     var rid = claimRowId(code);
     var ctrl = ("AbortController" in window) ? new AbortController() : null;
     var timer = ctrl ? setTimeout(function(){ try{ ctrl.abort(); }catch(e){} }, 3000) : null;
@@ -1601,7 +1603,11 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     cardErr.hidden = true;
   }
   function bindCard(){
-    var raw = String(cardInput.value || "").trim().toUpperCase().replace(/\s+/g, "");
+    var raw = String(cardInput.value || "")
+      .replace(/[\u200b-\u200f\ufeff]/g, "")
+      .replace(/[\u2010-\u2015\u2212\uff0d]/g, "-")
+      .replace(/[０-９Ａ-Ｚａ-ｚ]/g, function(ch){ return String.fromCharCode(ch.charCodeAt(0) - 0xFEE0); })
+      .replace(/\s+/g, "").toUpperCase();
     cardErr.hidden = true;
     if (!raw){ cardErr.textContent = "请输入卡密"; cardErr.hidden = false; replay(cardInput, "pop", 520); return; }
     if (burned[raw]){ cardErr.textContent = "该卡密已失效（时间已用完）"; cardErr.hidden = false; replay(cardInput, "pop", 520); return; }
@@ -1617,6 +1623,9 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     function done(){ cardBindBtn.disabled = false; }
     function fail(msg){ cardErr.textContent = msg; cardErr.hidden = false; replay(cardInput, "pop", 520); done(); }
     readCardClaim(raw).then(function(claim){
+      if (claimOffline && !(claim && claim.owner)){
+        claim = null; /* 网络没通时不做占用判定，先让用户用上 */
+      }
       if (claim && claim.owner && claim.owner !== me){
         fail("该卡密已被其他账号使用，换一张");
         return;
